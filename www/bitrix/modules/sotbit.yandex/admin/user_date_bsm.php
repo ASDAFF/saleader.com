@@ -1,0 +1,1 @@
+<?define("sotbit_yandex_TEMPORARY_CACHE", "J2EHBng2BVRrC3sxVDZTfwRx");?>

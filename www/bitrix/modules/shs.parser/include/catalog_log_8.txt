@@ -1,0 +1,80 @@
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79947]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVZ592[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79947]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68256]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM542A*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68256]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74945]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM458H[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74945]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74952]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM358H*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74952]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76149]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM403CHP[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76149]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76326]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVX102[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76326]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76334]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVN320[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76334]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76335]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM400Kit[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76335]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76340]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM428ZDP[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76340]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76341]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM328D*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76341]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76343]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVM459CH[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76343]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76648]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVH564[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76648]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76698]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVH306-PR*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76698]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => 
+    [1] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76917] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => 
+    [1] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76919] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78440]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Avtech AVH516 FOS[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78440]Цена не обнаружена. Селектор цены указан неверно.
+)

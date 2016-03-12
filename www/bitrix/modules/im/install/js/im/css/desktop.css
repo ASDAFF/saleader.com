@@ -1,0 +1,91 @@
+.bx-desktop { overflow: hidden }
+
+.bx-desktop-confirm { padding: 10px 10px 7px 10px; width: 430px; font: 13px "Helvetica Neue",Helvetica,Arial,sans-serif; color:#444444;}
+.bx-desktop-confirm-without-buttons { padding: 10px 10px 15px 10px; font: 13px "Helvetica Neue",Helvetica,Arial,sans-serif; color:#444444; }
+.bx-desktop-confirm-title { font-weight: bold; font-size: 15px; text-align: center; margin-bottom: 4px;}
+
+.bx-desktop-update-box {background-color: #f7f9f9; height: 494px; background: url(./../images/desktop-update-v2.jpg) no-repeat bottom left;}
+.bx-desktop-update-box-text { width: 460px; margin: 0 auto; padding-top: 264px; font: 20px/30px "Helvetica Neue",Helvetica,Arial,sans-serif; color: #41474f; text-align: center;    }
+.bx-desktop-update-box-btn {  margin: 0 auto;  font-weight: bold; line-height: 54px;  text-align: center; font-size: 17px; color: #535c69; height: 54px; cursor: pointer;   position: absolute; top: 387px; width: 100%; }
+
+.bx-desktop-button-wrap { display: block; padding-top: 7px; }
+.bx-desktop-button { display: inline-block; height: 30px; vertical-align: top; cursor: pointer; margin-right: 5px; text-decoration:none!important; }
+.bx-desktop-button span { height: 30px; background: url(./../images/im-sprite-v26.png) 0 -843px repeat-x;  display: inline-block; vertical-align: top; padding-left: 13px; padding-right: 13px; font: 13px/27px "Helvetica Neue",Helvetica,Arial,sans-serif; color:#fff; text-shadow: 0 1px #425a05;  text-decoration:none;}
+.bx-desktop-button i { display: inline-block; height: 30px; width: 4px; background: url(./../images/im-sprite-v26.png) -5px -811px no-repeat; }
+.bx-desktop-button i.bx-desktop-button-fc { background-position: 0 -811px; }
+.bx-desktop-button-white span { background-position:0 -907px; color: #505d67; text-shadow: 0 1px #fff; }
+.bx-desktop-button-white i { background-position: -25px -811px;  }
+.bx-desktop-button-white i.bx-desktop-button-fc {background-position: -21px -811px; }
+.bx-desktop-button-cancel span { background-position:0 -875px; text-shadow: 0 1px #660505; }
+.bx-desktop-button-cancel i { background-position: -14px -811px;  }
+.bx-desktop-button-cancel i.bx-desktop-button-fc {background-position: -10px -811px; }
+
+.bx-desktop-reconnect { display:inline-block; background: url(./../images/wait-small.gif) no-repeat; padding-left: 31px; height: 17px; line-height: 20px;}
+
+.bx-desktop-appearance-menu { position: absolute; z-index: 1005; background-color: #f1f3f5;border-right: 1px solid #cbced0;width: 46px;}
+.bx-desktop-appearance-content { position: relative; z-index: 2; margin-left: 44px;background-color: #fff;  }
+
+.bx-desktop-appearance-avatar { padding-top: 10px;text-align: center;}
+.bx-desktop-avatar { white-space: nowrap; background: url(./../images/im-sprite-v26.png) 2px -124px no-repeat; display: inline-block; width: 32px; height: 32px; vertical-align: middle; margin-bottom: 12px }
+.bx-desktop-avatar-img { width: inherit; height: inherit; border: 0; border-radius: 50%; }
+.bx-desktop-avatar-img-default { background: url("./../images/im-sprite-v26.png") no-repeat scroll -41px -1903px #77828e; }
+.bx-desktop-separator { display: block;height: 0; border-top: 1px solid #cbced0;}
+
+.bx-desktop-tab { display: block;height: 28px;border-radius: 2px;cursor: pointer;padding-bottom: 7px;padding-top: 7px;text-align: center;}
+.bx-desktop-tab:hover {background-color: #e6ecee;border-color: #c7cfd2;border-radius: 2px;}
+.bx-desktop-tab-active, .bx-desktop-tab-active:hover {background: none repeat scroll 0 0 #e6ecee;border-color: #c7cfd2;}
+.bx-desktop-tab-hide { display: none }
+.bx-desktop-tab-config {}
+.bx-desktop-tab-counter {background-color: #4085b7;border-radius: 10px;color: #fff;font-size: 11px;position: absolute;margin-top: 14px;margin-left: 13px;line-height: 14px;}
+.bx-desktop-tab-counter-digit { padding: 0 4px 0px 5px; display: block; }
+.bx-desktop-tab-icon { width: 27px; height: inherit; background: url("./../images/desktop-sprite-v4.png") no-repeat scroll 15px 15px;display: inline-block;}
+.bx-desktop-tab-icon-config { background-position: -49px -51px; }
+.bx-desktop-tab-icon-disk { background-position: -13px -50px; }
+.bx-desktop-tab-icon-im { background-position: -12px -9px; }
+.bx-desktop-tab-icon-notify { background-position: -86px -11px; }
+.bx-desktop-tab-icon-im-phone { background-position: -49px -9px; }
+.bx-desktop-tab-icon-im-lf { background-position: -86px -50px; }
+.bx-desktop-tab-icon-exit { background-position: -13px -87px; }
+.bx-desktop-tab-icon-contact_list { background-position: -49px -87px; }
+.bx-desktop-tab-content { display: none; height: inherit }
+.bx-desktop-tab-content-active { display: block; }
+.bx-desktop-tab-content-im { padding-left: 3px; }
+
+.im-desktop-popup .bx-messenger-settings { width: auto; display: block; }
+.im-desktop-popup .bx-messenger-settings { width: auto; }
+
+@media screen and (max-width: 913px) and (min-width: 600px) {
+	.bx-desktop .bx-messenger-call-overlay { margin-left: 200px!important;  }
+	.bx-desktop .bx-messenger-box-contact { width: 200px!important;  }
+	.bx-desktop .bx-messenger-box-dialog { margin-left: 200px!important; }
+	.bx-desktop .bx-messenger-box-extra { margin-left: 200px!important; }
+	.bx-desktop .bx-messenger-panel-title-chat-input { width: 100%!important;; }
+	.bx-desktop #disk-wrap .right_section { display: none; }
+	.bx-desktop #disk-wrap .header_section_one { display: none; }
+	.bx-desktop #disk-wrap .header_section_two { width: auto; }
+}
+@media screen and (max-width: 599px)  {
+	.bx-desktop .bx-messenger-box-contact { width: 70px!important;  }
+	.bx-desktop .bx-messenger-call-overlay { margin-left: 70px!important; }
+	.bx-desktop .bx-messenger-box-dialog { margin-left: 70px!important; }
+	.bx-desktop .bx-messenger-box-extra { margin-left: 70px!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-switcher-tab-wrap { width: 20px; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-switcher-tab-text { padding: 0 2px; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-user { display: none; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-panel-title-chat-input { width: 100%!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-count { position: absolute!important; right: 7px!important;; margin-top:-3px!important;; }
+	.bx-mac .bx-desktop .bx-messenger-box-contact .bx-messenger-cl-count { position: absolute!important; right: 11px!important;; margin-top:-3px!important;; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-switcher-tab-wrap .bx-messenger-cl-count { right: 18px!important;  margin-top: 15px!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-search-wrap .bx-messenger-input { width: 60%!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-panel-status-text { max-width: 33px!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-group-title {  padding: 0 7px 0 15px!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-group-title:before { left: 4px!important;}
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-group-open .bx-messenger-cl-group-title:before { left: 4px!important; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-recent-group {  margin: 2px 2px 2px 2px; text-align: center; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-recent-group-title { font-size: 10px!important; padding: 0; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-avatar { margin: 0; float: none; }
+	.bx-desktop .bx-messenger-box-contact .bx-messenger-cl-item { text-align: center; padding: 6px 11px 6px 11px }
+	.bx-desktop #disk-wrap .right_section { display: none; }
+	.bx-desktop #disk-wrap .header_section_one { display: none; }
+	.bx-desktop #disk-wrap .header_section_two { width: auto; }
+}

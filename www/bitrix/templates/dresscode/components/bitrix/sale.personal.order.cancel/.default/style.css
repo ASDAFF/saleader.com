@@ -1,0 +1,86 @@
+.back{
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	font-size: 14px;
+	color: #000000;
+}
+.bx_my_order_cancel{
+	margin-top: 20px;
+	font-size: 15px;
+}
+.bx_my_order_cancel a{
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	color: #000000;
+}
+
+.bx_my_order_cancel textarea{
+	outline: none;
+	max-width: 500px;
+	margin-top: 10px;
+	height: 100px;
+	resize: none;
+	width: 100%;
+}
+
+.bx_my_order_cancel  input[type="submit"]{
+	border-radius:3px;
+	text-align:center;
+	text-decoration:none;
+	font-size: 14px;
+	color: #ffffff !important;
+	font-size: 13px;
+	padding: 10px 25px;
+	cursor: pointer;
+	border: 0;
+}
+.bx_my_order_cancel .bx_shadow input[type="submit"]{box-shadow:0 1px 1px 0 rgba(0,0,0,.2)}
+.bx_my_order_cancel .bx_shadow input[type="submit"]:active{box-shadow:none}
+
+.bx_my_order_cancel  input[type="submit"] 		{
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	color:#656565;
+}
+
+.bx_my_order_cancel .bx_small input[type="submit"]{
+	display:inline-block;
+	min-width:20px;
+	line-height:20px;
+}
+.bx_my_order_cancel .bx_small input[type="submit"] 		{}
+.bx_my_order_cancel .bx_small input[type="submit"]:hover {}
+.bx_my_order_cancel .bx_small input[type="submit"]:active{}
+
+.bx_my_order_cancel .bx_medium input[type="submit"]	{
+	padding:0 13px;
+	height:25px;
+	font-weight:bold;
+	line-height:25px;
+}
+
+.bx_my_order_cancel .bx_medium input[type="submit"] 		 {font-weight:bold}
+.bx_my_order_cancel .bx_medium input[type="submit"]:hover {}
+.bx_my_order_cancel .bx_medium input[type="submit"]:active{}
+
+.bx_my_order_cancel .bx_big input[type="submit"]	{
+	padding:0 13px;
+	height:34px;
+	font-weight:bold;
+	line-height:34px;
+}
+
+.bx_my_order_cancel .bx_big input[type="submit"] 	  {}
+.bx_my_order_cancel .bx_big input[type="submit"]:hover {}
+.bx_my_order_cancel .bx_big input[type="submit"]:active{}
+
+.bx_my_order_cancel_switch {
+	margin-bottom: 15px;
+	line-height: 30px;
+}
+.bx_my_order_cancel_switch .bx_mo_link{
+	margin-right: 20px;
+}

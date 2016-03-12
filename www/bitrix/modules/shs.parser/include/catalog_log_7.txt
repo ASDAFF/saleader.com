@@ -1,0 +1,1075 @@
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70470]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D11[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70470]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70620]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E11[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70620]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70624]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-5511[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70624]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70626]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-5211[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70626]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70627]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-5211E[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70627]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70631]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E32[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70631]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70632]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E33[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70632]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70633]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E34[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70633]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70636]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E41[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70636]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70641]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E43A*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70641]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70642]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E44[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70642]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70643]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E45[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70643]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70645]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D51[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70645]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70647]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D54[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70647]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70648]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D55[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70648]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70650]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E52[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70650]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70652]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E54[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70652]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70657]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D64[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70657]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70659]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E61[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70659]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70661]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E63[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70661]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70662]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E64[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70662]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70664]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E66[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70664]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70667]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-3311[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70667]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70669]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D72A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70669]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70671]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E72[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70671]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70673]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E74A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70673]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70674]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-7111[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70674]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70677]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E81[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70677]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70681]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E85[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70681]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70683]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti ACM-7411[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70683]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70684]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-7311[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70684]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70687]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E91[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70687]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70688]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E92[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70688]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70689]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E93[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70689]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70691]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E96[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70691]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70692]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-3911[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70692]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70693]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-7911[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70693]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70694]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti ACM-8511[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70694]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70695]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti KCM-8111[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70695]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70697]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti TCM-6630[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70697]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70698]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti TCD-2100[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70698]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70703]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti ACD-3100[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70703]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70704]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti ECD-1000[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70704]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70705]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti GNR-3000[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70705]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70722]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti ACM-3701E[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=70722]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71675]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E21V[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71675]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71680]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E25[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71680]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71682]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti APP-2000-32[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71682]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71683]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti APP-2000-48[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71683]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71684]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti APP-2000-64[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71684]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71685]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LNVR3000-00001[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71685]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71686]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LCDP1000-00001[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71686]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71687]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LXNR4200-000XX[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71687]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71688]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LGNR2000-000XX[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71688]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71689]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LCMS1001-000XX[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71689]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71690]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LCMS2000-00001[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71690]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71691]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti PMON-1001-011[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71691]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71834]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti CAM-7301*[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=71834]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=72598]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E47[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=72598]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74113]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D21FA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74113]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74114]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D21VA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74114]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74115]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D22FA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74115]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74116]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D22VА[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74116]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74117]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E24А[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74117]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74118]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E270[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74118]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74119]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E271[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74119]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74120]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E94[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74120]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74121]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E95[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74121]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74122]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B51[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74122]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74123]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B52[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74123]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74124]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B53[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74124]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74125]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E68[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74125]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74127]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E610[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74127]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74128]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B61[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74128]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74130]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B65[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74130]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74131]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B67[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74131]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74132]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B81[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74132]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74133]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B84[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74133]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74134]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B85[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74134]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74135]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B87[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74135]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74136]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B55[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74136]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74137]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B56[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74137]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74138]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B94[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74138]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74139]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B96[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74139]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74140]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B97[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74140]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74141]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I91[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74141]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74142]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I92[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74142]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74143]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I93[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74143]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74145]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I95[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74145]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74151]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti INR-410[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74151]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74152]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti INR-420[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74152]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74153]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti LTVW1000-00000[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=74153]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75303]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E14[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75303]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75304]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B21[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75304]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75305]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B24[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75305]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75306]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B25[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75306]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75307]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B27[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75307]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75308]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E21FA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75308]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75312]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E21VA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75312]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75313]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E22FA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75313]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75314]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E22VA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75314]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75315]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E23A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75315]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75316]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D61A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75316]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75318]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D71A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75318]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75319]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D81A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75319]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75320]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D82A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75320]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75321]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E75[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75321]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75322]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E76[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75322]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75323]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E83A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75323]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75324]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E88[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75324]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75325]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E89[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75325]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75326]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E98[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75326]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75327]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E918[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75327]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75328]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E919[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75328]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75329]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E920[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75329]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75330]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E921[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75330]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75331]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E922[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75331]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75332]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E923[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75332]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75333]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I51[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75333]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75334]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I71[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75334]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75335]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B95[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75335]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75336]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B41[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75336]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75337]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B44[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75337]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75338]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B45[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75338]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75339]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B47[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75339]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75340]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E35[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75340]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75341]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E36[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75341]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75342]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E37[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75342]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75343]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti V21[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75343]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75344]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti V22[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75344]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75345]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti V23[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75345]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75346]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti V24[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75346]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75414]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti APP-2000-48 (16)[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=75414]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76423]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E15 5Мп[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76423]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76426]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E16 10Мп[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76426]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76427]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E217 2Мп корпусная[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76427]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76428]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E222 2Мп корпусная[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76428]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76429]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B210[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76429]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76430]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I24[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76430]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76431]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I25[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76431]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76432]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I27[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76432]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76433]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E38[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76433]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76434]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E42B[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76434]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76435]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B410[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76435]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76436]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I44[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76436]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76437]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I45[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76437]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76438]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I47[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76438]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76439]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E910[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76439]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76440]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E924[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76440]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76441]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E926[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76441]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76442]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E928[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76442]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76443]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E62A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76443]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76444]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E82A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76444]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76445]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E84A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76445]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76446]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E86A[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76446]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76447]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E616[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76447]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76448]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E617[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76448]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76449]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E618[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76449]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76450]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E620[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76450]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76451]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E621[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76451]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76452]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E815[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76452]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76453]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E816[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76453]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76454]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E817[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76454]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76455]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E819[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76455]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76456]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E822[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76456]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76457]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E925[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76457]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76458]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E927[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76458]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76459]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E929[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76459]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76460]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E931[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76460]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76461]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B54[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76461]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76462]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I52[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76462]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76463]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I53[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76463]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76464]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I72[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76464]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76465]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I73[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76465]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76467]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I912[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76467]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76468]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I910[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=76468]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=77874]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti PMAX-0312 кронштейн настенный для I93[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=77874]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78309]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B214 2MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78309]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78310]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B215 2MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78310]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78311]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B22 5MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78311]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78312]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E210 10MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78312]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78313]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E213 5MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78313]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78314]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E215 3MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78314]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78315]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E219 2MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78315]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78316]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E223 1.3MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78316]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78317]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I28 2MP Zoom Box with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78317]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78318]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E42B 3MP Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78318]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78319]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E41B 1MP Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78319]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78320]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E48 10MP Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78320]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79376]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E46A 3MP Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79376]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79640]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B46 5MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79640]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79641]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B49 3MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79641]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79642]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E413 5MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79642]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79643]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E415 3MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79643]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79644]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E416 10MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79644]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79645]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E417 2MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79645]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79646]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E418 1.3MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79646]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79647]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti I48 2MP Zoom Bullet with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79647]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79648]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E913 3MP Indoor Mini Dome with Superior WDR[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79648]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79649]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E924M 5MP Outdoor Mini Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79649]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79650]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E926M 10MP Outdoor Mini Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79650]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79651]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E928M 3MP Outdoor Mini Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79651]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79652]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D61A 1.3MP Indoor Dome with SLLS[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79652]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79653]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D62A 2MP Indoor Dome with SLLS[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79653]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79654]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti D65A 3MP Indoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79654]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79655]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E61A 1MP Indoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79655]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79656]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E63A 5MP Indoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79656]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79657]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E64A 1MP Indoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79657]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79658]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E66A 1.3MP Indoor Dome with Basic WDR[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79658]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79659]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E67A 2MP Indoor Dome with Basic WDR[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79659]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79660]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E71A 1MP Outdoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79660]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79661]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E72A 3MP Outdoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79661]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79662]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E73A 5MP Outdoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79662]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79663]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti E85A 1MP Outdoor Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79663]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79664]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Acti B62 5MP Indoor Zoom Dome with D/N[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=79664]Цена не обнаружена. Селектор цены указан неверно.
+)

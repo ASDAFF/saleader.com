@@ -1,0 +1,192 @@
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68534]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS M1043-W[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68534]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68535]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS M1044-W[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68535]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68539]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 211W[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68539]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68540]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 221[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68540]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68603]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 212 PTZ[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68603]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68606]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 215PTZ[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68606]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68607]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 233D[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68607]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68637]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 215PTZ -E[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68637]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68656]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS Q8108-R[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68656]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68657]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 12 Channel Video Server Bundle[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68657]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68658]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 18 Channel Video Encoder Bundle[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68658]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68660]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 241Q Blade[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68660]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68661]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 241Q[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68661]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68662]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 241S[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68662]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68663]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 243Q Blade[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68663]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68664]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS 243SA[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68664]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68691]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Module camera tamper control[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68691]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68693]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Module Object Tracking license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68693]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68694]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Module People Counting license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68694]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68695]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => Module Removed Object Detection license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68695]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68696]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Layout Navigation Tool license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68696]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68698]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II BASIC Camera license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68698]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68699]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II BASIC User License[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68699]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68700]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II ENTERPRISE Camera license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68700]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68676] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68690] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => 
+    [2] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692]Цена не обнаружена. Селектор цены указан неверно.
+    [3] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68692] - Не введено название.<br>Обязательное поле "Символьный код" не заполнено.<br>
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68702]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II ENTERPRISE Mobile Client[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68702]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68703]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II ENTERPRISE User License[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68703]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68704]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II eXtended Camera license[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68704]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68705]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II eXtended Mobile Client[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68705]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68706]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => NetAvis Observer II eXtended User License[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=68706]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78806]Цена не обнаружена. Селектор цены указан неверно.
+    [1] => AXIS M7001 Serv Kit[http://grand-prix.ru/catalog/details.php?ELEMENT_ID=78806]Цена не обнаружена. Селектор цены указан неверно.
+)

@@ -1,0 +1,99 @@
+#stores{
+    margin-top: 24px;
+    font-size: 13px;
+}
+
+#stores .wrap{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 24px;
+}
+
+#stores .heading{
+    border-top: 1px solid #efefef;
+    font-family: 'robotobold';
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 36px 24px;
+    font-weight: 800;
+    font-size: 20px;
+    display: block;
+}
+
+#stores .storeTable{
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#stores .storeTable tr:nth-child(odd) td{
+	background-color: #f9f9f9;
+}
+
+#stores .storeTable th{
+    background-color: #f3f3f3;
+    padding: 12px 24px;
+    font-weight: 400;
+    text-align: center;
+}
+
+#stores .storeTable td{
+	/*border-top: 1px solid #e7e8ea;*/
+    text-align: center;
+    padding: 12px 24px;
+}
+
+#stores .storeTable .name{
+    text-align: left;
+    width: 35%;
+}
+
+#stores .storeTable td.name{
+        text-align: left;
+}
+
+#stores .storeTable .lb{
+    display: inline-block;
+    text-align: left;
+}
+
+#stores .storeTable .icon{
+	vertical-align: middle;
+	padding-right: 6px;
+	margin-top: -4px;
+}
+
+#stores .storeTable .green{
+    /*font-weight: 800;*/
+    color: #73b24e;
+}
+
+#stores .storeTable .red{
+    color: #ff0000;
+}
+
+#stores .storeTable .picture{
+    vertical-align: middle;
+    padding-right: 12px;
+}
+
+#stores .storeTable a{
+    -webkit-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;    
+    text-decoration: underline;
+    color: #000000;
+}
+
+#stores .storeTable a:hover{
+    color: #888888;
+}
+
+#stores #storeMap{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-top: 24px;
+	padding: 0 24px;
+}

@@ -1,0 +1,30 @@
+.brandsHeading{
+	border-top: 1px solid #e7e8ea;
+	padding-top: 24px;
+}
+
+.brandsDescription{
+	margin-bottom: 24px;
+	color: #888888;
+	font-size: 12px;
+}
+
+.brandsBigPicture{
+	margin-top: 24px;
+	margin-bottom: 24px;
+}
+
+.backToList{
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+	margin-top: 24px;
+	display: block;
+	color: #000000;
+	float: right;
+}
+
+.backToList:active{
+	position: relative;
+	top: 1px;
+}

@@ -1,0 +1,28 @@
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=73704]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=73705]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=73706]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=73707]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=73708]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=80037]Цена не обнаружена. Селектор цены указан неверно.
+)
+Array
+(
+    [0] => [http://grand-prix.ru/catalog/details.php?ELEMENT_ID=80351]Цена не обнаружена. Селектор цены указан неверно.
+)

@@ -1,0 +1,3063 @@
+stdClass Object
+(
+    [filters] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [id] => -1
+                    [name] => цена
+                    [shortname] => price
+                    [type] => NUMERIC
+                    [unit] => RUR
+                    [minValue] => 0
+                    [maxValue] => 40000000
+                    [exactly] => 
+                )
+
+            [1] => stdClass Object
+                (
+                    [id] => 7893318
+                    [name] => Производитель
+                    [type] => ENUMERATOR
+                    [unit] => 
+                    [enumFilterType] => VENDOR
+                    [options] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [valueId] => 10713335
+                                    [valueText] => ACTi
+                                    [popularity] => 1770
+                                )
+
+                            [1] => stdClass Object
+                                (
+                                    [valueId] => 12805636
+                                    [valueText] => AXIS
+                                    [popularity] => 3349
+                                )
+
+                            [2] => stdClass Object
+                                (
+                                    [valueId] => 7161571
+                                    [valueText] => BEWARD
+                                    [popularity] => 2086
+                                )
+
+                            [3] => stdClass Object
+                                (
+                                    [valueId] => 153019
+                                    [valueText] => D-link
+                                    [popularity] => 1970
+                                )
+
+                            [4] => stdClass Object
+                                (
+                                    [valueId] => 7788643
+                                    [valueText] => GeoVision
+                                    [popularity] => 549
+                                )
+
+                            [5] => stdClass Object
+                                (
+                                    [valueId] => 8263686
+                                    [valueText] => Hikvision
+                                    [popularity] => 2666
+                                )
+
+                            [6] => stdClass Object
+                                (
+                                    [valueId] => 10713752
+                                    [valueText] => MicroDigital
+                                    [popularity] => 620
+                                )
+
+                            [7] => stdClass Object
+                                (
+                                    [valueId] => 153082
+                                    [valueText] => Panasonic
+                                    [popularity] => 808
+                                )
+
+                            [8] => stdClass Object
+                                (
+                                    [valueId] => 152955
+                                    [valueText] => Sony
+                                    [popularity] => 2641
+                                )
+
+                            [9] => stdClass Object
+                                (
+                                    [valueId] => 10713973
+                                    [valueText] => Vivotek
+                                    [popularity] => 1203
+                                )
+
+                        )
+
+                    [exactly] => 
+                )
+
+            [2] => stdClass Object
+                (
+                    [id] => 6122834
+                    [name] => Работа вне помещения
+                    [type] => BOOL
+                )
+
+            [3] => stdClass Object
+                (
+                    [id] => 6122995
+                    [name] => Питание PoE 
+                    [type] => BOOL
+                )
+
+            [4] => stdClass Object
+                (
+                    [id] => 6122989
+                    [name] => Купольная конструкция
+                    [type] => BOOL
+                )
+
+            [5] => stdClass Object
+                (
+                    [id] => 6123535
+                    [name] => Поворотная камера
+                    [type] => BOOL
+                )
+
+            [6] => stdClass Object
+                (
+                    [id] => 6123582
+                    [name] => Работа ночью
+                    [type] => BOOL
+                )
+
+            [7] => stdClass Object
+                (
+                    [id] => 6122994
+                    [name] => Детектор движения
+                    [type] => BOOL
+                )
+
+            [8] => stdClass Object
+                (
+                    [id] => 6122996
+                    [name] => Запись на карту памяти
+                    [type] => BOOL
+                )
+
+            [9] => stdClass Object
+                (
+                    [id] => 6122846
+                    [name] => Wi-Fi
+                    [type] => BOOL
+                )
+
+            [10] => stdClass Object
+                (
+                    [id] => 7770614
+                    [name] => Соответствие стандарту ONVIF
+                    [type] => BOOL
+                )
+
+            [11] => stdClass Object
+                (
+                    [id] => 10789488
+                    [name] => Разрешение
+                    [type] => ENUMERATOR
+                    [unit] => 
+                    [enumFilterType] => GENERIC
+                    [options] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [valueId] => 10789503
+                                    [valueText] => 640x480
+                                )
+
+                            [1] => stdClass Object
+                                (
+                                    [valueId] => 10861470
+                                    [valueText] => 704x576
+                                )
+
+                            [2] => stdClass Object
+                                (
+                                    [valueId] => 10789498
+                                    [valueText] => 720x576
+                                )
+
+                            [3] => stdClass Object
+                                (
+                                    [valueId] => 10861473
+                                    [valueText] => 800x600
+                                )
+
+                            [4] => stdClass Object
+                                (
+                                    [valueId] => 10789501
+                                    [valueText] => 1280x1024
+                                )
+
+                            [5] => stdClass Object
+                                (
+                                    [valueId] => 10789491
+                                    [valueText] => 1280x720
+                                )
+
+                            [6] => stdClass Object
+                                (
+                                    [valueId] => 10789495
+                                    [valueText] => 1280x800
+                                )
+
+                            [7] => stdClass Object
+                                (
+                                    [valueId] => 10789554
+                                    [valueText] => 1280x960
+                                )
+
+                            [8] => stdClass Object
+                                (
+                                    [valueId] => 10992877
+                                    [valueText] => 1600x1200
+                                )
+
+                            [9] => stdClass Object
+                                (
+                                    [valueId] => 10865693
+                                    [valueText] => 1600х1200
+                                )
+
+                            [10] => stdClass Object
+                                (
+                                    [valueId] => 10789505
+                                    [valueText] => 1920x1080
+                                )
+
+                            [11] => stdClass Object
+                                (
+                                    [valueId] => 10789497
+                                    [valueText] => 2048x1536
+                                )
+
+                            [12] => stdClass Object
+                                (
+                                    [valueId] => 10974463
+                                    [valueText] => 2048x1944
+                                )
+
+                            [13] => stdClass Object
+                                (
+                                    [valueId] => 10861471
+                                    [valueText] => 2560x1920
+                                )
+
+                            [14] => stdClass Object
+                                (
+                                    [valueId] => 10894239
+                                    [valueText] => 2592x1920
+                                )
+
+                            [15] => stdClass Object
+                                (
+                                    [valueId] => 10860520
+                                    [valueText] => 2592x1944
+                                )
+
+                        )
+
+                    [exactly] => 1
+                )
+
+            [12] => stdClass Object
+                (
+                    [id] => -5
+                    [name] => Рейтинг магазина
+                    [shortname] => rating
+                    [type] => ENUMERATOR
+                    [subType] => single
+                    [enumFilterType] => GENERIC
+                    [options] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [valueId] => 2
+                                    [valueText] => от 2 звезд и выше
+                                )
+
+                            [1] => stdClass Object
+                                (
+                                    [valueId] => 3
+                                    [valueText] => от 3 звезд и выше
+                                )
+
+                            [2] => stdClass Object
+                                (
+                                    [valueId] => 4
+                                    [valueText] => от 4 звезд и выше
+                                )
+
+                        )
+
+                    [exactly] => 1
+                )
+
+            [13] => stdClass Object
+                (
+                    [id] => -2
+                    [name] => гарантия производителя
+                    [shortname] => manufacturer_warranty
+                    [type] => BOOL
+                )
+
+            [14] => stdClass Object
+                (
+                    [id] => -3
+                    [name] => в наличии
+                    [shortname] => onstock
+                    [type] => BOOL
+                )
+
+            [15] => stdClass Object
+                (
+                    [id] => shipping
+                    [name] => Доставка
+                    [shortname] => shipping
+                    [type] => ENUMERATOR
+                    [subType] => single
+                    [enumFilterType] => GENERIC
+                    [options] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [valueId] => delivery
+                                    [valueText] => с доставкой
+                                )
+
+                            [1] => stdClass Object
+                                (
+                                    [valueId] => pickup
+                                    [valueText] => самовывоз
+                                )
+
+                        )
+
+                    [exactly] => 1
+                )
+
+            [16] => stdClass Object
+                (
+                    [id] => -6
+                    [name] => Магазины
+                    [shortname] => shop
+                    [type] => ENUMERATOR
+                    [subType] => single
+                    [enumFilterType] => SHOP
+                    [options] => Array
+                        (
+                            [0] => stdClass Object
+                                (
+                                    [valueId] => 234
+                                    [valueText] => 003.ru
+                                    [count] => 7
+                                )
+
+                            [1] => stdClass Object
+                                (
+                                    [valueId] => 159418
+                                    [valueText] => 1BESTSERVER
+                                    [count] => 187
+                                )
+
+                            [2] => stdClass Object
+                                (
+                                    [valueId] => 3929
+                                    [valueText] => 1Digital.ru
+                                    [count] => 12
+                                )
+
+                            [3] => stdClass Object
+                                (
+                                    [valueId] => 336546
+                                    [valueText] => 1PA.ru
+                                    [count] => 30
+                                )
+
+                            [4] => stdClass Object
+                                (
+                                    [valueId] => 96674
+                                    [valueText] => 1Reader.ru
+                                    [count] => 1
+                                )
+
+                            [5] => stdClass Object
+                                (
+                                    [valueId] => 30254
+                                    [valueText] => ab24.ru
+                                    [count] => 81
+                                )
+
+                            [6] => stdClass Object
+                                (
+                                    [valueId] => 137726
+                                    [valueText] => Acti-shop.ru
+                                    [count] => 106
+                                )
+
+                            [7] => stdClass Object
+                                (
+                                    [valueId] => 338709
+                                    [valueText] => AirSoft-RUS
+                                    [count] => 3
+                                )
+
+                            [8] => stdClass Object
+                                (
+                                    [valueId] => 29427
+                                    [valueText] => AktivStyle.ru
+                                    [count] => 1
+                                )
+
+                            [9] => stdClass Object
+                                (
+                                    [valueId] => 48114
+                                    [valueText] => Allo Internet
+                                    [count] => 38
+                                )
+
+                            [10] => stdClass Object
+                                (
+                                    [valueId] => 37720
+                                    [valueText] => Alp-Book
+                                    [count] => 1
+                                )
+
+                            [11] => stdClass Object
+                                (
+                                    [valueId] => 235199
+                                    [valueText] => Anadex
+                                    [count] => 1
+                                )
+
+                            [12] => stdClass Object
+                                (
+                                    [valueId] => 47317
+                                    [valueText] => ANetwork
+                                    [count] => 50
+                                )
+
+                            [13] => stdClass Object
+                                (
+                                    [valueId] => 18066
+                                    [valueText] => Arecont Vision
+                                    [count] => 3
+                                )
+
+                            [14] => stdClass Object
+                                (
+                                    [valueId] => 41758
+                                    [valueText] => ASP 24
+                                    [count] => 12
+                                )
+
+                            [15] => stdClass Object
+                                (
+                                    [valueId] => 228882
+                                    [valueText] => ASTEL-NKT
+                                    [count] => 77
+                                )
+
+                            [16] => stdClass Object
+                                (
+                                    [valueId] => 22591
+                                    [valueText] => ATbook
+                                    [count] => 31
+                                )
+
+                            [17] => stdClass Object
+                                (
+                                    [valueId] => 79667
+                                    [valueText] => AudioDomofon.ru
+                                    [count] => 109
+                                )
+
+                            [18] => stdClass Object
+                                (
+                                    [valueId] => 1956
+                                    [valueText] => AUTO-GPS.ru
+                                    [count] => 1
+                                )
+
+                            [19] => stdClass Object
+                                (
+                                    [valueId] => 3189
+                                    [valueText] => autokedy
+                                    [count] => 92
+                                )
+
+                            [20] => stdClass Object
+                                (
+                                    [valueId] => 200247
+                                    [valueText] => Autoset-DV.ru
+                                    [count] => 2
+                                )
+
+                            [21] => stdClass Object
+                                (
+                                    [valueId] => 273096
+                                    [valueText] => AvCaM
+                                    [count] => 4
+                                )
+
+                            [22] => stdClass Object
+                                (
+                                    [valueId] => 209959
+                                    [valueText] => Avrorus
+                                    [count] => 126
+                                )
+
+                            [23] => stdClass Object
+                                (
+                                    [valueId] => 28260
+                                    [valueText] => AVT-Техника
+                                    [count] => 6
+                                )
+
+                            [24] => stdClass Object
+                                (
+                                    [valueId] => 153650
+                                    [valueText] => Axis-Shop
+                                    [count] => 90
+                                )
+
+                            [25] => stdClass Object
+                                (
+                                    [valueId] => 234111
+                                    [valueText] => Axivision
+                                    [count] => 17
+                                )
+
+                            [26] => stdClass Object
+                                (
+                                    [valueId] => 6363
+                                    [valueText] => BeCompact.RU
+                                    [count] => 13
+                                )
+
+                            [27] => stdClass Object
+                                (
+                                    [valueId] => 235737
+                                    [valueText] => BEWARD (БЕВАРД)
+                                    [count] => 102
+                                )
+
+                            [28] => stdClass Object
+                                (
+                                    [valueId] => 338946
+                                    [valueText] => Beward-Moscow.ru
+                                    [count] => 82
+                                )
+
+                            [29] => stdClass Object
+                                (
+                                    [valueId] => 244497
+                                    [valueText] => BrainyBox
+                                    [count] => 4
+                                )
+
+                            [30] => stdClass Object
+                                (
+                                    [valueId] => 28494
+                                    [valueText] => BrandStar
+                                    [count] => 53
+                                )
+
+                            [31] => stdClass Object
+                                (
+                                    [valueId] => 262444
+                                    [valueText] => Browngoods.ru
+                                    [count] => 17
+                                )
+
+                            [32] => stdClass Object
+                                (
+                                    [valueId] => 161760
+                                    [valueText] => CamYol
+                                    [count] => 167
+                                )
+
+                            [33] => stdClass Object
+                                (
+                                    [valueId] => 270058
+                                    [valueText] => Case-MSK
+                                    [count] => 1
+                                )
+
+                            [34] => stdClass Object
+                                (
+                                    [valueId] => 30234
+                                    [valueText] => Cenam.NET
+                                    [count] => 38
+                                )
+
+                            [35] => stdClass Object
+                                (
+                                    [valueId] => 190723
+                                    [valueText] => ChipMart
+                                    [count] => 29
+                                )
+
+                            [36] => stdClass Object
+                                (
+                                    [valueId] => 118089
+                                    [valueText] => Chodo.ru
+                                    [count] => 2
+                                )
+
+                            [37] => stdClass Object
+                                (
+                                    [valueId] => 177922
+                                    [valueText] => ciscosales.ru
+                                    [count] => 2
+                                )
+
+                            [38] => stdClass Object
+                                (
+                                    [valueId] => 13063
+                                    [valueText] => COMP2YOU
+                                    [count] => 3
+                                )
+
+                            [39] => stdClass Object
+                                (
+                                    [valueId] => 104920
+                                    [valueText] => compday.ru
+                                    [count] => 1
+                                )
+
+                            [40] => stdClass Object
+                                (
+                                    [valueId] => 25017
+                                    [valueText] => CompYou
+                                    [count] => 1
+                                )
+
+                            [41] => stdClass Object
+                                (
+                                    [valueId] => 246624
+                                    [valueText] => CONETEC
+                                    [count] => 47
+                                )
+
+                            [42] => stdClass Object
+                                (
+                                    [valueId] => 314070
+                                    [valueText] => Connect-IT
+                                    [count] => 3
+                                )
+
+                            [43] => stdClass Object
+                                (
+                                    [valueId] => 273844
+                                    [valueText] => ControlAccess
+                                    [count] => 142
+                                )
+
+                            [44] => stdClass Object
+                                (
+                                    [valueId] => 230510
+                                    [valueText] => COPTERRA.RU
+                                    [count] => 1
+                                )
+
+                            [45] => stdClass Object
+                                (
+                                    [valueId] => 105425
+                                    [valueText] => Corporate Network
+                                    [count] => 103
+                                )
+
+                            [46] => stdClass Object
+                                (
+                                    [valueId] => 190092
+                                    [valueText] => csb72.ru
+                                    [count] => 1
+                                )
+
+                            [47] => stdClass Object
+                                (
+                                    [valueId] => 59890
+                                    [valueText] => CT company
+                                    [count] => 329
+                                )
+
+                            [48] => stdClass Object
+                                (
+                                    [valueId] => 137715
+                                    [valueText] => D-link-shop
+                                    [count] => 67
+                                )
+
+                            [49] => stdClass Object
+                                (
+                                    [valueId] => 336904
+                                    [valueText] => DahuaRussia
+                                    [count] => 53
+                                )
+
+                            [50] => stdClass Object
+                                (
+                                    [valueId] => 71183
+                                    [valueText] => Deeline
+                                    [count] => 36
+                                )
+
+                            [51] => stdClass Object
+                                (
+                                    [valueId] => 49044
+                                    [valueText] => Digitalvita, LLC
+                                    [count] => 5
+                                )
+
+                            [52] => stdClass Object
+                                (
+                                    [valueId] => 167941
+                                    [valueText] => DVB Store
+                                    [count] => 1
+                                )
+
+                            [53] => stdClass Object
+                                (
+                                    [valueId] => 5714
+                                    [valueText] => E-First
+                                    [count] => 14
+                                )
+
+                            [54] => stdClass Object
+                                (
+                                    [valueId] => 6176
+                                    [valueText] => Ediscom.ru
+                                    [count] => 90
+                                )
+
+                            [55] => stdClass Object
+                                (
+                                    [valueId] => 101529
+                                    [valueText] => ElectroSpectr.ru
+                                    [count] => 1
+                                )
+
+                            [56] => stdClass Object
+                                (
+                                    [valueId] => 65727
+                                    [valueText] => Erst Store
+                                    [count] => 106
+                                )
+
+                            [57] => stdClass Object
+                                (
+                                    [valueId] => 52410
+                                    [valueText] => F-Center
+                                    [count] => 6
+                                )
+
+                            [58] => stdClass Object
+                                (
+                                    [valueId] => 71252
+                                    [valueText] => F1Computers
+                                    [count] => 2
+                                )
+
+                            [59] => stdClass Object
+                                (
+                                    [valueId] => 3534
+                                    [valueText] => Flash Computers
+                                    [count] => 16
+                                )
+
+                            [60] => stdClass Object
+                                (
+                                    [valueId] => 27256
+                                    [valueText] => Fobis.Ru
+                                    [count] => 3
+                                )
+
+                            [61] => stdClass Object
+                                (
+                                    [valueId] => 277909
+                                    [valueText] => FORSA.RU
+                                    [count] => 4
+                                )
+
+                            [62] => stdClass Object
+                                (
+                                    [valueId] => 115178
+                                    [valueText] => FORUM
+                                    [count] => 28
+                                )
+
+                            [63] => stdClass Object
+                                (
+                                    [valueId] => 113799
+                                    [valueText] => FOSCAM. IP КАМЕРЫ
+                                    [count] => 16
+                                )
+
+                            [64] => stdClass Object
+                                (
+                                    [valueId] => 123492
+                                    [valueText] => Foto-gamma.ru
+                                    [count] => 1
+                                )
+
+                            [65] => stdClass Object
+                                (
+                                    [valueId] => 194238
+                                    [valueText] => Gadget Arena
+                                    [count] => 5
+                                )
+
+                            [66] => stdClass Object
+                                (
+                                    [valueId] => 210329
+                                    [valueText] => GETFORCE.RU
+                                    [count] => 1
+                                )
+
+                            [67] => stdClass Object
+                                (
+                                    [valueId] => 18680
+                                    [valueText] => GetPro.ru
+                                    [count] => 28
+                                )
+
+                            [68] => stdClass Object
+                                (
+                                    [valueId] => 222752
+                                    [valueText] => GIZON  Гипермаркет
+                                    [count] => 20
+                                )
+
+                            [69] => stdClass Object
+                                (
+                                    [valueId] => 327996
+                                    [valueText] => Gold SB
+                                    [count] => 368
+                                )
+
+                            [70] => stdClass Object
+                                (
+                                    [valueId] => 74228
+                                    [valueText] => GoMagazin
+                                    [count] => 19
+                                )
+
+                            [71] => stdClass Object
+                                (
+                                    [valueId] => 25078
+                                    [valueText] => GooDNeT
+                                    [count] => 42
+                                )
+
+                            [72] => stdClass Object
+                                (
+                                    [valueId] => 266
+                                    [valueText] => Gven
+                                    [count] => 5
+                                )
+
+                            [73] => stdClass Object
+                                (
+                                    [valueId] => 239907
+                                    [valueText] => HDMagazine
+                                    [count] => 223
+                                )
+
+                            [74] => stdClass Object
+                                (
+                                    [valueId] => 330227
+                                    [valueText] => Hi-market
+                                    [count] => 2
+                                )
+
+                            [75] => stdClass Object
+                                (
+                                    [valueId] => 251658
+                                    [valueText] => Hikvision-Shop.ru
+                                    [count] => 109
+                                )
+
+                            [76] => stdClass Object
+                                (
+                                    [valueId] => 3593
+                                    [valueText] => HOMY.RU
+                                    [count] => 77
+                                )
+
+                            [77] => stdClass Object
+                                (
+                                    [valueId] => 18077
+                                    [valueText] => iCases.RU
+                                    [count] => 2
+                                )
+
+                            [78] => stdClass Object
+                                (
+                                    [valueId] => 37063
+                                    [valueText] => iCover.ru
+                                    [count] => 34
+                                )
+
+                            [79] => stdClass Object
+                                (
+                                    [valueId] => 8185
+                                    [valueText] => iCult.ru
+                                    [count] => 4
+                                )
+
+                            [80] => stdClass Object
+                                (
+                                    [valueId] => 1212
+                                    [valueText] => IDN.RU
+                                    [count] => 298
+                                )
+
+                            [81] => stdClass Object
+                                (
+                                    [valueId] => 276630
+                                    [valueText] => Industrial Module
+                                    [count] => 52
+                                )
+
+                            [82] => stdClass Object
+                                (
+                                    [valueId] => 2273
+                                    [valueText] => Installing
+                                    [count] => 4
+                                )
+
+                            [83] => stdClass Object
+                                (
+                                    [valueId] => 128560
+                                    [valueText] => IP камеры CamDrive
+                                    [count] => 1
+                                )
+
+                            [84] => stdClass Object
+                                (
+                                    [valueId] => 26340
+                                    [valueText] => Ip-cam
+                                    [count] => 929
+                                )
+
+                            [85] => stdClass Object
+                                (
+                                    [valueId] => 25160
+                                    [valueText] => IP-ON.RU
+                                    [count] => 414
+                                )
+
+                            [86] => stdClass Object
+                                (
+                                    [valueId] => 253177
+                                    [valueText] => ipboom
+                                    [count] => 42
+                                )
+
+                            [87] => stdClass Object
+                                (
+                                    [valueId] => 136300
+                                    [valueText] => IPC2U Russia
+                                    [count] => 15
+                                )
+
+                            [88] => stdClass Object
+                                (
+                                    [valueId] => 247895
+                                    [valueText] => ipici.ru
+                                    [count] => 35
+                                )
+
+                            [89] => stdClass Object
+                                (
+                                    [valueId] => 451
+                                    [valueText] => IPK-SHOP.RU
+                                    [count] => 33
+                                )
+
+                            [90] => stdClass Object
+                                (
+                                    [valueId] => 231340
+                                    [valueText] => IPTELS.RU
+                                    [count] => 52
+                                )
+
+                            [91] => stdClass Object
+                                (
+                                    [valueId] => 298476
+                                    [valueText] => IQ-Robot.ru
+                                    [count] => 1
+                                )
+
+                            [92] => stdClass Object
+                                (
+                                    [valueId] => 323733
+                                    [valueText] => IQ-Техника
+                                    [count] => 2
+                                )
+
+                            [93] => stdClass Object
+                                (
+                                    [valueId] => 309418
+                                    [valueText] => IREON.RU
+                                    [count] => 1
+                                )
+
+                            [94] => stdClass Object
+                                (
+                                    [valueId] => 251540
+                                    [valueText] => ISB24.RU
+                                    [count] => 60
+                                )
+
+                            [95] => stdClass Object
+                                (
+                                    [valueId] => 308114
+                                    [valueText] => ISKOR
+                                    [count] => 64
+                                )
+
+                            [96] => stdClass Object
+                                (
+                                    [valueId] => 81781
+                                    [valueText] => iSmartec.ru
+                                    [count] => 8
+                                )
+
+                            [97] => stdClass Object
+                                (
+                                    [valueId] => 243407
+                                    [valueText] => ismer.ru
+                                    [count] => 1
+                                )
+
+                            [98] => stdClass Object
+                                (
+                                    [valueId] => 298560
+                                    [valueText] => IT Service
+                                    [count] => 72
+                                )
+
+                            [99] => stdClass Object
+                                (
+                                    [valueId] => 234069
+                                    [valueText] => ITcomStore
+                                    [count] => 52
+                                )
+
+                            [100] => stdClass Object
+                                (
+                                    [valueId] => 93046
+                                    [valueText] => ITSolid
+                                    [count] => 62
+                                )
+
+                            [101] => stdClass Object
+                                (
+                                    [valueId] => 96285
+                                    [valueText] => ITSolid-projects.ru
+                                    [count] => 80
+                                )
+
+                            [102] => stdClass Object
+                                (
+                                    [valueId] => 132786
+                                    [valueText] => iVenue.ru
+                                    [count] => 3
+                                )
+
+                            [103] => stdClass Object
+                                (
+                                    [valueId] => 17019
+                                    [valueText] => JUST.RU
+                                    [count] => 115
+                                )
+
+                            [104] => stdClass Object
+                                (
+                                    [valueId] => 118236
+                                    [valueText] => KamVideo.RU
+                                    [count] => 45
+                                )
+
+                            [105] => stdClass Object
+                                (
+                                    [valueId] => 45110
+                                    [valueText] => Kassirka
+                                    [count] => 1
+                                )
+
+                            [106] => stdClass Object
+                                (
+                                    [valueId] => 253216
+                                    [valueText] => Kguard
+                                    [count] => 1
+                                )
+
+                            [107] => stdClass Object
+                                (
+                                    [valueId] => 245614
+                                    [valueText] => Kinobay.ru
+                                    [count] => 31
+                                )
+
+                            [108] => stdClass Object
+                                (
+                                    [valueId] => 493
+                                    [valueText] => KNS.ru
+                                    [count] => 89
+                                )
+
+                            [109] => stdClass Object
+                                (
+                                    [valueId] => 181709
+                                    [valueText] => KZN-GPS.ru
+                                    [count] => 61
+                                )
+
+                            [110] => stdClass Object
+                                (
+                                    [valueId] => 216175
+                                    [valueText] => Landcomm
+                                    [count] => 46
+                                )
+
+                            [111] => stdClass Object
+                                (
+                                    [valueId] => 680
+                                    [valueText] => LAPTOP.RU
+                                    [count] => 4
+                                )
+
+                            [112] => stdClass Object
+                                (
+                                    [valueId] => 60658
+                                    [valueText] => Layta
+                                    [count] => 749
+                                )
+
+                            [113] => stdClass Object
+                                (
+                                    [valueId] => 30323
+                                    [valueText] => LDMarket
+                                    [count] => 1
+                                )
+
+                            [114] => stdClass Object
+                                (
+                                    [valueId] => 21868
+                                    [valueText] => Ledovo Computers
+                                    [count] => 62
+                                )
+
+                            [115] => stdClass Object
+                                (
+                                    [valueId] => 528
+                                    [valueText] => Lintek
+                                    [count] => 1
+                                )
+
+                            [116] => stdClass Object
+                                (
+                                    [valueId] => 209149
+                                    [valueText] => Livemall
+                                    [count] => 1
+                                )
+
+                            [117] => stdClass Object
+                                (
+                                    [valueId] => 108733
+                                    [valueText] => LOCCA.RU
+                                    [count] => 1
+                                )
+
+                            [118] => stdClass Object
+                                (
+                                    [valueId] => 89585
+                                    [valueText] => LOT99.ru
+                                    [count] => 1
+                                )
+
+                            [119] => stdClass Object
+                                (
+                                    [valueId] => 5124
+                                    [valueText] => LTShop.ru
+                                    [count] => 1
+                                )
+
+                            [120] => stdClass Object
+                                (
+                                    [valueId] => 137713
+                                    [valueText] => LTV-shop
+                                    [count] => 43
+                                )
+
+                            [121] => stdClass Object
+                                (
+                                    [valueId] => 137028
+                                    [valueText] => Madrobots.ru
+                                    [count] => 1
+                                )
+
+                            [122] => stdClass Object
+                                (
+                                    [valueId] => 63768
+                                    [valueText] => MaxMemory.ru
+                                    [count] => 5
+                                )
+
+                            [123] => stdClass Object
+                                (
+                                    [valueId] => 59861
+                                    [valueText] => Media Markt
+                                    [count] => 2
+                                )
+
+                            [124] => stdClass Object
+                                (
+                                    [valueId] => 245430
+                                    [valueText] => Medicalmag
+                                    [count] => 2
+                                )
+
+                            [125] => stdClass Object
+                                (
+                                    [valueId] => 4159
+                                    [valueText] => MetraCom
+                                    [count] => 415
+                                )
+
+                            [126] => stdClass Object
+                                (
+                                    [valueId] => 338968
+                                    [valueText] => Microdigital-Moscow
+                                    [count] => 56
+                                )
+
+                            [127] => stdClass Object
+                                (
+                                    [valueId] => 76825
+                                    [valueText] => Microlab.ru
+                                    [count] => 6
+                                )
+
+                            [128] => stdClass Object
+                                (
+                                    [valueId] => 34194
+                                    [valueText] => MigTele.ru
+                                    [count] => 257
+                                )
+
+                            [129] => stdClass Object
+                                (
+                                    [valueId] => 27127
+                                    [valueText] => miniPC.ru
+                                    [count] => 3
+                                )
+
+                            [130] => stdClass Object
+                                (
+                                    [valueId] => 145766
+                                    [valueText] => MITcor.ru
+                                    [count] => 22
+                                )
+
+                            [131] => stdClass Object
+                                (
+                                    [valueId] => 38615
+                                    [valueText] => Mobilfunk.ru
+                                    [count] => 1
+                                )
+
+                            [132] => stdClass Object
+                                (
+                                    [valueId] => 327009
+                                    [valueText] => Molbi
+                                    [count] => 442
+                                )
+
+                            [133] => stdClass Object
+                                (
+                                    [valueId] => 255632
+                                    [valueText] => MultiTech.pro
+                                    [count] => 98
+                                )
+
+                            [134] => stdClass Object
+                                (
+                                    [valueId] => 149742
+                                    [valueText] => NEOPIX.RU
+                                    [count] => 272
+                                )
+
+                            [135] => stdClass Object
+                                (
+                                    [valueId] => 78420
+                                    [valueText] => NetHolder
+                                    [count] => 68
+                                )
+
+                            [136] => stdClass Object
+                                (
+                                    [valueId] => 1380
+                                    [valueText] => netshopping.ru
+                                    [count] => 160
+                                )
+
+                            [137] => stdClass Object
+                                (
+                                    [valueId] => 64080
+                                    [valueText] => NLEVEL.RU
+                                    [count] => 4
+                                )
+
+                            [138] => stdClass Object
+                                (
+                                    [valueId] => 32483
+                                    [valueText] => NWHT
+                                    [count] => 4
+                                )
+
+                            [139] => stdClass Object
+                                (
+                                    [valueId] => 3731
+                                    [valueText] => ON NO
+                                    [count] => 5
+                                )
+
+                            [140] => stdClass Object
+                                (
+                                    [valueId] => 300938
+                                    [valueText] => Onber.ru
+                                    [count] => 9
+                                )
+
+                            [141] => stdClass Object
+                                (
+                                    [valueId] => 22659
+                                    [valueText] => Onecom
+                                    [count] => 64
+                                )
+
+                            [142] => stdClass Object
+                                (
+                                    [valueId] => 318834
+                                    [valueText] => Palmexx
+                                    [count] => 1
+                                )
+
+                            [143] => stdClass Object
+                                (
+                                    [valueId] => 129960
+                                    [valueText] => Pan-Shop
+                                    [count] => 85
+                                )
+
+                            [144] => stdClass Object
+                                (
+                                    [valueId] => 3487
+                                    [valueText] => Panasonic-Интегратор
+                                    [count] => 26
+                                )
+
+                            [145] => stdClass Object
+                                (
+                                    [valueId] => 293744
+                                    [valueText] => PC-ARENA.RU
+                                    [count] => 1
+                                )
+
+                            [146] => stdClass Object
+                                (
+                                    [valueId] => 62114
+                                    [valueText] => PCVideo
+                                    [count] => 170
+                                )
+
+                            [147] => stdClass Object
+                                (
+                                    [valueId] => 219566
+                                    [valueText] => PDA Trade
+                                    [count] => 1
+                                )
+
+                            [148] => stdClass Object
+                                (
+                                    [valueId] => 6102
+                                    [valueText] => PHILIPS
+                                    [count] => 1
+                                )
+
+                            [149] => stdClass Object
+                                (
+                                    [valueId] => 324
+                                    [valueText] => PlanetaShop
+                                    [count] => 110
+                                )
+
+                            [150] => stdClass Object
+                                (
+                                    [valueId] => 720
+                                    [valueText] => Pleer.ru
+                                    [count] => 255
+                                )
+
+                            [151] => stdClass Object
+                                (
+                                    [valueId] => 49733
+                                    [valueText] => PostRider.ru
+                                    [count] => 82
+                                )
+
+                            [152] => stdClass Object
+                                (
+                                    [valueId] => 310029
+                                    [valueText] => ProfCom
+                                    [count] => 7
+                                )
+
+                            [153] => stdClass Object
+                                (
+                                    [valueId] => 43797
+                                    [valueText] => profivideo
+                                    [count] => 2
+                                )
+
+                            [154] => stdClass Object
+                                (
+                                    [valueId] => 51655
+                                    [valueText] => PUP.RU
+                                    [count] => 2
+                                )
+
+                            [155] => stdClass Object
+                                (
+                                    [valueId] => 14712
+                                    [valueText] => Radio-Salon
+                                    [count] => 9
+                                )
+
+                            [156] => stdClass Object
+                                (
+                                    [valueId] => 165553
+                                    [valueText] => RadioLink
+                                    [count] => 51
+                                )
+
+                            [157] => stdClass Object
+                                (
+                                    [valueId] => 307982
+                                    [valueText] => RADIOSTUFF.RU
+                                    [count] => 18
+                                )
+
+                            [158] => stdClass Object
+                                (
+                                    [valueId] => 56589
+                                    [valueText] => RadioZone.RU
+                                    [count] => 2
+                                )
+
+                            [159] => stdClass Object
+                                (
+                                    [valueId] => 264831
+                                    [valueText] => re:Store
+                                    [count] => 1
+                                )
+
+                            [160] => stdClass Object
+                                (
+                                    [valueId] => 39353
+                                    [valueText] => recomb-omsk.ru
+                                    [count] => 8
+                                )
+
+                            [161] => stdClass Object
+                                (
+                                    [valueId] => 324734
+                                    [valueText] => Red-Matrix
+                                    [count] => 1
+                                )
+
+                            [162] => stdClass Object
+                                (
+                                    [valueId] => 308236
+                                    [valueText] => RFID Store
+                                    [count] => 7
+                                )
+
+                            [163] => stdClass Object
+                                (
+                                    [valueId] => 204787
+                                    [valueText] => Ricore.ru
+                                    [count] => 22
+                                )
+
+                            [164] => stdClass Object
+                                (
+                                    [valueId] => 337704
+                                    [valueText] => roscam-ufa.ru
+                                    [count] => 35
+                                )
+
+                            [165] => stdClass Object
+                                (
+                                    [valueId] => 268119
+                                    [valueText] => ROUTERBOX
+                                    [count] => 10
+                                )
+
+                            [166] => stdClass Object
+                                (
+                                    [valueId] => 163390
+                                    [valueText] => RTaff.RU
+                                    [count] => 25
+                                )
+
+                            [167] => stdClass Object
+                                (
+                                    [valueId] => 29009
+                                    [valueText] => Runmouse.ru
+                                    [count] => 4
+                                )
+
+                            [168] => stdClass Object
+                                (
+                                    [valueId] => 198709
+                                    [valueText] => RUS-SB.RU
+                                    [count] => 22
+                                )
+
+                            [169] => stdClass Object
+                                (
+                                    [valueId] => 119713
+                                    [valueText] => rvi-video.ru
+                                    [count] => 3
+                                )
+
+                            [170] => stdClass Object
+                                (
+                                    [valueId] => 319502
+                                    [valueText] => S-F-P.RU
+                                    [count] => 102
+                                )
+
+                            [171] => stdClass Object
+                                (
+                                    [valueId] => 232537
+                                    [valueText] => Salesec.ru
+                                    [count] => 33
+                                )
+
+                            [172] => stdClass Object
+                                (
+                                    [valueId] => 66847
+                                    [valueText] => Satellite Multimedia
+                                    [count] => 64
+                                )
+
+                            [173] => stdClass Object
+                                (
+                                    [valueId] => 142881
+                                    [valueText] => Satsamara.ru
+                                    [count] => 3
+                                )
+
+                            [174] => stdClass Object
+                                (
+                                    [valueId] => 229673
+                                    [valueText] => sb-magazin
+                                    [count] => 72
+                                )
+
+                            [175] => stdClass Object
+                                (
+                                    [valueId] => 43153
+                                    [valueText] => SB911
+                                    [count] => 366
+                                )
+
+                            [176] => stdClass Object
+                                (
+                                    [valueId] => 299482
+                                    [valueText] => security-video
+                                    [count] => 2
+                                )
+
+                            [177] => stdClass Object
+                                (
+                                    [valueId] => 190265
+                                    [valueText] => SfpSpb
+                                    [count] => 14
+                                )
+
+                            [178] => stdClass Object
+                                (
+                                    [valueId] => 114324
+                                    [valueText] => SHOP.bigtime.ru
+                                    [count] => 10
+                                )
+
+                            [179] => stdClass Object
+                                (
+                                    [valueId] => 252125
+                                    [valueText] => Sip-Store.ru
+                                    [count] => 41
+                                )
+
+                            [180] => stdClass Object
+                                (
+                                    [valueId] => 26346
+                                    [valueText] => SIPTRADE
+                                    [count] => 28
+                                )
+
+                            [181] => stdClass Object
+                                (
+                                    [valueId] => 52514
+                                    [valueText] => SKYDEX.RU
+                                    [count] => 6
+                                )
+
+                            [182] => stdClass Object
+                                (
+                                    [valueId] => 295182
+                                    [valueText] => SkynetPC
+                                    [count] => 10
+                                )
+
+                            [183] => stdClass Object
+                                (
+                                    [valueId] => 339
+                                    [valueText] => SLY Сomputers
+                                    [count] => 68
+                                )
+
+                            [184] => stdClass Object
+                                (
+                                    [valueId] => 283749
+                                    [valueText] => SolarisIT
+                                    [count] => 17
+                                )
+
+                            [185] => stdClass Object
+                                (
+                                    [valueId] => 430
+                                    [valueText] => Sotino.ru
+                                    [count] => 2
+                                )
+
+                            [186] => stdClass Object
+                                (
+                                    [valueId] => 19141
+                                    [valueText] => Soundbreeze
+                                    [count] => 1
+                                )
+
+                            [187] => stdClass Object
+                                (
+                                    [valueId] => 192873
+                                    [valueText] => Space-telecom
+                                    [count] => 2
+                                )
+
+                            [188] => stdClass Object
+                                (
+                                    [valueId] => 340556
+                                    [valueText] => Spec-System
+                                    [count] => 8
+                                )
+
+                            [189] => stdClass Object
+                                (
+                                    [valueId] => 18085
+                                    [valueText] => STORE.RU
+                                    [count] => 54
+                                )
+
+                            [190] => stdClass Object
+                                (
+                                    [valueId] => 91698
+                                    [valueText] => StoreVoip.ru
+                                    [count] => 60
+                                )
+
+                            [191] => stdClass Object
+                                (
+                                    [valueId] => 84351
+                                    [valueText] => Superbia.ru
+                                    [count] => 1
+                                )
+
+                            [192] => stdClass Object
+                                (
+                                    [valueId] => 43337
+                                    [valueText] => Synology-Store
+                                    [count] => 42
+                                )
+
+                            [193] => stdClass Object
+                                (
+                                    [valueId] => 206729
+                                    [valueText] => Synostore.ru
+                                    [count] => 2
+                                )
+
+                            [194] => stdClass Object
+                                (
+                                    [valueId] => 50220
+                                    [valueText] => Technoit.ru
+                                    [count] => 460
+                                )
+
+                            [195] => stdClass Object
+                                (
+                                    [valueId] => 317377
+                                    [valueText] => TechnoPoint
+                                    [count] => 22
+                                )
+
+                            [196] => stdClass Object
+                                (
+                                    [valueId] => 1672
+                                    [valueText] => TechPort.ru - Москва
+                                    [count] => 38
+                                )
+
+                            [197] => stdClass Object
+                                (
+                                    [valueId] => 154224
+                                    [valueText] => Teh-Net
+                                    [count] => 22
+                                )
+
+                            [198] => stdClass Object
+                                (
+                                    [valueId] => 11098
+                                    [valueText] => Telecamera.ru
+                                    [count] => 285
+                                )
+
+                            [199] => stdClass Object
+                                (
+                                    [valueId] => 254011
+                                    [valueText] => telecom-sales.ru
+                                    [count] => 22
+                                )
+
+                            [200] => stdClass Object
+                                (
+                                    [valueId] => 137033
+                                    [valueText] => Telecom-Trading.ru
+                                    [count] => 2
+                                )
+
+                            [201] => stdClass Object
+                                (
+                                    [valueId] => 42891
+                                    [valueText] => Teletri.ru
+                                    [count] => 38
+                                )
+
+                            [202] => stdClass Object
+                                (
+                                    [valueId] => 223533
+                                    [valueText] => TITAN SB
+                                    [count] => 93
+                                )
+
+                            [203] => stdClass Object
+                                (
+                                    [valueId] => 3749
+                                    [valueText] => Top Shop
+                                    [count] => 6
+                                )
+
+                            [204] => stdClass Object
+                                (
+                                    [valueId] => 4997
+                                    [valueText] => TOTOTO
+                                    [count] => 3
+                                )
+
+                            [205] => stdClass Object
+                                (
+                                    [valueId] => 17713
+                                    [valueText] => TPShop.ru
+                                    [count] => 18
+                                )
+
+                            [206] => stdClass Object
+                                (
+                                    [valueId] => 251824
+                                    [valueText] => TreoLink.ru
+                                    [count] => 30
+                                )
+
+                            [207] => stdClass Object
+                                (
+                                    [valueId] => 57712
+                                    [valueText] => TV-VISION
+                                    [count] => 7
+                                )
+
+                            [208] => stdClass Object
+                                (
+                                    [valueId] => 259846
+                                    [valueText] => ubiquiti-shop.ru
+                                    [count] => 4
+                                )
+
+                            [209] => stdClass Object
+                                (
+                                    [valueId] => 320418
+                                    [valueText] => ubnt.spb.ru
+                                    [count] => 5
+                                )
+
+                            [210] => stdClass Object
+                                (
+                                    [valueId] => 1511
+                                    [valueText] => UltraSale
+                                    [count] => 1
+                                )
+
+                            [211] => stdClass Object
+                                (
+                                    [valueId] => 142220
+                                    [valueText] => Unitsolutions.ru
+                                    [count] => 4
+                                )
+
+                            [212] => stdClass Object
+                                (
+                                    [valueId] => 47403
+                                    [valueText] => UP-HOUSE.RU
+                                    [count] => 1
+                                )
+
+                            [213] => stdClass Object
+                                (
+                                    [valueId] => 51015
+                                    [valueText] => Uppstore
+                                    [count] => 1
+                                )
+
+                            [214] => stdClass Object
+                                (
+                                    [valueId] => 300216
+                                    [valueText] => VALINE
+                                    [count] => 271
+                                )
+
+                            [215] => stdClass Object
+                                (
+                                    [valueId] => 187764
+                                    [valueText] => video-country.ru
+                                    [count] => 41
+                                )
+
+                            [216] => stdClass Object
+                                (
+                                    [valueId] => 325201
+                                    [valueText] => Video-Murmansk
+                                    [count] => 12
+                                )
+
+                            [217] => stdClass Object
+                                (
+                                    [valueId] => 127366
+                                    [valueText] => Video-sfera.net
+                                    [count] => 75
+                                )
+
+                            [218] => stdClass Object
+                                (
+                                    [valueId] => 105462
+                                    [valueText] => Video2002
+                                    [count] => 69
+                                )
+
+                            [219] => stdClass Object
+                                (
+                                    [valueId] => 260328
+                                    [valueText] => videocordon
+                                    [count] => 3130
+                                )
+
+                            [220] => stdClass Object
+                                (
+                                    [valueId] => 488
+                                    [valueText] => VIDEOMAX
+                                    [count] => 1
+                                )
+
+                            [221] => stdClass Object
+                                (
+                                    [valueId] => 173483
+                                    [valueText] => VideoSecurity.SU
+                                    [count] => 5
+                                )
+
+                            [222] => stdClass Object
+                                (
+                                    [valueId] => 153048
+                                    [valueText] => Vivotek-shop.ru
+                                    [count] => 105
+                                )
+
+                            [223] => stdClass Object
+                                (
+                                    [valueId] => 5043
+                                    [valueText] => VoIP ShOP
+                                    [count] => 34
+                                )
+
+                            [224] => stdClass Object
+                                (
+                                    [valueId] => 137023
+                                    [valueText] => VoIP-systems.ru
+                                    [count] => 146
+                                )
+
+                            [225] => stdClass Object
+                                (
+                                    [valueId] => 4961
+                                    [valueText] => VoIPdevice.ru
+                                    [count] => 25
+                                )
+
+                            [226] => stdClass Object
+                                (
+                                    [valueId] => 6018
+                                    [valueText] => VOIPS.RU
+                                    [count] => 8
+                                )
+
+                            [227] => stdClass Object
+                                (
+                                    [valueId] => 308710
+                                    [valueText] => voland-shop.ru
+                                    [count] => 12
+                                )
+
+                            [228] => stdClass Object
+                                (
+                                    [valueId] => 30469
+                                    [valueText] => Web-Computers
+                                    [count] => 7
+                                )
+
+                            [229] => stdClass Object
+                                (
+                                    [valueId] => 260343
+                                    [valueText] => Welam
+                                    [count] => 1
+                                )
+
+                            [230] => stdClass Object
+                                (
+                                    [valueId] => 60392
+                                    [valueText] => WifiMarket.ru
+                                    [count] => 1
+                                )
+
+                            [231] => stdClass Object
+                                (
+                                    [valueId] => 93298
+                                    [valueText] => WMD.ru
+                                    [count] => 11
+                                )
+
+                            [232] => stdClass Object
+                                (
+                                    [valueId] => 300991
+                                    [valueText] => www.ENIO.ru
+                                    [count] => 1
+                                )
+
+                            [233] => stdClass Object
+                                (
+                                    [valueId] => 161357
+                                    [valueText] => www.eurodk.ru
+                                    [count] => 22
+                                )
+
+                            [234] => stdClass Object
+                                (
+                                    [valueId] => 263837
+                                    [valueText] => X-Gadgets - Гаджеты
+                                    [count] => 8
+                                )
+
+                            [235] => stdClass Object
+                                (
+                                    [valueId] => 704
+                                    [valueText] => XCOM-SHOP.RU
+                                    [count] => 55
+                                )
+
+                            [236] => stdClass Object
+                                (
+                                    [valueId] => 3141
+                                    [valueText] => XPERT.RU
+                                    [count] => 5
+                                )
+
+                            [237] => stdClass Object
+                                (
+                                    [valueId] => 5346
+                                    [valueText] => YOSHOP.RU
+                                    [count] => 6
+                                )
+
+                            [238] => stdClass Object
+                                (
+                                    [valueId] => 36158
+                                    [valueText] => Yota Mobi
+                                    [count] => 1
+                                )
+
+                            [239] => stdClass Object
+                                (
+                                    [valueId] => 31471
+                                    [valueText] => You-Com.RU
+                                    [count] => 16
+                                )
+
+                            [240] => stdClass Object
+                                (
+                                    [valueId] => 212100
+                                    [valueText] => ZodiakVideo
+                                    [count] => 23
+                                )
+
+                            [241] => stdClass Object
+                                (
+                                    [valueId] => 7152
+                                    [valueText] => ZonaDostupa.ru
+                                    [count] => 5
+                                )
+
+                            [242] => stdClass Object
+                                (
+                                    [valueId] => 232673
+                                    [valueText] => ZSCOM.RU
+                                    [count] => 91
+                                )
+
+                            [243] => stdClass Object
+                                (
+                                    [valueId] => 53196
+                                    [valueText] => АВЕОН
+                                    [count] => 30
+                                )
+
+                            [244] => stdClass Object
+                                (
+                                    [valueId] => 190722
+                                    [valueText] => АгатСБ.ру
+                                    [count] => 4
+                                )
+
+                            [245] => stdClass Object
+                                (
+                                    [valueId] => 307256
+                                    [valueText] => Адамант СБ
+                                    [count] => 30
+                                )
+
+                            [246] => stdClass Object
+                                (
+                                    [valueId] => 234904
+                                    [valueText] => АйВью
+                                    [count] => 4
+                                )
+
+                            [247] => stdClass Object
+                                (
+                                    [valueId] => 38763
+                                    [valueText] => АйМАКС
+                                    [count] => 85
+                                )
+
+                            [248] => stdClass Object
+                                (
+                                    [valueId] => 337579
+                                    [valueText] => АйТи дисконт
+                                    [count] => 3
+                                )
+
+                            [249] => stdClass Object
+                                (
+                                    [valueId] => 295243
+                                    [valueText] => АйТи Таргет Системс
+                                    [count] => 124
+                                )
+
+                            [250] => stdClass Object
+                                (
+                                    [valueId] => 97526
+                                    [valueText] => АЛАС-НТ
+                                    [count] => 9
+                                )
+
+                            [251] => stdClass Object
+                                (
+                                    [valueId] => 6875
+                                    [valueText] => АЛЬФА-КОМ
+                                    [count] => 8
+                                )
+
+                            [252] => stdClass Object
+                                (
+                                    [valueId] => 4778
+                                    [valueText] => АНД-Системс
+                                    [count] => 28
+                                )
+
+                            [253] => stdClass Object
+                                (
+                                    [valueId] => 311758
+                                    [valueText] => Антикража
+                                    [count] => 10
+                                )
+
+                            [254] => stdClass Object
+                                (
+                                    [valueId] => 152824
+                                    [valueText] => Антирадар-Стрелка.рф
+                                    [count] => 4
+                                )
+
+                            [255] => stdClass Object
+                                (
+                                    [valueId] => 182810
+                                    [valueText] => АртТел
+                                    [count] => 10
+                                )
+
+                            [256] => stdClass Object
+                                (
+                                    [valueId] => 3974
+                                    [valueText] => Астель
+                                    [count] => 1
+                                )
+
+                            [257] => stdClass Object
+                                (
+                                    [valueId] => 216192
+                                    [valueText] => АСТИлайн
+                                    [count] => 1
+                                )
+
+                            [258] => stdClass Object
+                                (
+                                    [valueId] => 214640
+                                    [valueText] => Байон
+                                    [count] => 113
+                                )
+
+                            [259] => stdClass Object
+                                (
+                                    [valueId] => 966
+                                    [valueText] => Барс
+                                    [count] => 93
+                                )
+
+                            [260] => stdClass Object
+                                (
+                                    [valueId] => 322129
+                                    [valueText] => БЕВАРД
+                                    [count] => 84
+                                )
+
+                            [261] => stdClass Object
+                                (
+                                    [valueId] => 876
+                                    [valueText] => Бест Офис
+                                    [count] => 2
+                                )
+
+                            [262] => stdClass Object
+                                (
+                                    [valueId] => 210769
+                                    [valueText] => БЕТАЛАЙН
+                                    [count] => 77
+                                )
+
+                            [263] => stdClass Object
+                                (
+                                    [valueId] => 327350
+                                    [valueText] => Беталинк
+                                    [count] => 4
+                                )
+
+                            [264] => stdClass Object
+                                (
+                                    [valueId] => 99091
+                                    [valueText] => Бриго
+                                    [count] => 132
+                                )
+
+                            [265] => stdClass Object
+                                (
+                                    [valueId] => 145679
+                                    [valueText] => ВЕГА ТЕЛЕКОМ
+                                    [count] => 6
+                                )
+
+                            [266] => stdClass Object
+                                (
+                                    [valueId] => 8283
+                                    [valueText] => Вектор-Видео
+                                    [count] => 206
+                                )
+
+                            [267] => stdClass Object
+                                (
+                                    [valueId] => 29763
+                                    [valueText] => Видеоглаз
+                                    [count] => 3144
+                                )
+
+                            [268] => stdClass Object
+                                (
+                                    [valueId] => 212953
+                                    [valueText] => ВидеоГрад
+                                    [count] => 9
+                                )
+
+                            [269] => stdClass Object
+                                (
+                                    [valueId] => 337492
+                                    [valueText] => ВидеоИнтегратор
+                                    [count] => 3140
+                                )
+
+                            [270] => stdClass Object
+                                (
+                                    [valueId] => 289584
+                                    [valueText] => Видеокоми
+                                    [count] => 1
+                                )
+
+                            [271] => stdClass Object
+                                (
+                                    [valueId] => 319759
+                                    [valueText] => ВИДЕОКОНТРОЛЬ
+                                    [count] => 171
+                                )
+
+                            [272] => stdClass Object
+                                (
+                                    [valueId] => 295461
+                                    [valueText] => Видеолайф
+                                    [count] => 19
+                                )
+
+                            [273] => stdClass Object
+                                (
+                                    [valueId] => 325261
+                                    [valueText] => Видеонаблюдение360
+                                    [count] => 27
+                                )
+
+                            [274] => stdClass Object
+                                (
+                                    [valueId] => 35432
+                                    [valueText] => ВИДЕООКО
+                                    [count] => 91
+                                )
+
+                            [275] => stdClass Object
+                                (
+                                    [valueId] => 274471
+                                    [valueText] => ВИДЕОРЕГИСТРАТОР
+                                    [count] => 9
+                                )
+
+                            [276] => stdClass Object
+                                (
+                                    [valueId] => 153390
+                                    [valueText] => Все для дома и офиса
+                                    [count] => 4
+                                )
+
+                            [277] => stdClass Object
+                                (
+                                    [valueId] => 60329
+                                    [valueText] => ВТК СВЯЗЬ
+                                    [count] => 179
+                                )
+
+                            [278] => stdClass Object
+                                (
+                                    [valueId] => 126009
+                                    [valueText] => Гиперсфера Сток
+                                    [count] => 30
+                                )
+
+                            [279] => stdClass Object
+                                (
+                                    [valueId] => 300663
+                                    [valueText] => Готовые комплекты
+                                    [count] => 5
+                                )
+
+                            [280] => stdClass Object
+                                (
+                                    [valueId] => 42049
+                                    [valueText] => Гран При
+                                    [count] => 44
+                                )
+
+                            [281] => stdClass Object
+                                (
+                                    [valueId] => 38771
+                                    [valueText] => Гудстор
+                                    [count] => 50
+                                )
+
+                            [282] => stdClass Object
+                                (
+                                    [valueId] => 45518
+                                    [valueText] => Дальрадио
+                                    [count] => 1
+                                )
+
+                            [283] => stdClass Object
+                                (
+                                    [valueId] => 181462
+                                    [valueText] => Данные.ру
+                                    [count] => 36
+                                )
+
+                            [284] => stdClass Object
+                                (
+                                    [valueId] => 182973
+                                    [valueText] => Декстел
+                                    [count] => 37
+                                )
+
+                            [285] => stdClass Object
+                                (
+                                    [valueId] => 67924
+                                    [valueText] => Дистрибуция Контроль
+                                    [count] => 340
+                                )
+
+                            [286] => stdClass Object
+                                (
+                                    [valueId] => 69480
+                                    [valueText] => Доставка Игр
+                                    [count] => 1
+                                )
+
+                            [287] => stdClass Object
+                                (
+                                    [valueId] => 2117
+                                    [valueText] => ЕВРОСЕТЬ
+                                    [count] => 1
+                                )
+
+                            [288] => stdClass Object
+                                (
+                                    [valueId] => 316655
+                                    [valueText] => ЕВРОСЕТЬ
+                                    [count] => 1
+                                )
+
+                            [289] => stdClass Object
+                                (
+                                    [valueId] => 7656
+                                    [valueText] => Евростандарт
+                                    [count] => 3
+                                )
+
+                            [290] => stdClass Object
+                                (
+                                    [valueId] => 133407
+                                    [valueText] => ЗАКУПКА.biz
+                                    [count] => 1
+                                )
+
+                            [291] => stdClass Object
+                                (
+                                    [valueId] => 322268
+                                    [valueText] => Заправка.онлайн
+                                    [count] => 1
+                                )
+
+                            [292] => stdClass Object
+                                (
+                                    [valueId] => 185960
+                                    [valueText] => Зеленый Шар
+                                    [count] => 3
+                                )
+
+                            [293] => stdClass Object
+                                (
+                                    [valueId] => 29054
+                                    [valueText] => Империя Инструмента
+                                    [count] => 11
+                                )
+
+                            [294] => stdClass Object
+                                (
+                                    [valueId] => 194607
+                                    [valueText] => Инженерный Альянс
+                                    [count] => 20
+                                )
+
+                            [295] => stdClass Object
+                                (
+                                    [valueId] => 108879
+                                    [valueText] => Инсотел
+                                    [count] => 283
+                                )
+
+                            [296] => stdClass Object
+                                (
+                                    [valueId] => 170485
+                                    [valueText] => Инфотех
+                                    [count] => 4
+                                )
+
+                            [297] => stdClass Object
+                                (
+                                    [valueId] => 313976
+                                    [valueText] => К-Форма
+                                    [count] => 410
+                                )
+
+                            [298] => stdClass Object
+                                (
+                                    [valueId] => 133904
+                                    [valueText] => Камерра.рф
+                                    [count] => 4
+                                )
+
+                            [299] => stdClass Object
+                                (
+                                    [valueId] => 68637
+                                    [valueText] => КАРКАМ
+                                    [count] => 5
+                                )
+
+                            [300] => stdClass Object
+                                (
+                                    [valueId] => 314193
+                                    [valueText] => КАРКАМ
+                                    [count] => 5
+                                )
+
+                            [301] => stdClass Object
+                                (
+                                    [valueId] => 75655
+                                    [valueText] => КЕЙ
+                                    [count] => 8
+                                )
+
+                            [302] => stdClass Object
+                                (
+                                    [valueId] => 178809
+                                    [valueText] => Кибер-Принт
+                                    [count] => 4
+                                )
+
+                            [303] => stdClass Object
+                                (
+                                    [valueId] => 275058
+                                    [valueText] => Компания "Уралкам"
+                                    [count] => 63
+                                )
+
+                            [304] => stdClass Object
+                                (
+                                    [valueId] => 289396
+                                    [valueText] => Комплайн
+                                    [count] => 2
+                                )
+
+                            [305] => stdClass Object
+                                (
+                                    [valueId] => 12065
+                                    [valueText] => КомпьютерМаркет
+                                    [count] => 59
+                                )
+
+                            [306] => stdClass Object
+                                (
+                                    [valueId] => 281111
+                                    [valueText] => КотоФото.Москва
+                                    [count] => 2
+                                )
+
+                            [307] => stdClass Object
+                                (
+                                    [valueId] => 101058
+                                    [valueText] => Кофр-Икс
+                                    [count] => 2
+                                )
+
+                            [308] => stdClass Object
+                                (
+                                    [valueId] => 5648
+                                    [valueText] => КРАСНАЯ КНОПКА
+                                    [count] => 8
+                                )
+
+                            [309] => stdClass Object
+                                (
+                                    [valueId] => 84753
+                                    [valueText] => КЦ Алекомп alecomp.ru
+                                    [count] => 14
+                                )
+
+                            [310] => stdClass Object
+                                (
+                                    [valueId] => 286426
+                                    [valueText] => ЛайтФото
+                                    [count] => 1
+                                )
+
+                            [311] => stdClass Object
+                                (
+                                    [valueId] => 170050
+                                    [valueText] => Лан-Бокс
+                                    [count] => 30
+                                )
+
+                            [312] => stdClass Object
+                                (
+                                    [valueId] => 195381
+                                    [valueText] => Ланта
+                                    [count] => 41
+                                )
+
+                            [313] => stdClass Object
+                                (
+                                    [valueId] => 142664
+                                    [valueText] => Лантек
+                                    [count] => 34
+                                )
+
+                            [314] => stdClass Object
+                                (
+                                    [valueId] => 27025
+                                    [valueText] => ЛС-комп.ру
+                                    [count] => 15
+                                )
+
+                            [315] => stdClass Object
+                                (
+                                    [valueId] => 798
+                                    [valueText] => Марко-ПРО
+                                    [count] => 23
+                                )
+
+                            [316] => stdClass Object
+                                (
+                                    [valueId] => 114195
+                                    [valueText] => Мастер СКС
+                                    [count] => 9
+                                )
+
+                            [317] => stdClass Object
+                                (
+                                    [valueId] => 35082
+                                    [valueText] => МАТРИЦА - Зеленоград
+                                    [count] => 1
+                                )
+
+                            [318] => stdClass Object
+                                (
+                                    [valueId] => 310358
+                                    [valueText] => Мегабит
+                                    [count] => 66
+                                )
+
+                            [319] => stdClass Object
+                                (
+                                    [valueId] => 25836
+                                    [valueText] => Мегаком лайн
+                                    [count] => 1
+                                )
+
+                            [320] => stdClass Object
+                                (
+                                    [valueId] => 177487
+                                    [valueText] => Мульти REAL
+                                    [count] => 67
+                                )
+
+                            [321] => stdClass Object
+                                (
+                                    [valueId] => 87021
+                                    [valueText] => МЭЛТ
+                                    [count] => 15
+                                )
+
+                            [322] => stdClass Object
+                                (
+                                    [valueId] => 33198
+                                    [valueText] => Нанайки.ру
+                                    [count] => 10
+                                )
+
+                            [323] => stdClass Object
+                                (
+                                    [valueId] => 31208
+                                    [valueText] => Неогид
+                                    [count] => 11
+                                )
+
+                            [324] => stdClass Object
+                                (
+                                    [valueId] => 294043
+                                    [valueText] => НИСА-ТРЭЙД
+                                    [count] => 16
+                                )
+
+                            [325] => stdClass Object
+                                (
+                                    [valueId] => 98650
+                                    [valueText] => НОВИМАКС
+                                    [count] => 2
+                                )
+
+                            [326] => stdClass Object
+                                (
+                                    [valueId] => 38178
+                                    [valueText] => НОУ-ХАУ
+                                    [count] => 7
+                                )
+
+                            [327] => stdClass Object
+                                (
+                                    [valueId] => 269217
+                                    [valueText] => Ньютон24
+                                    [count] => 1
+                                )
+
+                            [328] => stdClass Object
+                                (
+                                    [valueId] => 252831
+                                    [valueText] => Оксар.ру
+                                    [count] => 1
+                                )
+
+                            [329] => stdClass Object
+                                (
+                                    [valueId] => 12138
+                                    [valueText] => ОЛДИ
+                                    [count] => 55
+                                )
+
+                            [330] => stdClass Object
+                                (
+                                    [valueId] => 255
+                                    [valueText] => ОНЛАЙН ТРЕЙД.РУ
+                                    [count] => 369
+                                )
+
+                            [331] => stdClass Object
+                                (
+                                    [valueId] => 6440
+                                    [valueText] => ООО "АлфаВит"
+                                    [count] => 1
+                                )
+
+                            [332] => stdClass Object
+                                (
+                                    [valueId] => 207947
+                                    [valueText] => ООО "АУРОВИЛЛЬ"
+                                    [count] => 1
+                                )
+
+                            [333] => stdClass Object
+                                (
+                                    [valueId] => 64153
+                                    [valueText] => ООО "ПИТЕР-ВИДЕО"
+                                    [count] => 1
+                                )
+
+                            [334] => stdClass Object
+                                (
+                                    [valueId] => 42489
+                                    [valueText] => ОргСервис
+                                    [count] => 13
+                                )
+
+                            [335] => stdClass Object
+                                (
+                                    [valueId] => 22970
+                                    [valueText] => ОТС
+                                    [count] => 3
+                                )
+
+                            [336] => stdClass Object
+                                (
+                                    [valueId] => 306112
+                                    [valueText] => ПВВМ-ТЕХНО
+                                    [count] => 17
+                                )
+
+                            [337] => stdClass Object
+                                (
+                                    [valueId] => 5837
+                                    [valueText] => Первый Офис
+                                    [count] => 9
+                                )
+
+                            [338] => stdClass Object
+                                (
+                                    [valueId] => 218018
+                                    [valueText] => ПОЗИТРОНИКА Москва
+                                    [count] => 7
+                                )
+
+                            [339] => stdClass Object
+                                (
+                                    [valueId] => 195316
+                                    [valueText] => Полигранд Видео
+                                    [count] => 4
+                                )
+
+                            [340] => stdClass Object
+                                (
+                                    [valueId] => 132195
+                                    [valueText] => Про-Кам
+                                    [count] => 89
+                                )
+
+                            [341] => stdClass Object
+                                (
+                                    [valueId] => 32396
+                                    [valueText] => Пролайн Рус
+                                    [count] => 5
+                                )
+
+                            [342] => stdClass Object
+                                (
+                                    [valueId] => 4398
+                                    [valueText] => Регард
+                                    [count] => 282
+                                )
+
+                            [343] => stdClass Object
+                                (
+                                    [valueId] => 295804
+                                    [valueText] => РОБОБАНДА
+                                    [count] => 2
+                                )
+
+                            [344] => stdClass Object
+                                (
+                                    [valueId] => 200800
+                                    [valueText] => РУБЕРИ
+                                    [count] => 34
+                                )
+
+                            [345] => stdClass Object
+                                (
+                                    [valueId] => 4779
+                                    [valueText] => САЙДЕКС Гипермаркет
+                                    [count] => 158
+                                )
+
+                            [346] => stdClass Object
+                                (
+                                    [valueId] => 133350
+                                    [valueText] => Сатро Секьюрити
+                                    [count] => 36
+                                )
+
+                            [347] => stdClass Object
+                                (
+                                    [valueId] => 8555
+                                    [valueText] => Сейфофф
+                                    [count] => 23
+                                )
+
+                            [348] => stdClass Object
+                                (
+                                    [valueId] => 18054
+                                    [valueText] => СЕК-ГРУПП
+                                    [count] => 128
+                                )
+
+                            [349] => stdClass Object
+                                (
+                                    [valueId] => 17436
+                                    [valueText] => Ситилинк
+                                    [count] => 1
+                                )
+
+                            [350] => stdClass Object
+                                (
+                                    [valueId] => 148302
+                                    [valueText] => СитиМедиа
+                                    [count] => 10
+                                )
+
+                            [351] => stdClass Object
+                                (
+                                    [valueId] => 143203
+                                    [valueText] => СканСтор
+                                    [count] => 26
+                                )
+
+                            [352] => stdClass Object
+                                (
+                                    [valueId] => 138530
+                                    [valueText] => СледиВсегда
+                                    [count] => 6
+                                )
+
+                            [353] => stdClass Object
+                                (
+                                    [valueId] => 104763
+                                    [valueText] => Спай-ТВ
+                                    [count] => 593
+                                )
+
+                            [354] => stdClass Object
+                                (
+                                    [valueId] => 95073
+                                    [valueText] => СПЕКТР-СБ
+                                    [count] => 30
+                                )
+
+                            [355] => stdClass Object
+                                (
+                                    [valueId] => 78938
+                                    [valueText] => Спектрвидео
+                                    [count] => 207
+                                )
+
+                            [356] => stdClass Object
+                                (
+                                    [valueId] => 22758
+                                    [valueText] => СпецДилер
+                                    [count] => 909
+                                )
+
+                            [357] => stdClass Object
+                                (
+                                    [valueId] => 186003
+                                    [valueText] => СпецТехКонсалтинг
+                                    [count] => 193
+                                )
+
+                            [358] => stdClass Object
+                                (
+                                    [valueId] => 52588
+                                    [valueText] => СТОР-СПб
+                                    [count] => 499
+                                )
+
+                            [359] => stdClass Object
+                                (
+                                    [valueId] => 206445
+                                    [valueText] => СУПЕРТРУБКА
+                                    [count] => 1
+                                )
+
+                            [360] => stdClass Object
+                                (
+                                    [valueId] => 225210
+                                    [valueText] => Твоя Камера
+                                    [count] => 141
+                                )
+
+                            [361] => stdClass Object
+                                (
+                                    [valueId] => 324700
+                                    [valueText] => ТД "ВидеоCеть"
+                                    [count] => 4
+                                )
+
+                            [362] => stdClass Object
+                                (
+                                    [valueId] => 335541
+                                    [valueText] => ТД "ВидеоCеть"
+                                    [count] => 115
+                                )
+
+                            [363] => stdClass Object
+                                (
+                                    [valueId] => 338745
+                                    [valueText] => ТД "ВидеоCеть"
+                                    [count] => 2
+                                )
+
+                            [364] => stdClass Object
+                                (
+                                    [valueId] => 1668
+                                    [valueText] => ТД Aктив-СБ
+                                    [count] => 618
+                                )
+
+                            [365] => stdClass Object
+                                (
+                                    [valueId] => 108546
+                                    [valueText] => ТехноГид
+                                    [count] => 33
+                                )
+
+                            [366] => stdClass Object
+                                (
+                                    [valueId] => 286698
+                                    [valueText] => ТехноДевайс
+                                    [count] => 1
+                                )
+
+                            [367] => stdClass Object
+                                (
+                                    [valueId] => 255691
+                                    [valueText] => Технологии для Жизни
+                                    [count] => 156
+                                )
+
+                            [368] => stdClass Object
+                                (
+                                    [valueId] => 32604
+                                    [valueText] => ТехноПлаза (a19.ru)
+                                    [count] => 31
+                                )
+
+                            [369] => stdClass Object
+                                (
+                                    [valueId] => 141308
+                                    [valueText] => ТехноРесурс
+                                    [count] => 1
+                                )
+
+                            [370] => stdClass Object
+                                (
+                                    [valueId] => 5046
+                                    [valueText] => ТЕХНОСИЛА
+                                    [count] => 1
+                                )
+
+                            [371] => stdClass Object
+                                (
+                                    [valueId] => 3024
+                                    [valueText] => Топтел
+                                    [count] => 1
+                                )
+
+                            [372] => stdClass Object
+                                (
+                                    [valueId] => 88123
+                                    [valueText] => ТСК-Арон
+                                    [count] => 42
+                                )
+
+                            [373] => stdClass Object
+                                (
+                                    [valueId] => 20317
+                                    [valueText] => УМНАЯ ЭЛЕКТРОНИКА
+                                    [count] => 261
+                                )
+
+                            [374] => stdClass Object
+                                (
+                                    [valueId] => 304990
+                                    [valueText] => УралТелеком24
+                                    [count] => 5
+                                )
+
+                            [375] => stdClass Object
+                                (
+                                    [valueId] => 61276
+                                    [valueText] => ФлайВижн
+                                    [count] => 219
+                                )
+
+                            [376] => stdClass Object
+                                (
+                                    [valueId] => 6869
+                                    [valueText] => Форлинк
+                                    [count] => 10
+                                )
+
+                            [377] => stdClass Object
+                                (
+                                    [valueId] => 131266
+                                    [valueText] => Фотосклад.ру
+                                    [count] => 5
+                                )
+
+                            [378] => stdClass Object
+                                (
+                                    [valueId] => 250246
+                                    [valueText] => ХИТКОМП
+                                    [count] => 42
+                                )
+
+                            [379] => stdClass Object
+                                (
+                                    [valueId] => 316412
+                                    [valueText] => Центр СБ
+                                    [count] => 186
+                                )
+
+                            [380] => stdClass Object
+                                (
+                                    [valueId] => 3678
+                                    [valueText] => ЭЛЬДОРАДО
+                                    [count] => 3
+                                )
+
+                            [381] => stdClass Object
+                                (
+                                    [valueId] => 262978
+                                    [valueText] => Энергобум
+                                    [count] => 10
+                                )
+
+                            [382] => stdClass Object
+                                (
+                                    [valueId] => 18063
+                                    [valueText] => Юлмарт
+                                    [count] => 9
+                                )
+
+                            [383] => stdClass Object
+                                (
+                                    [valueId] => 172876
+                                    [valueText] => ЮНИКОМП unicomps.ru
+                                    [count] => 87
+                                )
+
+                        )
+
+                    [exactly] => 1
+                )
+
+            [17] => stdClass Object
+                (
+                    [id] => -7
+                    [name] => Заказ на маркете
+                    [shortname] => cpa
+                    [type] => BOOL
+                )
+
+        )
+
+)

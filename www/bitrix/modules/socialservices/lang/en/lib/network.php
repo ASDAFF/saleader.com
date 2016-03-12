@@ -1,0 +1,8 @@
+<?
+$MESS["B24NET_SEARCH_STRING_TO_SHORT"] = "Search string is too short.";
+$MESS["B24NET_SOCSERV_NOT_INSTALLED"] = "The \"Social Services\" module is not installed.";
+$MESS["B24NET_SOCSERV_TRANSPORT_ERROR"] = "Error authenticating on Bitrix24.Network. Please log in again.";
+$MESS["B24NET_SEARCH_USER_NOT_FOUND"] = "User was not found.";
+$MESS["B24NET_NETWORK_IN_NOT_ENABLED"] = "Bitrix24.Network 2.0 is not enabled on the portal.";
+$MESS["B24NET_ERROR_INCORRECT_PARAMS"] = "Incorrect parameters supplied.";
+?>

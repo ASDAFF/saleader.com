@@ -1,0 +1,1 @@
+<? require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sotbit.yandex/admin/yandex_api_edit.php");?>
