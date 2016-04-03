@@ -1,1 +1,1 @@
-<img src="<?=SITE_TEMPLATE_PATH?>/images/left_banner2.jpg" alt="">
+<a href="/catalog/sistemy_bezopasnosti/videonablyudenie/ip_kamery/avtech/" title="Все модели камер AVTech"><img src="<?=SITE_TEMPLATE_PATH?>/images/Banner/left_banner2.jpg" alt=""></a>
