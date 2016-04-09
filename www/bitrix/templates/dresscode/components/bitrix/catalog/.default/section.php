@@ -101,7 +101,7 @@ if (CModule::IncludeModule("iblock")){
 	),
 	false
 );?>
-	</noindex>
+
 <?
 }
 $this->EndViewTarget();?>

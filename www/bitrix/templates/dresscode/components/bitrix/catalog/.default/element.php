@@ -19,12 +19,12 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 ?>
 
 
-<h1 class="changeName"><?=isset($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]) && $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ''
+<h1 itemprop="name" class="changeName"><?=isset($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]) && $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ''
     ? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
     : $APPLICATION->ShowTitle(true)?>
 </h1>
 <?$arParams["ADD_SECTIONS_CHAIN"] = "N";?>
-</div></div></div></div></div></div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?></div><?endif;?>
+</div></div></div></div></div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?></div><?endif;?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.element",
 	"",

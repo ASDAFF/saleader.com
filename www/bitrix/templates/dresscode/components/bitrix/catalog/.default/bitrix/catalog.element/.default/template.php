@@ -1,4 +1,6 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+$APPLICATION->AddViewContent('ProductScopeOpen','<div itemscope itemtype="http://schema.org/Product">');
+$APPLICATION->AddViewContent('ProductScopeClose','</div>');
 $this->setFrameMode(true);
 $propertyCounter = 0;
 $morePhotoCounter = 0;
@@ -59,7 +61,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                     <? foreach ($arResult["IMAGES"] as $ipr => $arNextPicture): ?>
                                         <div class="item">
                                             <a href="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>" class="zoom"
-                                               data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"><img
+                                               data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"><img itemprop="image"
                                                     src="<?= $arNextPicture["MEDIUM_IMAGE"]["SRC"] ?>" alt=""></a>
                                         </div>
                                     <? endforeach; ?>
@@ -73,7 +75,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                 <div class="item">
                                                     <a href="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"
                                                        data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>">
-                                                        <img src="<?= $arNextPicture["SMALL_IMAGE"]["SRC"] ?>" alt="">
+                                                        <img src="<?= $arNextPicture["SMALL_IMAGE"]["SRC"] ?>" alt="" itemprop="image">
                                                     </a>
                                                 </div>
                                             <? endforeach; ?>
@@ -193,7 +195,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                 <? if (!empty($arResult["DETAIL_TEXT"])): ?>
                     <div id="detailText">
                         <div class="heading"><?= GetMessage("CATALOG_ELEMENT_DETAIL_TEXT_HEADING") ?></div>
-                        <div class="changeDescription"
+                        <div class="changeDescription" itemprop="description"
                              data-first-value='<?= $arResult["~DETAIL_TEXT"] ?>'><?= $arResult["~DETAIL_TEXT"] ?></div>
                     </div>
                 <? endif; ?>

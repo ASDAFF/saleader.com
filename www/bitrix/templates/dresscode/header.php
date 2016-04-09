@@ -34,7 +34,8 @@ IncludeTemplateLangFile(__FILE__);
         <? $APPLICATION->ShowHeadStrings(); ?>
         <? $APPLICATION->ShowHeadScripts(); ?>
     </head>
-<body<? if (INDEX_PAGE == "Y"): ?> class="index"<? endif; ?>>
+<body<? if (INDEX_PAGE == "Y"): ?> class="index"<? endif; ?> >
+<?$APPLICATION->ShowViewContent('ProductScopeOpen')?>
     <div id="panel">
         <? $APPLICATION->ShowPanel(); ?>
     </div>

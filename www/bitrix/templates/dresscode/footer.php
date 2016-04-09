@@ -5,6 +5,8 @@
 </div>
 </div>
 </div>
+<?$APPLICATION->ShowViewContent('ProductScopeClose')?>
+
 <? $APPLICATION->IncludeComponent(
     "bitrix:main.include",
     ".default",

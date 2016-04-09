@@ -121,6 +121,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 <?if($countElements):?>
 	<div id="catalog">
 	<h1 class="brandsHeading"><?=GetMessage("CATALOG_TITLE")?><?=$ELEMENT_NAME?></h1>
+		<noindex>
 		<div id="catalogLine">
 			<?if(!empty($arSortFields)):?>
 				<div class="column">
@@ -153,12 +154,13 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 					</div>
 					<div class="viewList">
 						<?foreach ($arTemplates as $arTemplatesCode => $arNextTemplate):?>
-							<div class="element"><a<?if($arNextTemplate["SELECTED"] != "Y"):?> href="<?=$APPLICATION->GetCurPageParam("VIEW=".$arTemplatesCode, array("VIEW"));?>"<?endif;?> class="<?=$arNextTemplate["CLASS"]?><?if($arNextTemplate["SELECTED"] == "Y"):?> selected<?endif;?>"></a></div>
+							<div class="element"><a rel="nofollow" <?if($arNextTemplate["SELECTED"] != "Y"):?> href="<?=$APPLICATION->GetCurPageParam("VIEW=".$arTemplatesCode, array("VIEW"));?>"<?endif;?> class="<?=$arNextTemplate["CLASS"]?><?if($arNextTemplate["SELECTED"] == "Y"):?> selected<?endif;?>"></a></div>
 						<?endforeach;?>
 					</div>
 				</div>
 			<?endif;?>
 		</div>
+		</noindex>
 		<?
 			reset($arTemplates);
 		?>

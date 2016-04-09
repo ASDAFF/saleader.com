@@ -1,10 +1,12 @@
-	<div class="mainTool">
+	<div class="mainTool" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 		<?if(!empty($arResult["PROPERTIES"]["CML2_ARTICLE"]["VALUE"])):?>
 		<div class="article">
 				<?=GetMessage("CATALOG_ART_LABEL")?><span class="changeArticle" data-first-value="<?=$arResult["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?>"><?=$arResult["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]?></span>
 			</div>
-		<?endif;?>		
-		<a rel="nofollow" class="price changePrice"><?=$arResult["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+		<?endif;?>
+		<a rel="" class="price changePrice"><?=$arResult["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+			<meta itemprop="price" content="<?=$arResult["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>">
+			<meta itemprop="priceCurrency" content="RUB">
 			<?if(!empty($arResult["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arResult["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
 				<s class="discount"><?=$arResult["MIN_PRICE"]["PRINT_VALUE"]?></s>
 			<?endif;?>
