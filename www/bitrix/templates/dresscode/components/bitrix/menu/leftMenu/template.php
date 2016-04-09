@@ -95,7 +95,7 @@
 															</div>
 															<div class="row">
 																<a href="#" class="addWishlist label" data-id="<?=$arElement["~ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/wishlist.png" alt="" class="icon"><?=GetMessage("WISHLIST_LABEL")?></a>
-																<?if($arElement["CATALOG_QUANTITY"] > 0):?>
+																<?if(/*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"]):?>
 																	<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
 																<?else:?>
 																	<?if($arElement["CAN_BUY"] == true):?>

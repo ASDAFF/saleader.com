@@ -39,7 +39,7 @@
 			<a href="#" class="addCompare label changeID" data-id="<?=$arResult["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/compare.png" alt="<?=GetMessage("COMPARE_LABEL")?>" class="icon"><?=GetMessage("COMPARE_LABEL")?></a>
 		</div>
 		<div class="row">
-			<?if($arResult["CATALOG_QUANTITY"] > 0):?>
+			<?if(/*$arResult["CATALOG_QUANTITY"] > 0*/$arResult["CAN_BUY"]):?>
 				<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><?=GetMessage("AVAILABLE")?></a>
 			<?else:?>
 				<?if($arResult["CAN_BUY"] == true):?>

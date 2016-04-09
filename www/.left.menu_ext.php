@@ -2,7 +2,7 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die(); 
 global $APPLICATION;
 $aMenuLinksExt = $APPLICATION->IncludeComponent(
-	"dresscode:menu.sections", 
+	"seocontext:menu.sections",
 	"", 
 	array(
 		"IBLOCK_TYPE" => "catalog",
@@ -12,9 +12,11 @@ $aMenuLinksExt = $APPLICATION->IncludeComponent(
 		"CACHE_TIME" => "3600000",
 		"IS_SEF" => "N",
 		"ID" => $_REQUEST["ID"],
-		"SECTION_URL" => ""
+		"SECTION_URL" => "",
 	),
 	false
-); 
+);
+AddMessage2Log($aMenuLinksExt);
+
 $aMenuLinks = array_merge($aMenuLinks, $aMenuLinksExt); 
 ?>

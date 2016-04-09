@@ -24,7 +24,7 @@
 						</div>
 					</td>
 				<td>                            
-					<?if($arElement["INFO"]["CATALOG_QUANTITY"] > 0):?>
+					<?if(/*$arElement["INFO"]["CATALOG_QUANTITY"] > 0*/$arElement["INFO"]["CAN_BUY"] ):?>
 						<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
 					<?else:?>
 						<?if($arElement["INFO"]["CAN_BUY"] == true):?>

@@ -15,7 +15,10 @@ IncludeTemplateLangFile(__FILE__);
 	<head>
 		<meta charset="<?=SITE_CHARSET?>">
 		<META NAME="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/images/favicon.ico" /> 
+		<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/images/favicon.ico" />
+		<title><?$APPLICATION->ShowTitle();?> » SaLeader.com</title>
+		<?$APPLICATION->ShowMeta('description');?>
+		<?$APPLICATION->ShowMeta('keywords');?>
 		<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/fonts/roboto/roboto.css");?>
 		<?$APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH."/themes/".$TEMPLATE_BACKGROUND_NAME."/".$TEMPLATE_THEME_NAME."/style.css");?>
 		<?$APPLICATION->ShowCSS(true, false);?>
@@ -30,7 +33,6 @@ IncludeTemplateLangFile(__FILE__);
 		<?$APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH."/js/colorSwitcher.js");?>
         <?$APPLICATION->ShowHeadStrings();?>
     	<?$APPLICATION->ShowHeadScripts();?>
-		<title><?$APPLICATION->ShowTitle();?></title>
 	</head>
 <body<?if (INDEX_PAGE == "Y"):?> class="index"<?endif;?>>
 	<div id="panel">
@@ -41,7 +43,7 @@ IncludeTemplateLangFile(__FILE__);
 			<div class="limiter">
 				<?$APPLICATION->IncludeComponent("bitrix:menu", "topMenu", Array(
 					"ROOT_MENU_TYPE" => "top",
-						"MENU_CACHE_TYPE" => "N",
+						"MENU_CACHE_TYPE" => "A",
 						"MENU_CACHE_TIME" => "3600",
 						"MENU_CACHE_USE_GROUPS" => "Y",
 						"MENU_CACHE_GET_VARS" => "",
@@ -167,16 +169,16 @@ IncludeTemplateLangFile(__FILE__);
 		<div id="main">
 			<div class="limiter">
 				<div class="compliter">
-					<?$APPLICATION->IncludeComponent(
-	"bitrix:main.include", 
-	".default", 
-	array(
-		"AREA_FILE_SHOW" => "sect",
+					<?$APPLICATION->IncludeComponent("bitrix:main.include", ".default", array(
+	"AREA_FILE_SHOW" => "sect",
 		"AREA_FILE_SUFFIX" => "leftBlock",
 		"AREA_FILE_RECURSIVE" => "Y",
 		"EDIT_TEMPLATE" => ""
 	),
-	false
+	false,
+	array(
+	"ACTIVE_COMPONENT" => "Y"
+	)
 );?>
 
 					<div id="right">		
