@@ -70,6 +70,7 @@ if (CModule::IncludeModule("iblock")){
 		),
 		$component
 	);?>
+	<noindex>
 	   <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.smart.filter", 
 	".default", 
@@ -100,6 +101,7 @@ if (CModule::IncludeModule("iblock")){
 	),
 	false
 );?>
+	</noindex>
 <?
 }
 $this->EndViewTarget();?>
@@ -203,6 +205,7 @@ $this->EndViewTarget();?>
 	false
 );?>
 <div id="catalog">
+	<noindex>
 	<div id="catalogLine">
 		<?if(!empty($arSortFields)):?>
 			<div class="column">
@@ -241,6 +244,7 @@ $this->EndViewTarget();?>
 			</div>
 		<?endif;?>
 	</div>
+	</noindex>
 	<?reset($arTemplates);?>
 	<?$APPLICATION->IncludeComponent(
 		"bitrix:catalog.section",
