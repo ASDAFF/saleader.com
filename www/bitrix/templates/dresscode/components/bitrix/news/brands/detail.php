@@ -1,24 +1,63 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 $this->setFrameMode(true);
 ?>
+<?$ELEMENT_ID=$APPLICATION->IncludeComponent("bitrix:news.detail","brands",Array(
+		"DISPLAY_DATE" => "Y",
+		"DISPLAY_NAME" => "Y",
+		"DISPLAY_PICTURE" => "Y",
+		"DISPLAY_PREVIEW_TEXT" => "Y",
+		"USE_SHARE" => "Y",
+		"SHARE_HIDE" => "N",
+		"SHARE_TEMPLATE" => "",
+		"SHARE_HANDLERS" =>"",
+		"SHARE_SHORTEN_URL_LOGIN" => "",
+		"SHARE_SHORTEN_URL_KEY" => "",
+		"AJAX_MODE" => "Y",
+		"IBLOCK_TYPE" => "info",
+		"IBLOCK_ID" => "1",
+		"ELEMENT_ID" => "",
+		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
+		"CHECK_DATES" => "Y",
+		"FIELD_CODE" => "",
+		"PROPERTY_CODE" =>"",
+		"IBLOCK_URL" => "news.php?ID=#IBLOCK_ID#\"",
+		"DETAIL_URL" => "",
+		"SET_TITLE" => "Y",
+		"SET_CANONICAL_URL" => "Y",
+		"SET_BROWSER_TITLE" => "Y",
+		"BROWSER_TITLE" => "-",
+		"SET_META_KEYWORDS" => "Y",
+		"META_KEYWORDS" => "-",
+		"SET_META_DESCRIPTION" => "Y",
+		"META_DESCRIPTION" => "-",
+		"SET_STATUS_404" => "Y",
+		"SET_LAST_MODIFIED" => "Y",
+		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+		"ADD_SECTIONS_CHAIN" => "N",
+		"ADD_ELEMENT_CHAIN" => "Y",
+		"ACTIVE_DATE_FORMAT" => "d.m.Y",
+		"USE_PERMISSIONS" => "Y",
+		"GROUP_PERMISSIONS" =>"",
+		"CACHE_TYPE" => "A",
+		"CACHE_TIME" => "3600",
+		"CACHE_GROUPS" => "Y",
+		"DISPLAY_TOP_PAGER" => "Y",
+		"DISPLAY_BOTTOM_PAGER" => "Y",
+		"PAGER_TITLE" => "Страница",
+		"PAGER_TEMPLATE" => "",
+		"PAGER_SHOW_ALL" => "Y",
+		"PAGER_BASE_LINK_ENABLE" => "Y",
+		"SET_STATUS_404" => "Y",
+		"SHOW_404" => "Y",
+		"MESSAGE_404" => "",
+		"PAGER_BASE_LINK" => "",
+		"PAGER_PARAMS_NAME" => "arrPager",
+		"AJAX_OPTION_JUMP" => "N",
+		"AJAX_OPTION_STYLE" => "Y",
+		"AJAX_OPTION_HISTORY" => "N"
+	)
+);?>
 
-<?
-if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
-	$arSelect = Array("ID", "IBLOCK_ID", "NAME", "DETAIL_TEXT", "DETAIL_PICTURE", "SECTION_PAGE_URL");
-	$arFilter = Array("IBLOCK_ID" => IntVal($arParams["IBLOCK_ID"]), "CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"], "ACTIVE_DATE"=>"Y", "ACTIVE"=>"Y");
-	$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
-	if($ob = $res->GetNextElement()){
-		$arResult["ITEM"] = $ob->GetFields(); 
-		$ELEMENT_ID = $arResult["ITEM"]["ID"];
-		$ELEMENT_NAME = $arResult["ITEM"]["NAME"];
-	}
-}
-?>
-
-<?global $APPLICATION;
-		 $APPLICATION->AddChainItem($ELEMENT_NAME);
-		 $APPLICATION->SetTitle($ELEMENT_NAME);
-?>
 
 <?$BASE_PRICE = CCatalogGroup::GetBaseGroup();?>
 <?$arSortFields = array(
@@ -100,17 +139,6 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 	$arTemplates[key($arTemplates)]["SELECTED"] = "Y";
 }
 ?>
-
-
-<?$BIG_PICTURE = CFile::ResizeImageGet($arResult["ITEM"]["DETAIL_PICTURE"], array("width" => 150, "height" => 250), BX_RESIZE_IMAGE_PROPORTIONAL, false);?>
-
-<?if(!empty($BIG_PICTURE["src"])):?>
-	<div class="brandsBigPicture"><img src="<?=$BIG_PICTURE["src"]?>" alt="<?=$arResult["ITEM"]["NAME"]?>"></div>
-<?endif;?>
-
-<?if(!empty($arResult["ITEM"]["DETAIL_TEXT"])):?>
-	<div class="brandsDescription"><?=$arResult["ITEM"]["DETAIL_TEXT"]?></div>
-<?endif;?>
 
 <a href="<?=$arResult["FOLDER"]?>" class="backToList"><?=GetMessage("BACK_TO_LIST_PAGE")?></a>
 <?
