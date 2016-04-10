@@ -1,5 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-test_dump($arParams["DETAIL_SET_CANONICAL_URL"]);
+//test_dump($arParams["DETAIL_SET_CANONICAL_URL"]);
 $this->setFrameMode(true);?>
 <?
 	$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();
