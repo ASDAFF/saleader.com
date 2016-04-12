@@ -1,6 +1,8 @@
 <?
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true)
     die();
+use Bitrix\Main\Page\Asset;
+
 ?>
 
 <?
@@ -16,25 +18,24 @@ IncludeTemplateLangFile(__FILE__);
         <meta charset="<?= SITE_CHARSET ?>">
         <META NAME="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" type="image/x-icon" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon.ico"/>
-        <title><? $APPLICATION->ShowTitle(); ?> » SaLeader.com</title>
+        <title ><? $APPLICATION->ShowTitle(); ?> » SaLeader.com</title>
         <? $APPLICATION->ShowHead(); ?>
-        <? $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH . "/fonts/roboto/roboto.css"); ?>
-        <? $APPLICATION->SetAdditionalCSS(SITE_TEMPLATE_PATH . "/themes/" . $TEMPLATE_BACKGROUND_NAME . "/" . $TEMPLATE_THEME_NAME . "/style.css"); ?>
+        <? Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/fonts/roboto/roboto.css"); ?>
+        <? Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/themes/" . $TEMPLATE_BACKGROUND_NAME . "/" . $TEMPLATE_THEME_NAME . "/style.css"); ?>
         <? $APPLICATION->ShowCSS(true, false); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/jquery-1.11.0.min.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/jquery.easing.1.3.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/rangeSlider.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/system.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/topMenu.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/topSearch.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/dwCarousel.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/dwSlider.js"); ?>
-        <? $APPLICATION->AddHeadScript(SITE_TEMPLATE_PATH . "/js/colorSwitcher.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/jquery-1.11.0.min.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/jquery.easing.1.3.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/rangeSlider.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/system.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/topMenu.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/topSearch.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/dwCarousel.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/dwSlider.js"); ?>
+        <? Asset::getInstance()->addJs(SITE_TEMPLATE_PATH . "/js/colorSwitcher.js"); ?>
         <? $APPLICATION->ShowHeadStrings(); ?>
-        <? $APPLICATION->ShowHeadScripts(); ?>
     </head>
 <body<? if (INDEX_PAGE == "Y"): ?> class="index"<? endif; ?> >
-<?$APPLICATION->ShowViewContent('ProductScopeOpen')?>
+<? $APPLICATION->ShowViewContent('ProductScopeOpen') ?>
     <div id="panel">
         <? $APPLICATION->ShowPanel(); ?>
     </div>
@@ -185,11 +186,15 @@ IncludeTemplateLangFile(__FILE__);
     <div id="right">
 
 <? if (INDEX_PAGE != "Y"): ?>
-    <? $APPLICATION->IncludeComponent("bitrix:breadcrumb", ".default", Array(
-        "START_FROM" => "0",
-        "PATH" => "",
-        "SITE_ID" => "-",
-    ),
-        false
-    ); ?>
+    <? $APPLICATION->IncludeComponent(
+	"bitrix:breadcrumb",
+	".default",
+	array(
+		"START_FROM" => "1",
+		"PATH" => "",
+		"SITE_ID" => "s1",
+		"COMPONENT_TEMPLATE" => ".default"
+	),
+	false
+); ?>
 <? endif; ?>

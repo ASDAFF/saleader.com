@@ -148,9 +148,11 @@
                 ); ?>
             </div>
         </div>
+        <noindex>
         <div class="sideBlock banner">
             <? $APPLICATION->IncludeFile(SITE_DIR . "sect_left_banner1.php", Array(), Array("MODE" => "text", "NAME" => GetMessage("SECT_LEFT_BANNER_1"), "TEMPLATE" => "sect_left_banner1.php")); ?>
         </div>
+        </noindex>
 
         <? $APPLICATION->IncludeComponent("bitrix:news.list", "leftCollection", array(
             "IBLOCK_TYPE" => "info",
@@ -237,10 +239,11 @@
                 "ACTIVE_COMPONENT" => "N"
             )
         ); ?>
-
+        <noindex>
         <div class="sideBlock banner">
             <? $APPLICATION->IncludeFile(SITE_DIR . "sect_left_banner2.php", Array(), Array("MODE" => "text", "NAME" => GetMessage("SECT_LEFT_BANNER_2"), "TEMPLATE" => "sect_left_banner2.php")); ?>
         </div>
+        </noindex>
         <? $APPLICATION->IncludeComponent("bitrix:news.list", "leftService", array(
             "IBLOCK_TYPE" => "info",
             "IBLOCK_ID" => "6",

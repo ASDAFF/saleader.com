@@ -23,7 +23,7 @@ ErrorDocument 404 /404.php
       RewriteCond %{REQUEST_URI} !\.
       RewriteCond %{REQUEST_URI} !\/$
       RewriteCond %{HTTP_HOST} ^www\.(.*)$
-      RewriteRule ^(.*)$ http://%1/$1/ [L,R=301]
+      RewriteRule ^(.*)$ https://%1/$1/ [L,R=301]
 
       RewriteCond %{REQUEST_URI} !\?
       RewriteCond %{REQUEST_URI} !\&
@@ -31,7 +31,7 @@ ErrorDocument 404 /404.php
       RewriteCond %{REQUEST_URI} !\.
       RewriteCond %{REQUEST_URI} ![^\/]$
       RewriteCond %{HTTP_HOST} ^www\.(.*)$
-      RewriteRule ^(.*)$ http://%1/$1 [L,R=301]
+      RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
 
       RewriteCond %{REQUEST_URI} !\?
       RewriteCond %{REQUEST_URI} !\&
@@ -39,11 +39,11 @@ ErrorDocument 404 /404.php
       RewriteCond %{REQUEST_URI} !\.
       RewriteCond %{REQUEST_URI} !\/$
       RewriteCond %{HTTP_HOST} ^([^www].*)$
-      RewriteRule ^(.*)$ http://%1/$1/ [L,R=301]
+      RewriteRule ^(.*)$ https://%1/$1/ [L,R=301]
 
       #======http -> https
-#      RewriteCond %{HTTP:HTTPS} !=on
-#      RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+      RewriteCond %{HTTP:HTTPS} !=on
+      RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-l

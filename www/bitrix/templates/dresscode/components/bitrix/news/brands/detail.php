@@ -1,7 +1,11 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+CModule::IncludeModule("catalog");
 $this->setFrameMode(true);
 ?>
-<?$ELEMENT_ID=$APPLICATION->IncludeComponent("bitrix:news.detail","brands",Array(
+<?$ELEMENT_ID = $APPLICATION->IncludeComponent(
+	"bitrix:news.detail",
+	"brands",
+	array(
 		"DISPLAY_DATE" => "Y",
 		"DISPLAY_NAME" => "Y",
 		"DISPLAY_PICTURE" => "Y",
@@ -9,7 +13,7 @@ $this->setFrameMode(true);
 		"USE_SHARE" => "Y",
 		"SHARE_HIDE" => "N",
 		"SHARE_TEMPLATE" => "",
-		"SHARE_HANDLERS" =>"",
+		"SHARE_HANDLERS" => "",
 		"SHARE_SHORTEN_URL_LOGIN" => "",
 		"SHARE_SHORTEN_URL_KEY" => "",
 		"AJAX_MODE" => "Y",
@@ -18,8 +22,14 @@ $this->setFrameMode(true);
 		"ELEMENT_ID" => "",
 		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
 		"CHECK_DATES" => "Y",
-		"FIELD_CODE" => "",
-		"PROPERTY_CODE" =>"",
+		"FIELD_CODE" => array(
+			0 => "",
+			1 => "",
+		),
+		"PROPERTY_CODE" => array(
+			0 => "",
+			1 => "",
+		),
 		"IBLOCK_URL" => "news.php?ID=#IBLOCK_ID#\"",
 		"DETAIL_URL" => "",
 		"SET_TITLE" => "Y",
@@ -36,8 +46,8 @@ $this->setFrameMode(true);
 		"ADD_SECTIONS_CHAIN" => "N",
 		"ADD_ELEMENT_CHAIN" => "Y",
 		"ACTIVE_DATE_FORMAT" => "d.m.Y",
-		"USE_PERMISSIONS" => "Y",
-		"GROUP_PERMISSIONS" =>"",
+		"USE_PERMISSIONS" => "N",
+		"GROUP_PERMISSIONS" => "N",
 		"CACHE_TYPE" => "A",
 		"CACHE_TIME" => "3600",
 		"CACHE_GROUPS" => "Y",
@@ -47,15 +57,18 @@ $this->setFrameMode(true);
 		"PAGER_TEMPLATE" => "",
 		"PAGER_SHOW_ALL" => "Y",
 		"PAGER_BASE_LINK_ENABLE" => "Y",
-		"SET_STATUS_404" => "Y",
 		"SHOW_404" => "Y",
 		"MESSAGE_404" => "",
 		"PAGER_BASE_LINK" => "",
 		"PAGER_PARAMS_NAME" => "arrPager",
 		"AJAX_OPTION_JUMP" => "N",
 		"AJAX_OPTION_STYLE" => "Y",
-		"AJAX_OPTION_HISTORY" => "N"
-	)
+		"AJAX_OPTION_HISTORY" => "N",
+		"COMPONENT_TEMPLATE" => "brands",
+		"AJAX_OPTION_ADDITIONAL" => "",
+		"FILE_404" => ""
+	),
+	false
 );?>
 
 
