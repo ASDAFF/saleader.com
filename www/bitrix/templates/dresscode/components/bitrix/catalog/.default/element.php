@@ -1,4 +1,5 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+//test_dump($arParams["DETAIL_SET_CANONICAL_URL"]);
 $this->setFrameMode(true);?>
 <?
 	$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();
@@ -19,12 +20,12 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 ?>
 
 
-<h1 class="changeName"><?=isset($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]) && $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ''
+<h1 itemprop="name" class="changeName"><?=isset($arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]) && $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"] != ''
     ? $arResult["IPROPERTY_VALUES"]["ELEMENT_PAGE_TITLE"]
     : $APPLICATION->ShowTitle(true)?>
 </h1>
 <?$arParams["ADD_SECTIONS_CHAIN"] = "N";?>
-</div></div></div></div></div></div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?></div><?endif;?>
+</div></div></div></div></div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?></div><?endif;?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.element",
 	"",
@@ -110,7 +111,8 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 		"ADD_ELEMENT_CHAIN" => (isset($arParams["ADD_ELEMENT_CHAIN"]) ? $arParams["ADD_ELEMENT_CHAIN"] : ''),
 		"DISPLAY_PREVIEW_TEXT_MODE" => (isset($arParams['DETAIL_DISPLAY_PREVIEW_TEXT_MODE']) ? $arParams['DETAIL_DISPLAY_PREVIEW_TEXT_MODE'] : ''),
 		"DETAIL_PICTURE_MODE" => (isset($arParams['DETAIL_DETAIL_PICTURE_MODE']) ? $arParams['DETAIL_DETAIL_PICTURE_MODE'] : ''),
-		"USE_SKU" => $arParams["USE_SKU"]
+		"USE_SKU" => $arParams["USE_SKU"],
+		"SET_CANONICAL_URL"=>$arParams["DETAIL_SET_CANONICAL_URL"]
 	),
 	$component
 );?><div><div><div><div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?><div><?endif;?>

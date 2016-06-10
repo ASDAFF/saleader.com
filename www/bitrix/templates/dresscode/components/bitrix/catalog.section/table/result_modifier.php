@@ -64,7 +64,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
 						$arElement["SKU_PRICES"][] = $arSkuPrice["DISCOUNT_PRICE"];
 					}
 
-					$arElement["ADDSKU"] = $OPTION_ADD_CART === "Y" ? true : $arElement["CATALOG_QUANTITY"] > 0;
+					$arElement["ADDSKU"] = $OPTION_ADD_CART === "Y" ? true : /*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"];
 					$arElement["SKU_INFO"] = $SKU_INFO;
 				}
 			}

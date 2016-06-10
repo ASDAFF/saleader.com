@@ -52,13 +52,13 @@ $this->setFrameMode(true);?>
 					</a>
 				</div>
 				<div class="column">
-					<a href="#" class="addCart<?if($arElement["CAN_BUY"] != true && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>	
+					<a rel="nofollow" href="#" class="addCart<?if($arElement["CAN_BUY"] != true && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>
 				</div>
 				<div class="column">
 					<div class="optional">
 						<div class="row">
-							<a href="#" class="fastBack label" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/fastBack.png" alt="" class="icon"><?=GetMessage("FASTBACK_LABEL")?></a>
-							<a href="#" class="addCompare label" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/compare.png" alt="" class="icon"><?=GetMessage("COMPARE_LABEL")?></a>
+							<a rel="nofollow" href="#" class="fastBack label" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/fastBack.png" alt="" class="icon"><?=GetMessage("FASTBACK_LABEL")?></a>
+							<a rel="nofollow" href="#" class="addCompare label" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/compare.png" alt="" class="icon"><?=GetMessage("COMPARE_LABEL")?></a>
 						</div>
 					</div>
 				</div>
@@ -66,20 +66,20 @@ $this->setFrameMode(true);?>
 					<div class="optional">
 						<div class="row">
 							<a href="#" class="addWishlist label" data-id="<?=$arElement["~ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/wishlist.png" alt="" class="icon"><?=GetMessage("WISHLIST_LABEL")?></a>
-							<?if($arElement["CATALOG_QUANTITY"] > 0):?>
-								<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
+							<?if(/*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"]):?>
+								<a rel="nofollow" class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
 							<?else:?>
 								<?if($arElement["CAN_BUY"] == true):?>
-									<a class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>
+									<a rel="nofollow" class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>
 								<?else:?>
-									<a class="outOfStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/outOfStock.png" alt="" class="icon"><?=GetMessage("NOAVAILABLE")?></a>
+									<a rel="nofollow" class="outOfStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/outOfStock.png" alt="" class="icon"><?=GetMessage("NOAVAILABLE")?></a>
 								<?endif;?>
 							<?endif;?>
 						</div>						
 					</div>	
 				</div>
 				<div class="column out">
-					<a href="#" class="removeFromWishlist" data-id="<?=$arElement["~ID"]?>"></a>
+					<a rel="nofollow" href="#" class="removeFromWishlist" data-id="<?=$arElement["~ID"]?>"></a>
 				</div>
 			</div>
 		<?endforeach;?>

@@ -670,7 +670,9 @@ strong{
 }
 
 #bannersBlock ul li:first-child {
+    /*
 	margin-bottom: 12px;
+    */
 	float: none;
 }
 
@@ -1886,6 +1888,9 @@ line-height: 60px;
 	line-height: 346px;
 }
 
+.product .tabloid .addCart.disabled{
+	display: none;
+}
 .product .tabloid{
 
 	-webkit-transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
@@ -1987,7 +1992,7 @@ line-height: 60px;
 	-o-transition: all 0.5s ease-in-out;
 	transition: all 0.5s ease-in-out;
 
-	display: block;
+	display: flex;
 	text-align: center;
 	height: 240px;
 	line-height: 240px;
@@ -2000,6 +2005,7 @@ line-height: 60px;
 	vertical-align: middle;
     max-height: 90%;
 	max-width: 90%;
+	margin: auto;
 }
 
 .product .addCart{

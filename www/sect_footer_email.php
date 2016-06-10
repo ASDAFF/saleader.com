@@ -1,1 +1,1 @@
-<a href="mailto:info@digitalweb.ru" class="email">info@digitalweb.ru</a>
+<a rel="nofollow" href="mailto:info@digitalweb.ru" class="email">info@digitalweb.ru</a>

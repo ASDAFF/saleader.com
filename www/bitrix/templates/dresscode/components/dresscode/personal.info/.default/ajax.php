@@ -43,28 +43,28 @@
 			if(!$user->Update($userID, $fields)){
 				$result = array(
 					"message" => strip_tags($user->LAST_ERROR),
-					"heading" => "Îøèáêà",
+					"heading" => "ĞÑˆĞ¸Ğ±ĞºĞ°",
 					"reload" => false
 				);
 			}else{
 				$result = array(
-					"message" => "Èíôîğìàöèÿ óñïåøíî ñîõğàíåíà",
-					"heading" => "Ñîõğàíåíî",
+					"message" => "Ğ˜Ğ½Ñ„Ğ¾Ñ€Ğ¼Ğ°Ñ†Ğ¸Ñ ÑƒÑĞ¿ĞµÑˆĞ½Ğ¾ ÑĞ¾Ñ…Ñ€Ğ°Ğ½ĞµĞ½Ğ°",
+					"heading" => "Ğ¡Ğ¾Ñ…Ñ€Ğ°Ğ½ĞµĞ½Ğ¾",
 					"reload" => true
 				);
 			}
 		}else{
 			$result = array(
-				"message" => "Òğåáóåòñÿ àâòîğèçàöèÿ",
-				"heading" => "Îøèáêà",
+				"message" => "Ğ¢Ñ€ĞµĞ±ÑƒĞµÑ‚ÑÑ Ğ°Ğ²Ñ‚Ğ¾Ñ€Ğ¸Ğ·Ğ°Ñ†Ğ¸Ñ",
+				"heading" => "ĞÑˆĞ¸Ğ±ĞºĞ°",
 				"reload" => false
 			);
 		}
 	
 	}else{
 		$result = array(
-			"message" => "Îøèáêà ïåğåäà÷è ôîğìû",
-			"heading" => "Îøèáêà",
+			"message" => "ĞÑˆĞ¸Ğ±ĞºĞ° Ğ¿ĞµÑ€ĞµĞ´Ğ°Ñ‡Ğ¸ Ñ„Ğ¾Ñ€Ğ¼Ñ‹",
+			"heading" => "ĞÑˆĞ¸Ğ±ĞºĞ°",
 			"reload" => false
 		);
 	}

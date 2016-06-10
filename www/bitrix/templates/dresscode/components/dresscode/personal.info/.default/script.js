@@ -1,5 +1,6 @@
 $(window).bind('load', function(){
 	var sendPersonalInfo = function(event){
+		debugger;
 		var $form = $("#personalForm");
 		var $win = $("#elementError"); 
 		$.getJSON(ajaxDir + "/ajax.php?" + $form.serialize(), function(data){

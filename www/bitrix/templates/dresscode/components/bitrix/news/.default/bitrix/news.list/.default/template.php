@@ -21,14 +21,16 @@
 										<?if(!empty($image["src"])):?>
 											<div class="bigPicture"><a href="<?=$arElement["DETAIL_PAGE_URL"]?>"><img src="<?=$image["src"]?>" alt="<?=$arElement["NAME"]?>"></a></div>
 										<?endif;?>
-										<div class="title"><a href="<?=$arElement["DETAIL_PAGE_URL"]?>"><?=$arElement["NAME"]?></a></div>
+										<div class="title"><a rel="nofollow" href="<?=$arElement["DETAIL_PAGE_URL"]?>"><?=$arElement["NAME"]?></a></div>
 										<?if(!empty($arElement["DISPLAY_ACTIVE_FROM"])):?>
 											<div class="newsDate"><?=$arElement["DISPLAY_ACTIVE_FROM"]?></div>
 										<?endif;?>
+										<noindex>
 										<?if(!empty($arElement["PREVIEW_TEXT"])):?>
 											<div class="description"><?=$arElement["PREVIEW_TEXT"]?></div>
 										<?endif;?>
-										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="more"><?=GetMessage("NEWS_MORE")?></a>
+										<a rel="nofollow" href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="more"><?=GetMessage("NEWS_MORE")?></a>
+										</noindex>
 									</div>
 								<?endforeach;?>
 							</div>

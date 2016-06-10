@@ -23,6 +23,13 @@ JCSmartFilter.prototype.keyup = function(input)
 	{
 		clearTimeout(this.timer);
 	}
+	$inputElement=$(input);
+	if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
+		$inputElement.prop("disabled", true);
+	} else {
+		$inputElement.prop("disabled", false);
+	}
+
 	this.timer = setTimeout(BX.delegate(function(){
 		this.reload(input);
 	}, this), 500);
@@ -62,7 +69,10 @@ JCSmartFilter.prototype.reload = function(input)
 	{
 		var values = [];
 		values[0] = {name: 'ajax', value: 'y'};
-		this.gatherInputsValues(values, BX.findChildren(this.form, {'tag': new RegExp('^(input|select)$', 'i')}, true));
+		this.gatherInputsValues(values, BX.findChildren(this.form, function(el) {
+			//debugger;
+			return (el.tagName == 'INPUT' || el.tagName =='SELECT') && $(el).prop('disabled')!=true;
+		}, true));
 
 		for (var i = 0; i < values.length; i++)
 			this.cacheKey += values[i].name + ':' + values[i].value + '|';
@@ -921,9 +931,21 @@ $(window).on("load", function() {
 
 		$modef.css("top", (_itemOffset - $("#smartFilter").offset().top));
 	});
+	$(".rangeSlider").each(function(i, el) {
+		var $inputs = $(el).find("input");
 
+		$inputs.each(function(x, inp){
+			var $inputElement = $(inp);
+			if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
+				$inputElement.prop("disabled", true);
+			} else {
+				$inputElement.prop("disabled", true);
+			}
+
+		});
+	});
 	$("#set_filter, #modef_send").on("click", function(e) {
-
+		e.preventDefault();
 		$(".rangeSlider").each(function(i, el) {
 			var $inputs = $(el).find("input");
 
@@ -934,9 +956,6 @@ $(window).on("load", function() {
 					$inputElement.prop("disabled", true);
 				}
 			});
-
-			e.preventDefault();
-			
 		});
 
 		$filter.append('<input type="hidden" name="set_filter" value="Y">').submit();

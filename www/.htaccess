@@ -10,6 +10,41 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
   Options +FollowSymLinks
   RewriteEngine On
+
+    # Removes index.php from ExpressionEngine URLs
+      RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
+      RewriteCond %{REQUEST_URI} !/system/.* [NC]
+      RewriteCond %{REQUEST_URI} !^/bitrix/
+      RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
+
+      RewriteCond %{REQUEST_URI} !\?
+      RewriteCond %{REQUEST_URI} !\&
+      RewriteCond %{REQUEST_URI} !\=
+      RewriteCond %{REQUEST_URI} !\.
+      RewriteCond %{REQUEST_URI} !\/$
+      RewriteCond %{HTTP_HOST} ^www\.(.*)$
+      RewriteRule ^(.*)$ https://%1/$1/ [L,R=301]
+
+      RewriteCond %{REQUEST_URI} !\?
+      RewriteCond %{REQUEST_URI} !\&
+      RewriteCond %{REQUEST_URI} !\=
+      RewriteCond %{REQUEST_URI} !\.
+      RewriteCond %{REQUEST_URI} ![^\/]$
+      RewriteCond %{HTTP_HOST} ^www\.(.*)$
+      RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+      RewriteCond %{REQUEST_URI} !\?
+      RewriteCond %{REQUEST_URI} !\&
+      RewriteCond %{REQUEST_URI} !\=
+      RewriteCond %{REQUEST_URI} !\.
+      RewriteCond %{REQUEST_URI} !\/$
+      RewriteCond %{HTTP_HOST} ^([^www].*)$
+      RewriteRule ^(.*)$ https://%1/$1/ [L,R=301]
+
+      #======http -> https
+      RewriteCond %{HTTP:HTTPS} !=on
+      RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-l
   RewriteCond %{REQUEST_FILENAME} !-d

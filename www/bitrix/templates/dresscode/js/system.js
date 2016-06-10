@@ -26,7 +26,7 @@ $(function(){
 	}else{
 		$("#footerTabsCaption .item").eq(0).find("a").addClass("selected");
 		$("#footerTabs .tab").eq(0).addClass("selected");
-	}	
+	}
 
 });
 
@@ -119,14 +119,14 @@ $(window).on("ready", function(event){
 					});
 				});
 			});
-			
+
 			$_mProduct.find(".addCart, .fastBack, .addCompare").data("id", http[0]["PRODUCT"]["ID"]);
 			$_mProduct.find(".name").attr("href", http[0]["PRODUCT"]["DETAIL_PAGE_URL"]).html(http[0]["PRODUCT"]["NAME"]);
 			$_mProduct.find(".picture").html($("<img/>").attr("src", http[0]["PRODUCT"]["PICTURE"]));
 			$_mProduct.find(".price").html(http[0]["PRODUCT"]["PRICE"]["DISCOUNT_PRICE"]);
 
 			var $changeCart = $_mProduct.find(".addCart");
-			
+
 			$changeCart.find("img").remove();
 			$changeCart.removeClass("added").removeClass("disabled")
 				.html(LANG["ADD_BASKET_DEFAULT_LABEL"])
@@ -164,12 +164,12 @@ $(window).on("ready", function(event){
 					$changeAvailable.html(LANG["CATALOG_ON_ORDER"]).addClass("onOrder");
 					$changeAvailable.prepend(
 						$("<img/>").addClass("icon").attr("src", TEMPLATE_PATH + "/images/onOrder.png")
-					);				
+					);
 				}
 			}
 
 			$_clickedProp.removeClass("loading");
-			
+
 		  }).fail(function(jqxhr, textStatus, error){
 		  	$_clickedProp.removeClass("loading");
 		    alert("Request Failed: " + textStatus + ", " + error);
@@ -180,7 +180,7 @@ $(window).on("ready", function(event){
 	}
 
 	var addCart = function(event){
-		
+
 		var $this = $(this);
 		var productID = $this.data("id");
 		var quantity = $this.data("quantity");
@@ -222,7 +222,7 @@ $(window).on("ready", function(event){
 			}else{
 
 				if(parseInt(productID, 10) > 0){
-					
+
 					$this.addClass("loading");
 
 					var gObj = {
@@ -232,7 +232,7 @@ $(window).on("ready", function(event){
 					};
 
 					$.getJSON(ajaxPath, gObj).done(function(jData){
-						
+
 						var reloadCart = cartReload();
 						var cartWindow = displayWindow(jData);
 						var $imageAfterLoad = $this.find("img");
@@ -242,16 +242,16 @@ $(window).on("ready", function(event){
 							.html(LANG["BASKET_ADDED"])
 							.prepend($imageAfterLoad.attr("src", TEMPLATE_PATH + "/images/added.png"))
 							.attr("href", SITE_DIR + "personal/cart/");
-					
+
 					}).fail(function(jqxhr, textStatus, error){
-						
+
 						$.get(ajaxPath, gObj).done(function(Data){
 							console.log(Data)
 						});
 
 						$this.removeClass("loading")
 									.addClass("error");
-					   
+
 					    console.error(
 					    	"Request Failed: " + textStatus + ", " + error
 					    );
@@ -266,7 +266,7 @@ $(window).on("ready", function(event){
 	}
 
 	var displayWindow = function(jData){
-		
+
 		var $appBasket = $("#appBasket").show();
 		var $container = $appBasket.find(".container");
 		var $foundation = $("#foundation").addClass("blurred");
@@ -295,7 +295,7 @@ $(window).on("ready", function(event){
 			if(jData["CAN_BUY"] != true){
 				$changeAvailable.addClass("outOfStock");
 			}else{
-				$changeAvailable.addClass("onOrder");		
+				$changeAvailable.addClass("onOrder");
 			}
 		}
 
@@ -316,7 +316,7 @@ $(window).on("ready", function(event){
 		}
 
 		if(jData["RATING"] != undefined){
-			
+
 			$container.prepend(
 				$("<div>").addClass("rating")
 					.append(
@@ -336,7 +336,7 @@ $(window).on("ready", function(event){
 									.remove();
 
 		if(jData["MARKER"] != undefined){
-			
+
 			$picture.prepend(
 				$("<div>").addClass("markerContainer")
 					.append(
@@ -365,7 +365,7 @@ $(window).on("ready", function(event){
 		};
 
 		$.get(ajaxPath, gObj).done(function(hData){
-			
+
 			if(hData != ""){
 				$("#appBasket .closeWindow").trigger("click");
 				$this.removeClass("loading");
@@ -376,10 +376,10 @@ $(window).on("ready", function(event){
 			}
 
 		}).fail(function(jqxhr, textStatus, error){
-			
+
 			$this.removeClass("loading")
 						.addClass("error");
-		   
+
 		    console.error(
 		    	"Request Failed: " + textStatus + ", " + error
 		    );
@@ -390,12 +390,12 @@ $(window).on("ready", function(event){
 	};
 
 	var appBasketClose = function(event){
-		
+
 		var $appBasket = $("#appBasket").hide();
 		var $foundation = $("#foundation").removeClass("blurred");
-		
+
 		appOpen = false;  //global flag
-		
+
 		return event.preventDefault();
 	};
 
@@ -407,7 +407,7 @@ $(window).on("ready", function(event){
 		if(gQuantity > 1){
 			$qty.val(gQuantity - 1);
 		}
-		
+
 		appBasketCalc($qty, $this.data("id"));
 		return event.preventDefault();
 	};
@@ -425,7 +425,7 @@ $(window).on("ready", function(event){
 	};
 
 	var appBasketChange = function(event){
-		
+
 		var $this = $(this);
 		var gValue = $this.val();
 		var wValue;
@@ -433,7 +433,7 @@ $(window).on("ready", function(event){
 		if(gValue.replace(/[^\d]/gi, '') != gValue){
 			wValue = 1;
 		}else if(parseFloat(gValue) > 0){
-			wValue = parseFloat(gValue); 
+			wValue = parseFloat(gValue);
 		}
 
 		appBasketCalc($this.val(wValue), $this.data("id"));
@@ -442,18 +442,18 @@ $(window).on("ready", function(event){
 	};
 
 	var appBasketCalc = function($qty, productID){
-		
+
 		var $appBasket = $("#appBasket");
 		var $price = $appBasket.find(".price");
 		var $sum = $appBasket.find(".allSum");
 		var gStrSum = $sum.html().replace(/\d\.\d/g, '').replace(/[0-9]/g, '');
-		
+
 		$sum.html(
 			formatPrice(
 				$price.data("price") * $qty.val()
 			) + gStrSum
 		);
-	
+
 		if($price.data("discount") > 0){
 
 			var $sumDiscount = $sum.find(".discount");
@@ -462,7 +462,7 @@ $(window).on("ready", function(event){
 			$sumDiscount.html(
 				formatPrice(
 					$price.data("discount") * $qty.val()
-				) + gstrSumDiscount	
+				) + gstrSumDiscount
 			);
 		}
 
@@ -477,7 +477,7 @@ $(window).on("ready", function(event){
 		intervalID = setInterval(function() {
 	        appBasketPlus(event);
 	    }, 150);
-	};	
+	};
 
 	var appBasketPlusHoldUp = function(){
 		clearInterval(intervalID);
@@ -487,7 +487,7 @@ $(window).on("ready", function(event){
 		intervalID = setInterval(function() {
 	        appBasketMinus(event);
 	    }, 150);
-	};	
+	};
 
 	var appBasketMinusHoldUp = function(){
 		clearInterval(intervalID);
@@ -501,7 +501,7 @@ $(window).on("ready", function(event){
 
 		if($this.attr("href") == "#"){
 			if(parseInt(productID, 10) > 0 && !$this.hasClass("added")){
-				
+
 				$this.addClass("loading");
 
 				var gObj = {
@@ -528,10 +528,10 @@ $(window).on("ready", function(event){
 								.addClass("error");
 					}
 				}).fail(function(jqxhr, textStatus, error){
-					
+
 					$this.removeClass("loading")
 								.addClass("error");
-				   
+
 				    console.error(
 				    	"Request Failed: " + textStatus + ", " + error
 				    );
@@ -544,14 +544,14 @@ $(window).on("ready", function(event){
 	};
 
 	var addWishlist = function(event){
-		
+
 		var $this = $(event.currentTarget);
 		var $icon = $this.find("img");
 		var productID = $this.data("id");
 
 		if($this.attr("href") == "#"){
 			if(parseInt(productID, 10) > 0 && !$this.hasClass("added")){
-				
+
 				$this.addClass("loading");
 
 				var gObj = {
@@ -578,10 +578,10 @@ $(window).on("ready", function(event){
 									.addClass("error");
 					}
 				}).fail(function(jqxhr, textStatus, error){
-					
+
 					$this.removeClass("loading")
 								.addClass("error");
-				   
+
 				    console.error(
 				    	"Request Failed: " + textStatus + ", " + error
 				    );
@@ -605,7 +605,7 @@ $(window).on("ready", function(event){
 		$("#fastBuyForm").find('input[type="text"], textarea').val("");
 
 		var productID = $this.data("id");
-		
+
 		$this.addClass("loading");
 
 		var gObj = {
@@ -614,17 +614,17 @@ $(window).on("ready", function(event){
 		};
 
 		$.getJSON(ajaxPath, gObj).done(function(jData){
-			
+
 			$this.removeClass("loading");
 			$appFastBuy.find("#fastBuyPicture .url, #fastBuyName .url").attr("href", jData[0]["DETAIL_PAGE_URL"]);
 			$appFastBuy.find("#fastBuyPicture .picture").attr("src", $appFastBuy.data("load"));
 			$appFastBuy.find("#fastBuyPrice").html(jData[0]["PRICE"]["PRICE_FORMATED"]);
-			$appFastBuy.find("#fastBuyName .middle").html(jData[0]["NAME"]);	
+			$appFastBuy.find("#fastBuyName .middle").html(jData[0]["NAME"]);
 			$appFastBuy.find("#fastBuyFormId").val(jData[0]["ID"]);
 			$appFastBuy.find(".markerContainer").remove();
 
 			if(jData[0]["MARKER"] != undefined){
-				
+
 				$appFastBuy.find("#fastBuyPicture").prepend(
 					$("<div>").addClass("markerContainer")
 						.append(
@@ -634,21 +634,21 @@ $(window).on("ready", function(event){
 				);
 			}
 
-			$appFastBuy.show();	
+			$appFastBuy.show();
 
 			loadingPictureControl(jData[0]["PICTURE"]["src"], function(){
 				$appFastBuy.find("#fastBuyPicture .picture").attr("src", jData[0]["PICTURE"]["src"]);
 			});
 
 		}).fail(function(jqxhr, textStatus, error){
-			
+
 			$.get(ajaxPath, gObj).done(function(Data){
 				console.log(Data)
 			});
 
 			$this.removeClass("loading")
 						.addClass("error");
-		   
+
 		    console.error(
 		    	"Request Failed: " + textStatus + ", " + error
 		    );
@@ -659,7 +659,7 @@ $(window).on("ready", function(event){
 	};
 
 	var sendFastBack = function(event){
-		
+
 		var $this = $(this).addClass("loading");
 		var $fastBuyForm = $("#fastBuyForm");
 		var $fastBuyFormName = $fastBuyForm.find("#fastBuyFormName").removeClass("error");
@@ -676,19 +676,19 @@ $(window).on("ready", function(event){
 		if($fastBuyFormName.val() != "" && $fastBuyFormTelephone.val() !=""){
 
 			$.getJSON(ajaxPath + "?" + $fastBuyForm.serialize()).done(function(jData){
-				
+
 				$("#fastBuyResultTitle").html(jData["heading"]);
 				$("#fastBuyResultMessage").html(jData["message"]);
 
 				$("#fastBuyOpenContainer").hide();
 				$("#fastBuyResult").show();
-				
+
 				$this.removeClass("loading");
 
 			}).fail(function(jqxhr, textStatus, error){
-				
+
 				$this.removeClass("loading").addClass("error");
-			   
+
 			    console.error(
 			    	"Request Failed: " + textStatus + ", " + error
 			    );
@@ -709,7 +709,7 @@ $(window).on("ready", function(event){
 	};
 
 	var removeFromWishlist = function(event){
-		
+
 		var $this = $(this);
 		var $wishlist = $("#wishlist");
 		var $parentThis = $(this).parents(".item");
@@ -734,10 +734,10 @@ $(window).on("ready", function(event){
 							.addClass("error");
 			}
 		}).fail(function(jqxhr, textStatus, error){
-			
+
 			$this.removeClass("loading")
 						.addClass("error");
-		   
+
 		    console.error(
 		    	"Request Failed: " + textStatus + ", " + error
 		    );
@@ -745,7 +745,7 @@ $(window).on("ready", function(event){
 		});
 
 		return event.preventDefault();
-	
+
 	};
 
     var slideCollapsedBlock = function(event){
@@ -793,13 +793,13 @@ $(window).on("ready", function(event){
 	};
 
     var loadingPictureControl = function(imagePath, callBack){
-    
+
         if(imagePath){
             var newImage = new Image();
             $(newImage).one("load", callBack);
             newImage.src = imagePath;
         }
-   
+
     };
 
     $(document).on("click", 					closeElementsAfterClick);
@@ -808,7 +808,7 @@ $(window).on("ready", function(event){
     $(document).on("click", "#appBasket .minus", appBasketMinus);
     $(document).on("click", "#appBasket .plus", appBasketPlus);
     $(document).on("keyup", "#appBasket .qty", appBasketChange);
-	
+
 	$(document).on("click", ".skuPropertyLink", selectSku);
 	$(document).on("click", ".addCart", addCart);
 

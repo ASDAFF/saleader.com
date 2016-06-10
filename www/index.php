@@ -2,18 +2,18 @@
 <?define("MAIN_PAGE", true);?>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");?>					
 	<div id="promoBlock">
-		<?$APPLICATION->IncludeComponent(
-	"dresscode:slider", 
-	".default", 
-	array(
-		"IBLOCK_TYPE" => "slider",
+		<?$APPLICATION->IncludeComponent("dresscode:slider", ".default", array(
+	"IBLOCK_TYPE" => "slider",
 		"IBLOCK_ID" => "2",
 		"CACHE_TYPE" => "Y",
 		"CACHE_TIME" => "3600000",
 		"PICTURE_WIDTH" => "1181",
 		"PICTURE_HEIGHT" => "555"
 	),
-	false
+	false,
+	array(
+	"ACTIVE_COMPONENT" => "N"
+	)
 );?>
 
 		<div id="bannersBlock">
@@ -79,24 +79,21 @@
 		"ACTIVE_COMPONENT" => "Y"
 	)
 );?>
-<?$APPLICATION->IncludeComponent(
-	"dresscode:slider", 
-	"middle", 
-	array(
-		"IBLOCK_TYPE" => "slider",
+<?$APPLICATION->IncludeComponent("dresscode:slider", "middle", array(
+	"IBLOCK_TYPE" => "slider",
 		"IBLOCK_ID" => "3",
 		"CACHE_TYPE" => "Y",
 		"CACHE_TIME" => "3600000",
 		"PICTURE_WIDTH" => "1476",
 		"PICTURE_HEIGHT" => "202"
 	),
-	false
-);?> 	
-<?$APPLICATION->IncludeComponent(
-	"dresscode:brands.list", 
-	".default", 
+	false,
 	array(
-		"IBLOCK_TYPE" => "info",
+	"ACTIVE_COMPONENT" => "N"
+	)
+);?>
+<?$APPLICATION->IncludeComponent("dresscode:brands.list", ".default", array(
+	"IBLOCK_TYPE" => "info",
 		"IBLOCK_ID" => "1",
 		"SELECT_FIELDS" => array(
 			0 => "",
@@ -116,7 +113,7 @@
 	),
 	false,
 	array(
-		"ACTIVE_COMPONENT" => "Y"
+	"ACTIVE_COMPONENT" => "Y"
 	)
 );?>
 <?$APPLICATION->IncludeComponent(

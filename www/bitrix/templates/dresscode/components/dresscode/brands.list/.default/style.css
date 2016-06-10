@@ -68,7 +68,7 @@
 	opacity: 0.8;
 	text-align: center;
 	line-height: 100px;
-	display: block;
+	display: flex;
 	height: 100px;
 }
 
@@ -80,6 +80,7 @@
 	vertical-align: middle;
 	max-height: 90%;
 	max-width: 90%;
+	margin: auto;
 }
 
 #brandList .name{

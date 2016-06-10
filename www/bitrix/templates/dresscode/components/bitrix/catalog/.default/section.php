@@ -70,6 +70,7 @@ if (CModule::IncludeModule("iblock")){
 		),
 		$component
 	);?>
+	<noindex>
 	   <?$APPLICATION->IncludeComponent(
 	"bitrix:catalog.smart.filter", 
 	".default", 
@@ -100,6 +101,7 @@ if (CModule::IncludeModule("iblock")){
 	),
 	false
 );?>
+
 <?
 }
 $this->EndViewTarget();?>
@@ -203,6 +205,7 @@ $this->EndViewTarget();?>
 	false
 );?>
 <div id="catalog">
+	<noindex>
 	<div id="catalogLine">
 		<?if(!empty($arSortFields)):?>
 			<div class="column">
@@ -241,6 +244,7 @@ $this->EndViewTarget();?>
 			</div>
 		<?endif;?>
 	</div>
+	</noindex>
 	<?reset($arTemplates);?>
 	<?$APPLICATION->IncludeComponent(
 		"bitrix:catalog.section",
@@ -325,7 +329,8 @@ $this->EndViewTarget();?>
 			'MESS_NOT_AVAILABLE' => $arParams['MESS_NOT_AVAILABLE'],
 
 			'TEMPLATE_THEME' => (isset($arParams['TEMPLATE_THEME']) ? $arParams['TEMPLATE_THEME'] : ''),
-			"ADD_SECTIONS_CHAIN" => "N"
+			"ADD_SECTIONS_CHAIN" => "N",
+			"USE_MAIN_ELEMENT_SECTION"=>$arParams['USE_MAIN_ELEMENT_SECTION']
 		),
 		$component
 	);?>
