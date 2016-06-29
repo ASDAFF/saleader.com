@@ -109,7 +109,7 @@
     </div>
     <div id="footerBottom">
         <div class="creator">
-            <a href="http://dw24.su/"><img src="<?= SITE_TEMPLATE_PATH ?>/images/dw.png" alt="Digital Web"></a>
+            <a href="http://seocontext.su/"><img src="<?= SITE_TEMPLATE_PATH ?>/images/dw.png" alt="Разработка и продвижение сайта SeoContext.su"></a>
         </div>
         <div class="social">
             <? $APPLICATION->IncludeComponent(
