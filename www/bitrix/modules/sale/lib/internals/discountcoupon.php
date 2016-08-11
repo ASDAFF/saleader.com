@@ -275,7 +275,7 @@ class DiscountCouponTable extends Main\Entity\DataManager
 
 		if (!empty($modifyFieldList))
 			$result->modifyFields($modifyFieldList);
-		unset($modifyFieldList);
+		unset($modifyFieldList, $data);
 
 		return $result;
 	}
@@ -291,8 +291,9 @@ class DiscountCouponTable extends Main\Entity\DataManager
 		if (!self::isCheckedCouponsUse())
 			return;
 		$data = $event->getParameter('fields');
-		$data['DISCOUNT_ID'] = (int)$data['DISCOUNT_ID'];
-		self::$discountCheckList[$data['DISCOUNT_ID']] = $data['DISCOUNT_ID'];
+		$id = (int)$data['DISCOUNT_ID'];
+		self::$discountCheckList[$id] = $id;
+		unset($id, $data);
 		self::updateUseCoupons();
 	}
 
@@ -313,7 +314,7 @@ class DiscountCouponTable extends Main\Entity\DataManager
 
 		if (!empty($modifyFieldList))
 			$result->modifyFields($modifyFieldList);
-		unset($modifyFieldList);
+		unset($modifyFieldList, $data);
 
 		return $result;
 	}
@@ -332,12 +333,11 @@ class DiscountCouponTable extends Main\Entity\DataManager
 		if (isset($data['DISCOUNT_ID']))
 		{
 			$data['DISCOUNT_ID'] = (int)$data['DISCOUNT_ID'];
-			$id = $event->getParameter('id');
-			$couponIterator = self::getList(array(
+			$coupon = static::getList(array(
 				'select' => array('ID', 'DISCOUNT_ID'),
-				'filter' => array('=ID' => $id)
-			));
-			if ($coupon = $couponIterator->fetch())
+				'filter' => array('=ID' => $event->getParameter('id'))
+			))->fetch();
+			if (!empty($coupon))
 			{
 				$coupon['DISCOUNT_ID'] = (int)$coupon['DISCOUNT_ID'];
 				if ($coupon['DISCOUNT_ID'] !== $data['DISCOUNT_ID'])
@@ -346,8 +346,9 @@ class DiscountCouponTable extends Main\Entity\DataManager
 					self::$discountCheckList[$coupon['DISCOUNT_ID']] = $coupon['DISCOUNT_ID'];
 				}
 			}
-			unset($coupon, $couponIterator);
+			unset($coupon);
 		}
+		unset($data);
 	}
 
 	/**
@@ -371,17 +372,16 @@ class DiscountCouponTable extends Main\Entity\DataManager
 	{
 		if (!self::isCheckedCouponsUse())
 			return;
-		$id = $event->getParameter('id');
-		$couponIterator = self::getList(array(
+		$coupon = self::getList(array(
 			'select' => array('ID', 'DISCOUNT_ID'),
-			'filter' => array('=ID' => $id)
-		));
-		if ($coupon = $couponIterator->fetch())
+			'filter' => array('=ID' => $event->getParameter('id'))
+		))->fetch();
+		if (!empty($coupon))
 		{
 			$coupon['DISCOUNT_ID'] = (int)$coupon['DISCOUNT_ID'];
 			self::$discountCheckList[$coupon['DISCOUNT_ID']] = $coupon['DISCOUNT_ID'];
 		}
-		unset($coupon, $couponIterator);
+		unset($coupon);
 	}
 
 	/**
@@ -464,7 +464,7 @@ class DiscountCouponTable extends Main\Entity\DataManager
 	public static function setDiscountCheckList($discountList)
 	{
 		if (!is_array($discountList))
-			$discountList = array($discountList);
+			$discountList = array($discountList => $discountList);
 		if (!empty($discountList))
 			self::$discountCheckList = (empty(self::$discountCheckList) ? $discountList : array_merge(self::$discountCheckList, $discountList));
 	}
@@ -513,7 +513,7 @@ class DiscountCouponTable extends Main\Entity\DataManager
 		}
 		unset($withCoupons, $withoutCoupons);
 
-		self::$discountCheckList = array();
+		static::clearDiscountCheckList();
 	}
 
 	/**
@@ -952,15 +952,16 @@ class DiscountCouponTable extends Main\Entity\DataManager
 	 * @param array $keys				List with checked keys (userId info).
 	 * @return void
 	 */
-	protected static function setUserID(&$result, $data, $keys)
+	protected static function setUserID(array &$result, array $data, array $keys)
 	{
 		static $currentUserID = false;
 		if ($currentUserID === false)
 		{
 			global $USER;
+			/** @noinspection PhpMethodOrClassCallIsNotCaseSensitiveInspection */
 			$currentUserID = (isset($USER) && $USER instanceof \CUser ? (int)$USER->getID() : null);
 		}
-		foreach ($keys as &$oneKey)
+		foreach ($keys as $oneKey)
 		{
 			$setField = true;
 			if (array_key_exists($oneKey, $data))
@@ -980,9 +981,9 @@ class DiscountCouponTable extends Main\Entity\DataManager
 	 * @param array $keys				List with checked keys (datetime info).
 	 * @return void
 	 */
-	protected static function setTimestamp(&$result, $data, $keys)
+	protected static function setTimestamp(array &$result, array $data, array $keys)
 	{
-		foreach ($keys as &$oneKey)
+		foreach ($keys as $oneKey)
 		{
 			$setField = true;
 			if (array_key_exists($oneKey, $data))

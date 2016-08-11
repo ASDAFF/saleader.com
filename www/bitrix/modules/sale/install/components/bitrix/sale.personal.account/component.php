@@ -1,6 +1,8 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+$this->setFramemode(false);
+
 if (!CModule::IncludeModule("sale"))
 {
 	ShowError(GetMessage("SALE_MODULE_NOT_INSTALL"));
@@ -12,7 +14,7 @@ if (!CBXFeatures::IsFeatureEnabled('SaleAccounts'))
 
 if (!$USER->IsAuthorized())
 {
-	$APPLICATION->AuthForm(GetMessage("SALE_ACCESS_DENIED"));
+	$APPLICATION->AuthForm(GetMessage("SALE_ACCESS_DENIED"), false, false, 'N', false);
 }
 
 $arParams["SET_TITLE"] = ($arParams["SET_TITLE"] == "N" ? "N" : "Y" );

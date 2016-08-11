@@ -24,8 +24,22 @@ $APPLICATION->SetTitle(GetMessage("SALE_PRINT_RECORD", array("#ID#"=>$ID)));
 
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 
-$bUserCanViewOrder = CSaleOrder::CanUserViewOrder($ID, $GLOBALS["USER"]->GetUserGroupArray(), $GLOBALS["USER"]->GetID());
-$bUserCanEditOrder = CSaleOrder::CanUserUpdateOrder($ID, $GLOBALS["USER"]->GetUserGroupArray());
+global $USER;
+
+$bUserCanViewOrder = false;
+$bUserCanEditOrder = false;
+
+$allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesGroupCanDoOperations($USER->GetUserGroupArray(), array('view'));
+if(in_array($str_STATUS_ID, $allowedStatusesView))
+{
+	$bUserCanViewOrder = true;
+}
+
+$allowedStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesGroupCanDoOperations($USER->GetUserGroupArray(), array('update'));
+if(in_array($str_STATUS_ID, $allowedStatusesUpdate))
+{
+	$bUserCanEditOrder = true;
+}
 
 $errorMessage = "";
 

@@ -16,6 +16,7 @@ Loc::loadMessages(__FILE__);
  * <li> DISCOUNT_ID int mandatory
  * <li> ACTIVE string(1) optional
  * <li> GROUP_ID int mandatory
+ * <li> DISCOUNT reference to {@link \Bitrix\Sale\Internals\DiscountTable}
  * </ul>
  *
  * @package Bitrix\Sale\Internals
@@ -58,7 +59,13 @@ class DiscountGroupTable extends Main\Entity\DataManager
 			'GROUP_ID' => new Main\Entity\IntegerField('GROUP_ID', array(
 				'required' => true,
 				'title' => Loc::getMessage('DISCOUNT_GROUP_ENTITY_GROUP_ID_FIELD')
-			))
+			)),
+			'DISCOUNT' => new Main\Entity\ReferenceField(
+				'DISCOUNT',
+				'Bitrix\Sale\Internals\Discount',
+				array('=this.DISCOUNT_ID' => 'ref.ID'),
+				array('join_type' => 'LEFT')
+			)
 		);
 	}
 

@@ -495,7 +495,16 @@ function getOrderPropFormated($arProperties, $arResult, &$arUserResult, &$arDele
 			$arUserResult["ORDER_PROP"][$arProperties["ID"]] = $arProperties["VALUE"];
 		}
 	}
+	elseif ($arProperties["TYPE"] == "DATE")
+	{
+		$arProperties["VALUE"] = htmlspecialcharsEx(isset($curVal) ? $curVal : $arProperties["DEFAULT_VALUE"]);
+		$arProperties["VALUE_FORMATED"] = $arProperties["VALUE"];
 
+		if ($isProfileChanged || $isEmptyUserResult)
+		{
+			$arUserResult["ORDER_PROP"][$arProperties["ID"]] = $arProperties["VALUE"];
+		}
+	}
 	return $arProperties;
 }
 

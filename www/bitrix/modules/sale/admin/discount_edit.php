@@ -22,6 +22,14 @@ if ($ex = $APPLICATION->GetException())
 
 IncludeModuleLangFile(__FILE__);
 
+if (!Main\Loader::includeModule('catalog'))
+{
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
+	ShowError(GetMessage('BX_SALE_DISCOUNT_EDIT_ERR_MODULE_CATALOG_IS_ABSENT'));
+	require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");
+	die();
+}
+
 $tabList = array(
 	array('DIV' => 'edit1', 'ICON' => 'sale', 'TAB' => GetMessage("BT_SALE_DISCOUNT_EDIT_TAB_NAME_COMMON"), 'TITLE' => GetMessage("BT_SALE_DISCOUNT_EDIT_TAB_TITLE_COMMON")),
 	array('DIV' => 'edit3', 'ICON' => 'sale', 'TAB' => GetMessage("BT_SALE_DISCOUNT_EDIT_TAB_NAME_ACTIONS"), 'TITLE' => GetMessage("BT_CAT_DISCOUNT_EDIT_TAB_TITLE_ACTIONS")),
@@ -297,7 +305,7 @@ $defaultCoupons = array(
 	'COUPON' => array(
 		'ACTIVE_FROM' => null,
 		'ACTIVE_TO' => null,
-		'COUPON_TYPE' => Internals\DiscountCouponTable::TYPE_ONE_ORDER,
+		'TYPE' => Internals\DiscountCouponTable::TYPE_ONE_ORDER,
 		'MAX_USE' => 0
 	)
 );
@@ -670,7 +678,7 @@ $control->BeginNextFormTab();
 		<tr id="tr_COUPON_TYPE" class="adm-detail-required-field" style="display: <? echo ($coupons['COUPON_ADD'] == 'Y' ? 'table-row' : 'none'); ?>;">
 			<td width="40%"><? echo GetMessage('BX_SALE_DISCOUNT_EDIT_FIELDS_COUPON_TYPE'); ?></td>
 			<td width="60%">
-				<select name="COUPON[TYPE]"><?
+				<select name="COUPON[TYPE]" size="3"><?
 					foreach ($couponTypes as $type => $title)
 					{
 						?><option value="<? echo $type; ?>" <? echo ($type == $coupons['COUPON']['TYPE'] ? 'selected' : ''); ?>><? echo htmlspecialcharsex($title); ?></option><?

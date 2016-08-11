@@ -193,7 +193,7 @@
 								{
 
 									echo GetMessage("SALE_DELIV_PRICE").": <b>";
-									if (!empty($arDelivery['DELIVERY_DISCOUNT_PRICE'])
+									if (isset($arDelivery['DELIVERY_DISCOUNT_PRICE'])
 										&& round($arDelivery['DELIVERY_DISCOUNT_PRICE'], 4) != round($arDelivery["PRICE"], 4))
 									{
 										echo (strlen($arDelivery["DELIVERY_DISCOUNT_PRICE_FORMATED"]) > 0 ? $arDelivery["DELIVERY_DISCOUNT_PRICE_FORMATED"] : number_format($arDelivery["DELIVERY_DISCOUNT_PRICE"], 2, ',', ' '));
@@ -231,7 +231,8 @@
 										"LOCATION_ZIP" => $arResult["USER_VALS"]["DELIVERY_LOCATION_ZIP"],
 										"CURRENCY" => $arResult["BASE_LANG_CURRENCY"],
 										"ITEMS" => $arResult["BASKET_ITEMS"],
-										"EXTRA_PARAMS_CALLBACK" => $extraParams
+										"EXTRA_PARAMS_CALLBACK" => $extraParams,
+										"ORDER_DATA" => $arResult['ORDER_DATA']
 									), null, array('HIDE_ICONS' => 'Y'));
 
 								}?>
@@ -242,7 +243,7 @@
 								if (strlen($arDelivery["DESCRIPTION"])>0)
 									echo $arDelivery["DESCRIPTION"]."<br />";
 
-								if (count($arDelivery["STORE"]) > 0):
+								if (count($arDelivery["STORE"]) > 0 && $arDelivery['CHECKED'] == 'Y'):
 								?>
 									<span id="select_store"<?if(strlen($arResult["STORE_LIST"][$arResult["BUYER_STORE"]]["TITLE"]) <= 0) echo " style=\"display:none;\"";?>>
 										<span class="select_store"><?=GetMessage('SOA_ORDER_GIVE_TITLE');?>: </span>

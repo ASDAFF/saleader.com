@@ -35,4 +35,6 @@ $MESS["SALE_EBAY_CODE"] = "Code";
 $MESS["SALE_EBAY_WARNING"] = "Warning";
 $MESS["SALE_EBAY_EXCHANGE_OK"] = "Data exchange completed successfully";
 $MESS["SALE_EBAY_EXCHANGE_ERROR"] = "Error doing data exchange";
+$MESS["SALE_EBAY_SETTINGS_SAVED"] = "Parameters have been saved successfully.";
+$MESS["SALE_EBAY_SETTINGS_SAVING_SITE_ERROR"] = "Data exchange is currently impossible. Please #A1#configure#A2# the site \"#S#\" to enable data exchange.";
 ?>

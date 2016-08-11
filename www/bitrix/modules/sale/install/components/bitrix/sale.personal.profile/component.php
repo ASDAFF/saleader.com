@@ -11,6 +11,8 @@ $arComponentVariables = array("ID", "del_id");
 $componentPage = "";
 $arVariables = array();
 
+$this->setFramemode(false);
+
 if ($arParams["SEF_MODE"] == "Y")
 {
 	$arUrlTemplates = CComponentEngine::MakeComponentUrlTemplates($arDefaultUrlTemplates404, $arParams["SEF_URL_TEMPLATES"]);

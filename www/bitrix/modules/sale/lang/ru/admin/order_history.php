@@ -3,6 +3,7 @@ $MESS["SOD_HIST_NULL"] = "По данному заказу изменений н
 $MESS["SOD_HIST_H_DATE"] = "Дата изменения";
 $MESS["SOD_HIST_H_USER"] = "Пользователь";
 $MESS["SOD_HIST_TYPE"] = "Операция";
+$MESS["SOD_HIST_IMPORTANT_TYPES"] = "Показывать ключевые операции";
 $MESS["SOD_HIST_DATA"] = "Описание";
 $MESS["SOD_HIST_YES"] = "Да";
 $MESS["SOD_HIST_NO"] = "Нет";

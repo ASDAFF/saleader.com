@@ -52,4 +52,5 @@ $MESS["SOD_HIST_ENTITY_ID"] = "Entity ID";
 $MESS["SOD_HIST_ENTITY_SHIPMENT"] = "Shipment";
 $MESS["SOD_HIST_ENTITY_PAYMENT"] = "Payment";
 $MESS["SOD_HIST_ALL"] = "(All)";
+$MESS["SOD_HIST_IMPORTANT_TYPES"] = "Show important actions";
 ?>

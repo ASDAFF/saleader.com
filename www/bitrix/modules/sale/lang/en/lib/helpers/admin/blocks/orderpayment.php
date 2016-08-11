@@ -38,8 +38,7 @@ $MESS["SALE_ORDER_PAYMENT_RETURN_SUM"] = "Amount";
 $MESS["SALE_ORDER_PAYMENT_RETURN_ACCOUNT"] = "Internal account";
 $MESS["SALE_ORDER_PAYMENT_CHOOSE_DATE"] = "Click to select date";
 $MESS["SALE_ORDER_PAYMENT_RETURN_ALERT"] = "Attention! Funds will be placed to the customer's internal account";
-$MESS["SALE_ORDER_PAYMENT_BLOCK_NEW_PAYMENT_TITLE"] = "New payment #";
-$MESS["SALE_ORDER_PAYMENT_BLOCK_EDIT_PAYMENT_TITLE"] = "Payment ";
+$MESS["SALE_ORDER_PAYMENT_BLOCK_NEW_PAYMENT_TITLE"] = "New payment ¹";
 $MESS["SALE_ORDER_PAYMENT_ERROR_PAYSYSTEM"] = "Payment system not selected or does not exist.";
 $MESS["SALE_ORDER_PAYMENT_ERROR_ORDER_NOT_FOUND"] = "Order ID #ORDER_ID# does not exist";
 $MESS["SALE_ORDER_PAYMENT_ERROR_PAYMENT_NOT_FOUND"] = "No payment with this ID exists";
@@ -63,4 +62,7 @@ $MESS["SALE_ORDER_PAYMENT_DELETE_SUCCESS"] = "Payment deleted successfully";
 $MESS["SALE_ORDER_PAYMENT_BUTTON_ADD"] = "Add funds";
 $MESS["SALE_ORDER_PAYMENT_RETURN_TO"] = "Return funds to";
 $MESS["SALE_ORDER_PAYMENT_ERROR_VOUCHER_DATE_FORMAT"] = "Invalid payment order date";
+$MESS["SALE_ORDER_PAYMENT_PAYABLE_PRICE_COD"] = "COD amount";
+$MESS["SALE_ORDER_PAYMENT_PAY_SYSTEM_CHECK"] = "Get";
+$MESS["SALE_ORDER_PAYMENT_BLOCK_EDIT_PAYMENT_TITLE"] = "Payment ##ID# from #DATE_BILL#";
 ?>

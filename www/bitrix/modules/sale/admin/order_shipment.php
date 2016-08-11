@@ -29,6 +29,7 @@ $filter = array(
 	'filter_order_id_to',
 	'filter_allow_delivery',
 	'filter_deducted',
+	'filter_delivery_id',
 	'filter_delivery_doc_num',
 	'filter_price_delivery_from',
 	'filter_price_delivery_to',
@@ -80,6 +81,28 @@ if (strlen($filter_company_id) > 0 && $filter_company_id != 'NOT_REF')
 
 if (strlen($filter_date_deducted_from) > 0)
 	$arFilter[">=DATE_DEDUCTED"] = trim($filter_date_deducted_from);
+
+$serviceList = array();
+$filterServiceList = array();
+
+$dbRes = \Bitrix\Sale\Delivery\Services\Table::getList(array('select' => array('ID', 'NAME', 'PARENT_ID', 'CLASS_NAME'), 'order' => array('SORT' => 'ASC')));
+while ($service = $dbRes->fetch())
+{
+	$serviceList[$service['ID']] = $service;
+	if ($service['PARENT_ID'] > 0)
+		$filterServiceList[$service['PARENT_ID']][] = $service['ID'];
+}
+
+if (is_array($filter_delivery_id) && count($filter_delivery_id) > 0 && $filter_delivery_id[0] != 'NOT_REF')
+{
+	$arFilter['DELIVERY_ID'] = $filter_delivery_id;
+	foreach ($filter_delivery_id as $deliveryId)
+	{
+		if (array_key_exists($deliveryId, $filterServiceList))
+			$arFilter['DELIVERY_ID'] = array_merge($arFilter['DELIVERY_ID'], $filterServiceList[$deliveryId]);
+	}
+}
+
 if (strlen($filter_date_deducted_to) > 0)
 {
 	if ($arDate = ParseDateTime($filter_date_deducted_to, CSite::GetDateFormat("FULL", $siteId)))
@@ -106,7 +129,7 @@ if (isset($filter_status) && is_array($filter_status) && count($filter_status) >
 	{
 		$filter_status[$i] = trim($filter_status[$i]);
 		if (strlen($filter_status[$i]) > 0)
-			$arFilter["STATUS_ID"][] = $filter_status[$i];
+			$arFilter["=STATUS_ID"][] = $filter_status[$i];
 	}
 }
 
@@ -119,6 +142,35 @@ if (strlen($filter_user_email)>0)
 	$arFilter["ORDER.USER.EMAIL"] = trim($filter_user_email);
 if (IntVal($filter_user_id)>0)
 	$arFilter["ORDER.USER_ID"] = IntVal($filter_user_id);
+
+$allowedStatusesView = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+
+if($saleModulePermissions < "W")
+{
+	if(!$arFilter["=STATUS_ID"])
+		$arFilter["=STATUS_ID"] = array();
+
+	$intersected = array_intersect($arFilter["=STATUS_ID"], $allowedStatusesView);
+
+	if(!empty($arFilter["=STATUS_ID"]))
+	{
+		if(empty($intersected))
+		{
+			$arFilter[]["=STATUS_ID"] = $arFilter["=STATUS_ID"];
+			$arFilter[]["=STATUS_ID"] = $allowedStatusesView;
+			unset($arFilter["=STATUS_ID"], $arFilter["=STATUS_ID"]);
+		}
+		else
+		{
+			$arFilter["=STATUS_ID"] = $intersected;
+		}
+	}
+	else
+	{
+		$arFilter["=STATUS_ID"] = $allowedStatusesView;
+	}
+
+}
 
 if($arID = $lAdmin->GroupAction())
 {
@@ -467,6 +519,33 @@ $oFilter->Begin();
 	</td>
 </tr>
 <tr>
+	<td><?=GetMessage("SALE_ORDER_DELIVERY_NAME");?>:</td>
+	<td>
+		<select multiple name="filter_delivery_id[]">
+			<option value="NOT_REF">(<?=GetMessage("SALE_ORDER_ALL");?>)</option>
+			<?
+			\Bitrix\Sale\Delivery\Services\Manager::getHandlersList();
+
+			$result = array();
+			foreach ($serviceList as $serviceId => $service)
+			{
+				if (is_callable($service['CLASS_NAME'].'::canHasChildren') && $service['CLASS_NAME']::canHasChildren())
+					continue;
+
+				if ((int)$service['PARENT_ID'] > 0)
+					$name = $serviceList[$service['PARENT_ID']]['NAME'].': '.$service['NAME'];
+				else
+					$name = $service['NAME'];
+
+				$selected = (is_array($filter_delivery_id) && in_array($serviceId, $filter_delivery_id)) ? 'selected' : '';
+				$name = htmlspecialcharsbx($name);
+				echo '<option title="'.$name.'" value="'.htmlspecialcharsbx($serviceId).'" '.$selected.'">['.htmlspecialcharsbx($serviceId).'] '.$name.'</option>';
+			}
+			?>
+		</select>
+	</td>
+</tr>
+<tr>
 	<td><?=GetMessage("SALE_ORDER_DELIVERY_DOC_NUM");?>:</td>
 	<td>
 		<input type="text" name="filter_delivery_doc_num" value="<?=htmlspecialcharsbx($filter_delivery_doc_num);?>">
@@ -508,26 +587,23 @@ $oFilter->Begin();
 	</td>
 </tr>
 <?
-	$params = array(
-		"select" => array(
-			'ID',
-			'STATUS_NAME' => 'Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME'
-		),
-		"filter" => array(
-						'=Bitrix\Sale\Internals\StatusLangTable:STATUS.NAME'  => $lang,
-						'TYPE'      => 'O'
-		)
+	$statusesList = \Bitrix\Sale\DeliveryStatus::getStatusesUserCanDoOperations(
+		$USER->GetID(),
+		array('view')
 	);
-	$result = \Bitrix\Sale\Internals\StatusTable::getList($params);
+
+	$allStatusNames = \Bitrix\Sale\DeliveryStatus::getAllStatusesNames();
 ?>
 <tr>
 	<td valign="top"><?echo GetMessage("SALE_ORDER_SHIPMENT_STATUS")?>:<br /><img src="/bitrix/images/sale/mouse.gif" width="44" height="21" border="0" alt=""></td>
 	<td valign="top">
 		<select name="filter_status[]" multiple size="3">
 			<?
-			while ($statusList = $result->fetch())
+			foreach($statusesList as  $statusCode)
 			{
-				?><option value="<?= $statusList["ID"] ?>"<?if (is_array($filter_status) && in_array($statusList["ID"], $filter_status)) echo " selected"?>>[<?=$statusList["ID"];?>] <?= htmlspecialcharsEx($statusList["STATUS_NAME"]) ?></option><?
+				if (!$statusName = $allStatusNames[$statusCode])
+					continue;
+				?><option value="<?= htmlspecialcharsbx($statusCode) ?>"<?if (is_array($filter_status) && in_array($statusCode, $filter_status)) echo " selected"?>>[<?=htmlspecialcharsbx($statusCode)?>] <?= htmlspecialcharsEx($statusName) ?></option><?
 			}
 			?>
 		</select>

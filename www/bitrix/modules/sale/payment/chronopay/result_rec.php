@@ -14,6 +14,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$techMessage = GetMessage("SALE_CHR_REC_ORDER");
 	}
 
+	if ($bCorrectPayment)
+		CSalePaySystemAction::InitParamArrays($arOrder, $arOrder["ID"]);
+
 	$sharedsecB = CSalePaySystemAction::GetParamValue("SHARED");
 
 	if(strlen($sharedsecB) <= 0)
@@ -21,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
 	if ($bCorrectPayment)
 	{
-		CSalePaySystemAction::InitParamArrays($arOrder, $arOrder["ID"]);
 		$productIdB = CSalePaySystemAction::GetParamValue("PRODUCT_ID");
 		$orderIdB = CSalePaySystemAction::GetParamValue("ORDER_ID");
 		$product_priceB = number_format(CSalePaySystemAction::GetParamValue("SHOULD_PAY"), 2, '.', '');

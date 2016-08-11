@@ -92,6 +92,8 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductRow = function(basketCode, p
 
 	for(var fieldId in this.visibleColumns)
 	{
+		if (!this.visibleColumns.hasOwnProperty(fieldId))
+			continue;
 		cellContent = this.createProductCell(basketCode, product, fieldId, 1);
 		if(cellContent)
 			tr.appendChild(cellContent);
@@ -227,8 +229,12 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductCell = function(basketCode, 
 			{
 				for (storeId in product.BARCODE_INFO)
 				{
+					if (!product.BARCODE_INFO.hasOwnProperty(storeId))
+						continue;
 					for (i in product.STORES)
 					{
+						if (!product.STORES.hasOwnProperty(i))
+							continue;
 						if (storeId == product.STORES[i].STORE_ID)
 						{
 							cellNodes.push(BX.create('br'));
@@ -268,9 +274,14 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductCell = function(basketCode, 
 			{
 				for (storeId in product.BARCODE_INFO)
 				{
+					if (!product.BARCODE_INFO.hasOwnProperty(storeId))
+						continue;
 					var quantity = 0;
 					for (i in product.BARCODE_INFO[storeId])
-						quantity += parseFloat(product.BARCODE_INFO[storeId][i].QUANTITY);
+					{
+						if (product.BARCODE_INFO[storeId].hasOwnProperty(i))
+							quantity += parseFloat(product.BARCODE_INFO[storeId][i].QUANTITY);
+					}
 
 					var measureText = (!!product.MEASURE_TEXT) ? product.MEASURE_TEXT : '';
 					cellNodes.push(BX.create('br'));
@@ -313,6 +324,8 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductCell = function(basketCode, 
 			{
 				for (i in product.BARCODE_INFO)
 				{
+					if (!product.BARCODE_INFO.hasOwnProperty(i))
+						continue;
 					if (product.BARCODE_MULTI == 'Y')
 					{
 						span = BX.create('span', {
@@ -325,8 +338,16 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductCell = function(basketCode, 
 
 						var barcodeWrapper = BX.create('div');
 
+						var clearMsg = true;
 						for (var j in product.BARCODE_INFO[i])
 						{
+							if (!product.BARCODE_INFO[i].hasOwnProperty(j))
+								continue;
+
+							if (product.BARCODE_INFO[i][j].BARCODE == '')
+								continue;
+
+							clearMsg = false;
 							var div = BX.create('div',
 								{
 									props: {
@@ -342,11 +363,14 @@ BX.Sale.Admin.ShipmentBasket.prototype.createProductCell = function(basketCode, 
 									props: {
 										class: 'barcode'
 									},
-									text: 'TAB: ' + BX.util.htmlspecialchars(product.BARCODE_INFO[i][j].BARCODE)
+									text: BX.util.htmlspecialchars(product.BARCODE_INFO[i][j].BARCODE)
 								})
 							);
 							barcodeWrapper.appendChild(div);
 						}
+
+						if (clearMsg)
+							barcodeWrapper = BX.create('div', {text : BX.message('SALE_ORDER_SHIPMENT_BASKET_BARCODE_EMPTY')});
 
 						var showBarcodeDialog = function (barcodeWrapper, span)
 						{
@@ -623,6 +647,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 				{
 					for (i in stack)
 					{
+						if (!stack.hasOwnProperty(i))
+							continue;
 						var obStore = BX.findChild(stack[i], {tag: 'select'}, true);
 						obStore.parentNode.appendChild(
 							BX.create('input', {
@@ -663,6 +689,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 						var index = children.length + 1;
 						for (var i in children)
 						{
+							if (!children.hasOwnProperty(i))
+								continue;
 							var chIndex = children[i].getAttribute('data-index');
 							if (chIndex == index)
 								index++;
@@ -691,7 +719,10 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 					stack.push(spanAddStore);
 				}
 				for (i in stack)
-					cellNodes.unshift(stack[i]);
+				{
+					if (stack.hasOwnProperty(i))
+						cellNodes.unshift(stack[i]);
+				}
 			}
 			else
 			{
@@ -706,7 +737,10 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 					stack = this.recoveryDeliveryCurAmount(product, stack[0]);
 
 				for (i in stack)
-					cellNodes.unshift(stack[i]);
+				{
+					if (stack.hasOwnProperty(i))
+						cellNodes.unshift(stack[i]);
+				}
 			}
 			else
 			{
@@ -721,7 +755,10 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 					stack = this.recoveryRemainingQuantity(product, stack[0]);
 
 				for (i in stack)
-					cellNodes.unshift(stack[i]);
+				{
+					if (stack.hasOwnProperty(i))
+						cellNodes.unshift(stack[i]);
+				}
 			}
 			else
 			{
@@ -736,7 +773,10 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductCell = function(basketCo
 					stack = this.recoveryBarcode(product, stack[0]);
 
 				for (i in stack)
-					cellNodes.unshift(stack[i]);
+				{
+					if (stack.hasOwnProperty(i))
+						cellNodes.unshift(stack[i]);
+				}
 			}
 			else
 			{
@@ -820,7 +860,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createFieldAmount = function(containe
 				type: "text",
 				name: this.getFieldName(basketCode, "AMOUNT"),
 				value: product.AMOUNT,
-				id: basketCode + '_amount'
+				id: basketCode + '_amount',
+				autocomplete : 'off'
 			},
 			attrs : {
 				readOnly : this.isShipped
@@ -846,37 +887,19 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createFieldAmount = function(containe
 			var setItems = product.SET_ITEMS;
 			for (var i in setItems)
 			{
+				if (!setItems.hasOwnProperty(i))
+					continue;
 				var setItemBasketCode = this.getProductBasketCode(setItems[i]);
 				var obAmount = BX(setItemBasketCode+'_'+'amount');
 				obAmount.value = product.BASE_ELEMENTS_QUANTITY[setItems[i].OFFER_ID]*input.value;
 			}
 		}
 		var tr = BX.findParent(input, {tag: 'tr'}, true);
-		var index = tr.getAttribute('data-index');
-		var quantity = BX(basketCode + '_quantity');
-		if (parseFloat(input.value) > parseFloat(quantity.value))
-			BX.addClass(input, 'adm-bus-shipment-basket-error');
-		else
-			BX.removeClass(input, 'adm-bus-shipment-basket-error');
-
 		var curAmount = BX.findChildrenByClassName(tr, this.getProductBasketCode(product)+'_cur_amount', true);
-		var sum = 0;
-		for (i in curAmount)
-			sum += parseFloat(curAmount[i].value);
 
-		if (sum > parseFloat(input.value))
-		{
-			for (i in curAmount)
-				BX.addClass(curAmount[i], 'adm-bus-shipment-basket-error');
-		}
-		else
-		{
-			for (i in curAmount)
-			{
-				if (BX.hasClass(curAmount[i], 'adm-bus-shipment-basket-error'))
-					BX.removeClass(curAmount[i], 'adm-bus-shipment-basket-error');
-			}
-		}
+		if (!!product.STORES && product.STORES.length == 1)
+			curAmount[0].value = input.value;
+
 		this.updateShipment();
 	}, this));
 
@@ -891,12 +914,18 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.recoveryDeliveryStore = function(prod
 	var index = 1;
 	for (var storeId in product.BARCODE_INFO)
 	{
+		if (!product.BARCODE_INFO.hasOwnProperty(storeId))
+			continue;
+
 		var stackElement = stack[stack.length-1];
 		var obStore = BX.findChild(stackElement, {tag: 'select'}, true);
 		if (obStore)
 		{
 			for (var k in obStore.options)
 			{
+				if (!obStore.options.hasOwnProperty(k))
+					continue;
+
 				var option = obStore.options[k];
 				if (option.value == storeId)
 				{
@@ -922,10 +951,16 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.recoveryDeliveryCurAmount = function(
 
 	for (var storeId in product.BARCODE_INFO)
 	{
+		if (!product.BARCODE_INFO.hasOwnProperty(storeId))
+			continue;
+
 		var stackElement = stack[stack.length-1];
 		var barcodeInfo = product['BARCODE_INFO'][storeId];
 		for (var i in barcodeInfo)
 		{
+			if (!barcodeInfo.hasOwnProperty(i))
+				continue;
+
 			var obAmount = BX.findChildByClassName(stackElement, basketCode + '_cur_amount', true);
 
 
@@ -958,11 +993,17 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.recoveryRemainingQuantity = function(
 
 	for (var storeId in product.BARCODE_INFO)
 	{
+		if (!product.BARCODE_INFO.hasOwnProperty(storeId))
+			continue;
+
 		var stackElement = stack[stack.length-1];
 
 		var obRemainingQuantity = BX.findChildByClassName(stackElement, basketCode + '_store_remaining_quantity');
 		for (var i in product['STORES'])
 		{
+			if (!product['STORES'].hasOwnProperty(i))
+				continue;
+
 			if (product['STORES'][i].STORE_ID == storeId)
 			{
 				obRemainingQuantity.innerHTML = product['STORES'][i].AMOUNT;
@@ -983,6 +1024,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.recoveryBarcode = function(product, e
 
 	for (var storeId in product['BARCODE_INFO'])
 	{
+		if (!product['BARCODE_INFO'].hasOwnProperty(storeId))
+			continue;
 
 		var stackElement = stack[stack.length - 1];
 		var barcodeInfo = product['BARCODE_INFO'][storeId];
@@ -1006,6 +1049,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.recoveryBarcode = function(product, e
 
 		for (var i in barcodeInfo)
 		{
+			if (!barcodeInfo.hasOwnProperty(i))
+				continue;
+
 			if (product.BARCODE_MULTI == 'N')
 			{
 				var obBarcodeValue = BX.findChildByClassName(stackElement, basketCode + '_barcode_value');
@@ -1111,7 +1157,12 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.moveToSystemBasket = function (basket
 		var  bundleChildren = BX.findChildrenByClassName(productRowParent, "bundle-child-"+oldParentId, false);
 
 		for(var i in bundleChildren)
+		{
+			if (!bundleChildren.hasOwnProperty(i))
+				continue;
+
 			bundleChildren[i].parentNode.removeChild(bundleChildren[i]);
+		}
 	}
 
 	this.removeEmptyFooter(this.idPrefix);
@@ -1228,6 +1279,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockStore = function(basketCod
 
 		for (var i in product.STORES)
 		{
+			if (!product.STORES.hasOwnProperty(i))
+				continue;
+
 			var option = BX.create('option', {
 				'props': {
 					'value': product.STORES[i].STORE_ID
@@ -1245,6 +1299,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockStore = function(basketCod
 
 			for (var i in product.STORES)
 			{
+				if (!product.STORES.hasOwnProperty(i))
+					continue;
+
 				if (product.STORES[i].STORE_ID == storeId)
 					currStoreQuantity.innerHTML = product.STORES[i].AMOUNT;
 			}
@@ -1278,6 +1335,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockStore = function(basketCod
 				var deletedEssences = ['store', 'remaining_quantity', 'cur_amount', 'barcode'];
 				for (var i in deletedEssences)
 				{
+					if (!deletedEssences.hasOwnProperty(i))
+						continue;
+
 					var essence = BX.findChildByClassName(tr, this.getDivWrapperClassName(product, deletedEssences[i], index), true);
 					if (essence)
 						BX.remove(essence);
@@ -1286,19 +1346,25 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockStore = function(basketCod
 				var sum = 0;
 				var curAmount = BX.findChildrenByClassName(tr, this.getProductBasketCode(product) + '_cur_amount', true);
 				for (i in curAmount)
-					sum += parseFloat(curAmount[i].value);
+				{
+					if (curAmount.hasOwnProperty(i))
+						sum += parseFloat(curAmount[i].value);
+				}
 
 				var input = BX(this.getProductBasketCode(product) + '_amount');
 				if (sum > parseFloat(input.value))
 				{
 					for (i in curAmount)
-						BX.addClass(curAmount[i], 'adm-bus-shipment-basket-error');
+					{
+						if (curAmount.hasOwnProperty(i))
+							BX.addClass(curAmount[i], 'adm-bus-shipment-basket-error');
+					}
 				}
 				else
 				{
 					for (i in curAmount)
 					{
-						if (BX.hasClass(curAmount[i], 'adm-bus-shipment-basket-error'))
+						if (curAmount.hasOwnProperty(i) && BX.hasClass(curAmount[i], 'adm-bus-shipment-basket-error'))
 							BX.removeClass(curAmount[i], 'adm-bus-shipment-basket-error');
 					}
 				}
@@ -1366,7 +1432,10 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockCurAmount = function(baske
 		var amount = parseFloat(obAmount.value);
 		var sum = 0;
 		for (var i in children)
-			sum += parseFloat(children[i].value);
+		{
+			if (children.hasOwnProperty(i))
+				sum += parseFloat(children[i].value);
+		}
 
 		var quantity = (sum >= amount) ? 0 : amount - sum;
 	}
@@ -1382,7 +1451,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockCurAmount = function(baske
 				name: this.getFieldName(basketCode, "BARCODE_INFO")+'[' + index + '][QUANTITY]',
 				value: quantity,
 				className: basketCode + '_cur_amount',
-				id: basketCode + '_cur_amount_' + index
+				id: basketCode + '_cur_amount_' + index,
+				autocomplete : 'off'
 			},
 			attrs : {
 				readOnly : this.isShipped
@@ -1403,23 +1473,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockCurAmount = function(baske
 		var tr = BX.findParent(input, {tag: 'tr'}, true);
 		var children = BX.findChildrenByClassName(tr, basketCode + '_cur_amount', true);
 		var obAmount = BX(basketCode + '_amount');
-		var amount = parseFloat(obAmount.value);
 
-		var sum = 0;
-		for (i in children)
-			sum += parseFloat(children[i].value);
-
-		if (sum > amount)
-		{
-			BX.addClass(input, 'adm-bus-shipment-basket-error');
-		}
-		else
-		{
-			var curAmount = BX.findChildByClassName(tr, 'CUR_AMOUNT', true);
-			var inputs = BX.findChildrenByClassName(curAmount, 'adm-bus-shipment-basket-error', true);
-			for (i in inputs)
-				BX.removeClass(inputs[i], 'adm-bus-shipment-basket-error');
-		}
+		if (!!product.STORES && product.STORES.length == 1 && product.IS_SET_ITEM != 'Y')
+			obAmount.value = children[0].value;
 	}, this));
 
 	divWrapper.appendChild(input);
@@ -1546,6 +1602,8 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockBarcode = function(basketC
 				var childrenValue = BX.findChildrenByClassName(parent, basketCode + '_barcode_value');
 
 				var iterator = 1;
+				if (countInputs == 0)
+					countInputs = 1;
 				while (iterator <= countInputs)
 				{
 					var div = BX.create('div', {
@@ -1554,7 +1612,7 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockBarcode = function(basketC
 						}
 					});
 					div.style.marginTop = '5px';
-					div.style.marginLeft = '16px';
+					div.style.marginLeft = '36px';
 
 
 					var barcodeFieldValue = BX.create('input',
@@ -1603,7 +1661,7 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockBarcode = function(basketC
 							var k = 0;
 							for (var i in barcodeValues)
 							{
-								if (barcodeValues[i].value == barcode)
+								if (barcodeValues.hasOwnProperty(i) && barcodeValues[i].value == barcode)
 									k++;
 							}
 							if (k >= 2)
@@ -1660,8 +1718,7 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockBarcode = function(basketC
 					var span = BX.create('span', {
 						props: {
 							class: 'barcode'
-						},
-						text: 'TAB: '
+						}
 					});
 
 					var btDel = BX.create('div', {
@@ -1718,8 +1775,11 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createBlockBarcode = function(basketC
 									hiddenContainer.style.display = 'none';
 									for (var i in inputs)
 									{
-										var clone = inputs[i].cloneNode(false);
-										hiddenContainer.appendChild(clone);
+										if (inputs.hasOwnProperty(i))
+										{
+											var clone = inputs[i].cloneNode(false);
+											hiddenContainer.appendChild(clone);
+										}
 									}
 
 									var parentDiv = BX.findParent(barcodeButton, {tag : 'div'});
@@ -1809,6 +1869,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createProductRow = function(basketCod
 
 	for(var fieldId in this.visibleColumns)
 	{
+		if (!this.visibleColumns.hasOwnProperty(fieldId))
+			continue;
+
 		cellContent = this.createProductCell(basketCode, product, fieldId, 1);
 		if(cellContent)
 			tr.appendChild(cellContent);
@@ -1866,13 +1929,19 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.createCheckboxField = function(produc
 	var hiddenRequiredFields = ['MODULE', 'PRODUCT_ID', 'OFFER_ID', 'ORDER_DELIVERY_BASKET_ID', 'BASKET_ID'];
 	for (var i in hiddenRequiredFields)
 	{
-		td.appendChild(BX.create('input', {
-			props: {
-				type: 'hidden',
-				name: this.getFieldName(basketCode,hiddenRequiredFields[i]),
-				value: product[hiddenRequiredFields[i]]
-			}
-		}));
+		if (!hiddenRequiredFields.hasOwnProperty(i))
+			continue;
+
+		if (product[hiddenRequiredFields[i]])
+		{
+			td.appendChild(BX.create('input', {
+				props: {
+					type: 'hidden',
+					name: this.getFieldName(basketCode, hiddenRequiredFields[i]),
+					value: product[hiddenRequiredFields[i]]
+				}
+			}));
+		}
 	}
 
 	return td;
@@ -1962,7 +2031,7 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.groupMoveToSystemBasket = function (_
 	    {
 		    for (i in this.products)
 		    {
-			    if (!!this.products[i])
+			    if (this.products.hasOwnProperty(i) && !!this.products[i])
 			    {
 					var basketCode = this.getProductBasketCode(this.products[i]);
 					this.moveToSystemBasket(basketCode);
@@ -1982,7 +2051,7 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.groupMoveToSystemBasket = function (_
 		    var obCount = BX(this.idPrefix + '_selected_count');
 		    for (i in checkboxes)
 		    {
-			    if (!!checkboxes[i].checked)
+			    if (checkboxes.hasOwnProperty(i) && !!checkboxes[i].checked)
 					this.moveToSystemBasket(checkboxes[i].getAttribute("data-basket-code"));
 			}
 			BX.html(obCount, '0');
@@ -2078,6 +2147,9 @@ BX.Sale.Admin.ShipmentBasketEdit.prototype.checkProductByBarcode = function(_thi
 				var inBasket = false;
 				for (var i in this.link.products)
 				{
+					if (!this.link.products.hasOwnProperty(i))
+						continue;
+
 					if (this.link.products[i].OFFER_ID == productId)
 					{
 						this.products[i] = this.link.products[i];
@@ -2127,7 +2199,10 @@ BX.Sale.Admin.SystemShipmentBasketEdit.prototype.addProductSearch = function()
 	var i = null;
 
 	for (i in this.visibleColumns)
-		thead += '<td>' + this.visibleColumns[i] + '</td>';
+	{
+		if (this.visibleColumns.hasOwnProperty(i))
+			thead += '<td>' + this.visibleColumns[i] + '</td>';
+	}
 	thead += '</thead></tr>';
 
 	if (BX(this.tableId))
@@ -2230,7 +2305,10 @@ BX.Sale.Admin.SystemShipmentBasketEdit.prototype.moveToBasket = function (basket
 		var  bundleChildren = BX.findChildrenByClassName(productRowParent, "bundle-child-"+oldParentId, false);
 
 		for(var i in bundleChildren)
-			bundleChildren[i].parentNode.removeChild(bundleChildren[i]);
+		{
+			if (bundleChildren.hasOwnProperty(i))
+				bundleChildren[i].parentNode.removeChild(bundleChildren[i]);
+		}
 	}
 
 	delete this.products[basketCode];
@@ -2253,7 +2331,7 @@ BX.Sale.Admin.SystemShipmentBasketEdit.prototype.groupAdd = function ()
 	var checkboxes = BX.findChildrenByClassName(obTable, "checkboxForDelete", true);
 	for (var i in checkboxes)
 	{
-		if (!!checkboxes[i].checked)
+		if (checkboxes.hasOwnProperty(i) && !!checkboxes[i].checked)
 			this.moveToBasket(checkboxes[i].getAttribute("data-basket-code"));
 	}
 };

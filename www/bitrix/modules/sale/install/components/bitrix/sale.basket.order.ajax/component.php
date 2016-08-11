@@ -1,5 +1,9 @@
 <?
 /**
+ * Component deprecated
+ */
+
+/**
  * @global CMain $APPLICATION
  * @global array $arParams
  * */

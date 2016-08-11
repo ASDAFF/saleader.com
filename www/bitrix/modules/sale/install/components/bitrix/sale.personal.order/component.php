@@ -1,5 +1,7 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?><?
 
+$this->setFramemode(false);
+
 $arDefaultUrlTemplates404 = array(
 	"list" => "index.php",
 	"detail" => "order_detail.php?ID=#ID#",

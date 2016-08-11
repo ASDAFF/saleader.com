@@ -8,8 +8,9 @@ Loc::loadMessages(__FILE__);
 
 class CAllSaleDiscount
 {
-	const VERSION_OLD = 1;
-	const VERSION_NEW = 2;
+	const VERSION_OLD = Sale\Internals\DiscountTable::VERSION_OLD;
+	const VERSION_NEW = Sale\Internals\DiscountTable::VERSION_NEW;
+	const VERSION_15 = Sale\Internals\DiscountTable::VERSION_15;
 
 	const OLD_DSC_TYPE_PERCENT = 'P';
 	const OLD_DSC_TYPE_FIX = 'V';
@@ -26,38 +27,144 @@ class CAllSaleDiscount
 			return;
 
 		$isOrderConverted = \Bitrix\Main\Config\Option::get("main", "~sale_converted_15", 'N');
+		$oldDelivery = '';
 
+		$checkIds = true;
+		$arIDS = array();
 		if ($isOrderConverted == 'Y')
 		{
+			if (isset($arOrder['DELIVERY_ID']) && $arOrder['DELIVERY_ID'] != '')
+			{
+				$oldDelivery = $arOrder['DELIVERY_ID'];
+				$arOrder['DELIVERY_ID'] = \CSaleDelivery::getIdByCode($arOrder['DELIVERY_ID']);
+			}
+			$adminSection = (defined('ADMIN_SECTION') && ADMIN_SECTION === true);
+			if (!$adminSection)
+			{
+				$mode = Sale\Compatible\DiscountCompatibility::MODE_MANAGER;
+				$modeParams = array();
+				if (isset($arOrder['CURRENCY']))
+					$modeParams['CURRENCY'] = $arOrder['CURRENCY'];
+				if (isset($arOrder['SITE_ID']))
+				{
+					$modeParams['SITE_ID'] = $arOrder['SITE_ID'];
+					if (!isset($modeParams['CURRENCY']))
+						$modeParams['CURRENCY'] = Sale\Internals\SiteCurrencyTable::getSiteCurrency($modeParams['SITE_ID']);
+				}
+			}
+			else
+			{
+				$mode = Sale\Compatible\DiscountCompatibility::MODE_CLIENT;
+				$modeParams = array(
+					'SITE_ID' => SITE_ID,
+					'CURRENCY' => Sale\Internals\SiteCurrencyTable::getSiteCurrency(SITE_ID)
+				);
+			}
+			unset($adminSection);
+			if (!empty($modeParams))
+			{
+				Sale\Discount\Actions::setUseMode(
+					Sale\Discount\Actions::MODE_CALCULATE,
+					array(
+						'USE_BASE_PRICE' => \Bitrix\Main\Config\Option::get('sale', 'get_discount_percent_from_base_price'),
+						'SITE_ID' => $modeParams['SITE_ID'],
+						'CURRENCY' => $modeParams['CURRENCY']
+					)
+				);
+			}
+			if (!Sale\Compatible\DiscountCompatibility::isInited())
+			{
+				if (!empty($modeParams))
+					Sale\Compatible\DiscountCompatibility::init($mode, $modeParams);
+			}
+			unset($modeParams, $mode);
 			Sale\Compatible\DiscountCompatibility::clearDiscountResult();
 			Sale\Compatible\DiscountCompatibility::fillBasketData($arOrder['BASKET_ITEMS']);
 			Sale\Compatible\DiscountCompatibility::calculateBasketDiscounts($arOrder['BASKET_ITEMS']);
 			Sale\Compatible\DiscountCompatibility::setApplyMode($arOrder['BASKET_ITEMS']);
+
+			$applyMode = Sale\Discount::getApplyMode();
+			if ($applyMode == Sale\Discount::APPLY_MODE_FULL_LAST || $applyMode == Sale\Discount::APPLY_MODE_FULL_DISABLE)
+			{
+				foreach ($arOrder['BASKET_ITEMS'] as &$basketItem)
+				{
+					if (isset($basketItem['LAST_DISCOUNT']) && $basketItem['LAST_DISCOUNT'] == 'Y')
+					{
+						$checkIds = false;
+						break;
+					}
+				}
+				unset($basketItem);
+			}
 		}
 
-		$arIDS = array();
-		$groupDiscountIterator = Sale\Internals\DiscountGroupTable::getList(array(
-			'select' => array('DISCOUNT_ID'),
-			'filter' => array('@GROUP_ID' => CUser::GetUserGroup($arOrder['USER_ID']), '=ACTIVE' => 'Y')
-		));
-		while ($groupDiscount = $groupDiscountIterator->fetch())
+		if ($checkIds)
 		{
-			$groupDiscount['DISCOUNT_ID'] = (int)$groupDiscount['DISCOUNT_ID'];
-			if ($groupDiscount['DISCOUNT_ID'] > 0)
-				$arIDS[$groupDiscount['DISCOUNT_ID']] = true;
+			$groupDiscountIterator = Sale\Internals\DiscountGroupTable::getList(array(
+				'select' => array('DISCOUNT_ID'),
+				'filter' => array('@GROUP_ID' => CUser::GetUserGroup($arOrder['USER_ID']), '=ACTIVE' => 'Y')
+			));
+			while ($groupDiscount = $groupDiscountIterator->fetch())
+			{
+				$groupDiscount['DISCOUNT_ID'] = (int)$groupDiscount['DISCOUNT_ID'];
+				if ($groupDiscount['DISCOUNT_ID'] > 0)
+					$arIDS[$groupDiscount['DISCOUNT_ID']] = true;
+			}
 		}
-
 		if (!empty($arIDS))
 		{
 			$arIDS = array_keys($arIDS);
-			$couponList = Sale\DiscountCouponsManager::getForApply(array('MODULE' => 'sale', 'DISCOUNT_ID' => $arIDS), array(), true);
+			$couponList = Sale\DiscountCouponsManager::getForApply(array('MODULE_ID' => 'sale', 'DISCOUNT_ID' => $arIDS), array(), true);
+
+			//TODO: fix this condition
+			$useProps = true;
+			$iblockPropList = array();
+			$entityList = Sale\Internals\DiscountEntitiesTable::getByDiscount(
+				$arIDS,
+				array(
+					'=MODULE_ID' => 'catalog',
+					'=ENTITY' => 'ELEMENT_PROPERTY'
+				)
+			);
+			if (empty($entityList))
+			{
+				$useProps = false;
+			}
+			else
+			{
+				if (empty($entityList['catalog']['ELEMENT_PROPERTY']))
+				{
+					$useProps = false;
+				}
+				else
+				{
+					foreach ($entityList['catalog']['ELEMENT_PROPERTY'] as $entity)
+					{
+						$entityField = explode(':', $entity['FIELD_TABLE']);
+						if (isset($entityField[1]))
+						{
+							$propId = (int)$entityField[1];
+							if ($propId > 0)
+								$iblockPropList[$propId] = $propId;
+							unset($propId);
+						}
+						unset($entityField);
+					}
+					unset($entity);
+					if (empty($iblockPropList))
+						$useProps = false;
+				}
+			}
 
 			$arExtend = array(
 				'catalog' => array(
 					'fields' => true,
-					'props' => true,
+					'props' => $useProps,
 				),
 			);
+			if ($useProps)
+				$arExtend['iblock']['props'] = $iblockPropList;
+			unset($iblockPropList, $useProps);
 			foreach (GetModuleEvents('sale', 'OnExtendBasketItems', true) as $arEvent)
 				ExecuteModuleEventEx($arEvent, array(&$arOrder['BASKET_ITEMS'], $arExtend));
 
@@ -152,6 +259,7 @@ class CAllSaleDiscount
 				'order' => $discountOrder
 			));
 			$discountApply = array();
+			$resultDiscountFullList = array();
 			$resultDiscountList = array();
 			$resultDiscountKeys = array();
 			$resultDiscountIndex = 0;
@@ -194,10 +302,14 @@ class CAllSaleDiscount
 				if ($applyFlag && self::__Unpack($arOrder, $discount['UNPACK']))
 				{
 					$oldOrder = $arOrder;
+					if ($isOrderConverted == 'Y')
+						Sale\Discount\Actions::clearAction();
+
 					self::__ApplyActions($arOrder, $discount['APPLICATION']);
 
 					if ($isOrderConverted == 'Y')
 					{
+						$resultDiscountFullList[] = $discount;
 						if (Sale\Compatible\DiscountCompatibility::calculateSaleDiscount($arOrder, $discount))
 						{
 							$resultDiscountList[$resultDiscountIndex] = array(
@@ -221,6 +333,7 @@ class CAllSaleDiscount
 							if ($discount['LAST_DISCOUNT'] == 'Y')
 								break;
 						}
+						Sale\Discount\Actions::clearAction();
 					}
 					else
 					{
@@ -273,6 +386,8 @@ class CAllSaleDiscount
 
 			foreach ($arOrder['BASKET_ITEMS'] as &$arShoppingCartItem)
 			{
+				if (isset($arShoppingCartItem['CATALOG']))
+					unset($arShoppingCartItem['CATALOG']);
 				if (!CSaleBasketHelper::isSetItem($arShoppingCartItem))
 				{
 					$customPrice = isset($arShoppingCartItem['CUSTOM_PRICE']) && $arShoppingCartItem['CUSTOM_PRICE'] = 'Y';
@@ -287,6 +402,13 @@ class CAllSaleDiscount
 					else
 					{
 						$arShoppingCartItem['DISCOUNT_PRICE'] = 0;
+					}
+					if (isset($arShoppingCartItem['VAT_RATE']))
+					{
+						$vatRate = (float)$arShoppingCartItem['VAT_RATE'];
+						if ($vatRate > 0)
+							$arShoppingCartItem['VAT_VALUE'] = (($arShoppingCartItem['PRICE'] / ($vatRate + 1)) * $vatRate);
+						unset($vatRate);
 					}
 
 					$arOrder["ORDER_PRICE"] += $arShoppingCartItem["PRICE"] * $arShoppingCartItem["QUANTITY"];
@@ -310,9 +432,13 @@ class CAllSaleDiscount
 			}
 			unset($arShoppingCartItem);
 			$arOrder['DISCOUNT_LIST'] = $resultDiscountList;
+			$arOrder['FULL_DISCOUNT_LIST'] = $resultDiscountFullList;
 			if ($isOrderConverted == 'Y')
 				Sale\Compatible\DiscountCompatibility::setOldDiscountResult($resultDiscountList);
 		}
+
+		if ($isOrderConverted == 'Y' && $oldDelivery != '')
+			$arOrder['DELIVERY_ID'] = $oldDelivery;
 
 		$arOrder["ORDER_PRICE"] = roundEx($arOrder["ORDER_PRICE"], SALE_VALUE_PRECISION);
 	}
@@ -527,7 +653,7 @@ class CAllSaleDiscount
 		if ((is_set($arFields, 'LAST_DISCOUNT') || $ACTION == 'ADD') && $arFields["LAST_DISCOUNT"] != "N")
 			$arFields["LAST_DISCOUNT"] = 'Y';
 
-		$arFields['VERSION'] = self::VERSION_NEW;
+		$arFields['VERSION'] = self::VERSION_15;
 
 		$useConditions = array_key_exists('CONDITIONS', $arFields) || $ACTION == 'ADD';
 		$useActions = array_key_exists('ACTIONS', $arFields) || $ACTION == 'ADD';
@@ -692,7 +818,7 @@ class CAllSaleDiscount
 				}
 			}
 		}
-		if ($ACTION == 'ADD' && $executeModule == '')
+		if (($ACTION == 'ADD' || $updateData) && $executeModule == '')
 			$executeModule = 'all';
 		if ($executeModule != '')
 			$arFields['EXECUTE_MODULE'] = $executeModule;
@@ -763,7 +889,7 @@ class CAllSaleDiscount
 			{
 				$absValue = $oldOrder['PRICE_DELIVERY'] - $currentOrder['PRICE_DELIVERY'];
 				$fullValue = ($extMode && isset($currentOrder['PRICE_DELIVERY_ORIG']) ? $currentOrder['PRICE_DELIVERY_ORIG'] : $oldOrder['PRICE_DELIVERY']);
-				$percValue = $absValue*100/$fullValue;
+				$percValue = ($fullValue != 0 ? $absValue*100/$fullValue : 0);
 				$result['DELIVERY'] = array(
 					'TYPE' => 'D',
 					'DISCOUNT_TYPE' => ($currentOrder['PRICE_DELIVERY'] < $oldOrder['PRICE_DELIVERY'] ? 'D' : 'M'),
@@ -785,7 +911,7 @@ class CAllSaleDiscount
 					$newItem = &$currentOrder['BASKET_ITEMS'][$key];
 					$absValue = $item['PRICE'] - $newItem['PRICE'];
 					$fullValue = ($extMode && isset($newItem['PRICE_ORIG']) ? $newItem['PRICE_ORIG'] : $item['PRICE']);
-					$percValue = $absValue*100/$fullValue;
+					$percValue = ($fullValue != 0 ? $absValue*100/$fullValue : 0);
 					if (!isset($result['BASKET']))
 						$result['BASKET'] = array();
 					$result['BASKET'][] = array(

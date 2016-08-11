@@ -52,8 +52,17 @@ if (($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 		switch ($_REQUEST['action'])
 		{
 			case "delete":
-				if (($ID == "N") || ($ID == "F") || ($ID == "DN") || ($ID == "DF"))
+				$lockedStatusList = array(
+					\Bitrix\Sale\OrderStatus::getInitialStatus(),
+					\Bitrix\Sale\OrderStatus::getFinalStatus(),
+					\Bitrix\Sale\DeliveryStatus::getInitialStatus(),
+					\Bitrix\Sale\DeliveryStatus::getFinalStatus(),
+				);
+
+				if (in_array($ID, $lockedStatusList))
+				{
 					continue;
+				}
 
 				@set_time_limit(0);
 

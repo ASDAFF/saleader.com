@@ -21,7 +21,7 @@ class Ebay extends Platform
 	 */
 	public static function getInstance()
 	{
-		return parent::getInstance(self::TRADING_PLATFORM_CODE);
+		return parent::getInstanceByCode(self::TRADING_PLATFORM_CODE);
 	}
 
 	public static function getSftpTokenUrl($accountName)

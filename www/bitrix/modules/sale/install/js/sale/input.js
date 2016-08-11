@@ -148,7 +148,7 @@ BX.Sale.Input = (function () {
 
 	Utils.stopElementEvents = function (event) // TODO remove
 	{
-		if (event.preventDefault)
+		if (event && event.preventDefault)
 		{
 			event.preventDefault();
 			event.stopPropagation();
@@ -197,7 +197,7 @@ BX.Sale.Input = (function () {
 	})();
 
 	Utils.globalValueAttributes = {
-		ACCESSKEY:1, CLASS:1, CONTEXTMENU:1, DIR:1, DROPZONE:1, LANG:1, STYLE:1, TABINDEX:1, TITLE:1,
+		ACCESSKEY:1, CLASS:1, CONTEXTMENU:1, DIR:1, DROPZONE:1, LANG:1, STYLE:1, TABINDEX:1, TITLE:1, DATA:1,
 		'XML:LANG':1, 'XML:SPACE':1, 'XML:BASE':1
 	};
 
@@ -206,7 +206,22 @@ BX.Sale.Input = (function () {
 		var callback = function (element, name, value, whiteValue)
 		{
 			if (value)
-				element.setAttribute(name, value);
+			{
+				if (name == 'DATA')
+				{
+					if (value !== null && typeof value === 'object')
+					{
+						var n;
+						for (n in value)
+							if (value.hasOwnProperty(n))
+								element.setAttribute('data-' + n, value[n]); // TODO dataset
+					}
+				}
+				else
+				{
+					element.setAttribute(name, value);
+				}
+			}
 		};
 
 		return function () {Utils.applyAttributesTo(arguments, callback);};
@@ -732,9 +747,20 @@ BX.Sale.Input = (function () {
 		}
 
 		element.name  = name;
-		element.value = value;
+		element.value = value || '';
 
-		return [element];
+		// Deletor
+		var item = [element];
+
+		if (settings.MULTIPLE == 'Y')
+		{
+			var deletor = this.createEditorSingleDeletor(item);
+			deletor.setName(name+'[DELETE]');
+			item.deletor = deletor;
+			item.push(deletor);
+		}
+		
+		return item;
 	};
 
 	StringInput.prototype.afterEditorSingleInsert = function (item)
@@ -934,8 +960,8 @@ BX.Sale.Input = (function () {
 			name = this.name,
 			settings = this.settings,
 			options = settings.OPTIONS;
-
-		if (options === undefined || options === null || options.constructor !== Object)
+		
+		if (options === undefined || options === null || (options.constructor !== Object && options.constructor !== Array) || options.length === 0)
 		{
 			this.variants = [];
 			this.items = [document.createTextNode(BX.message('INPUT_ENUM_OPTIONS_ERROR'))];
@@ -1061,6 +1087,15 @@ BX.Sale.Input = (function () {
 				}
 			);
 
+			if (settings.REQUIRED == "N")
+			{
+				var option = document.createElement('option');
+				option.text     = BX.message('INPUT_ENUM_EMPTY_OPTION');
+				option.value    = "";
+				select.insertBefore(option, select.firstChild);
+				variants.push(option);
+			}
+
 			this.items = [select];
 		}
 
@@ -1080,7 +1115,7 @@ BX.Sale.Input = (function () {
 				if (value.constructor === Object)
 					this.createEditorOptions(group(key), value, selected, group, option);
 				else
-					option(container, key, selected.hasOwnProperty(key), value);
+					option(container, key, selected.hasOwnProperty(key), value || key);
 			}
 		}
 	};
@@ -1268,6 +1303,7 @@ BX.Sale.Input = (function () {
 		if (src)
 		{
 			anchor.href = src;
+			anchor.target = '_blank';
 			anchor.title = BX.message('INPUT_FILE_DOWNLOAD');
 			switch (src.split('.').pop())
 			{
@@ -1290,6 +1326,7 @@ BX.Sale.Input = (function () {
 		else
 		{
 			anchor.removeAttribute('href');
+			anchor.removeAttribute('target');
 			anchor.removeAttribute('title');
 		}
 

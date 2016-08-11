@@ -50,7 +50,7 @@ $request = Main\Context::getCurrent()->getRequest();
 
 if (
 	$request->getRequestMethod() == 'GET'
-	&& ($request['operation'] == 'Y' || $request['getCount'] == 'Y')
+	&& ($request['operation'] == 'Y' || $request['getCount'] == 'Y' || $request['clearTags'] == 'Y')
 )
 {
 	CUtil::JSPostUnescape();
@@ -87,6 +87,18 @@ if (
 			'counter' => CSaleBasketDiscountConvert::getFilterCounter($filter)
 		);
 	}
+
+	if ($request['clearTags'] == 'Y')
+	{
+		$adminNotifyIterator = CAdminNotify::GetList(array(), array('MODULE_ID' => 'sale', 'TAG' => 'BASKET_DISCOUNT_CONVERTED'));
+		if ($adminNotifyIterator)
+		{
+			if ($adminNotify = $adminNotifyIterator->Fetch())
+				CAdminNotify::Delete($adminNotify['ID']);
+			unset($adminNotify);
+		}
+		unset($adminNotifyIterator);
+	}
 	header('Content-Type: application/x-javascript; charset='.LANG_CHARSET);
 	echo CUtil::PhpToJSObject($result, false, true);
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
@@ -98,6 +110,18 @@ else
 	$ordersCounter = CSaleBasketDiscountConvert::getAllCounter();
 	$oneStepTime = CSaleBasketDiscountConvert::getDefaultExecutionTime();
 
+	if ($ordersCounter == 0)
+	{
+		$adminNotifyIterator = CAdminNotify::GetList(array(), array('MODULE_ID' => 'sale', 'TAG' => 'BASKET_DISCOUNT_CONVERTED'));
+		if ($adminNotifyIterator)
+		{
+			if ($adminNotify = $adminNotifyIterator->Fetch())
+				CAdminNotify::Delete($adminNotify['ID']);
+			unset($adminNotify);
+		}
+		unset($adminNotifyIterator);
+	}
+
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
 
 	$tabList = array(
@@ -108,6 +132,14 @@ else
 	Main\Page\Asset::getInstance()->addJs('/bitrix/js/catalog/step_operations.js');
 	Main\Page\Asset::getInstance()->addJs('/bitrix/js/sale/admin/step_operations.js');
 
+	$startDate = new Main\Type\DateTime();
+	$startDate->add('-3M');
+	$startDate->setTime(0,0,0);
+
+	if ($ordersCounter == 0)
+	{
+		ShowNote(Loc::getMessage('SALE_BASKET_DISCOUNT_MESS_ORDERS_ABSENT'));
+	}
 	?><div id="basket_discount_result_div" style="margin:0; display: none;"></div>
 	<div id="basket_discount_error_div" style="margin:0; display: none;">
 		<div class="adm-info-message-wrap adm-info-message-red">
@@ -134,7 +166,7 @@ else
 				<select name="filter_type" id="filter_type">
 					<option value="all" selected><? echo Loc::getMessage('SALE_BASKET_DISCOUNT_FILTER_TYPE_ALL'); ?></option>
 					<option value="id"><? echo Loc::getMessage('SALE_BASKET_DISCOUNT_FILTER_TYPE_ID'); ?></option>
-					<option value="date"><? echo Loc::getMessage('SALE_BASKET_DISCOUNT_FILTER_TYPE_DATE'); ?></option>
+					<option value="date" selected><? echo Loc::getMessage('SALE_BASKET_DISCOUNT_FILTER_TYPE_DATE'); ?></option>
 				</select>
 			</td>
 		</tr>
@@ -147,13 +179,13 @@ else
 				?>&nbsp;<input type="text" name="order_id_to" id="order_id_to" size="5">
 			</td>
 		</tr>
-		<tr id="tr_filter_date" style="display: none;">
+		<tr id="tr_filter_date" style="display: table-row;">
 			<td width="40%"><? echo Loc::getMessage('SALE_BASKET_DISCOUNT_FILTER_DATE_RANGE') ?></td>
 			<td><?
 				$calendar = new CAdminCalendar;
 				echo $calendar->CalendarPeriodCustom(
 					'order_date_from', 'order_date_to',
-					'', '',
+					$startDate->toString(), '',
 					false, 19, true
 				);
 			?></td>
@@ -210,6 +242,5 @@ else
 	});
 </script>
 	<?
-
 	require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 }

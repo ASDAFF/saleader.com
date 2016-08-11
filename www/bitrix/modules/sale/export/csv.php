@@ -9,17 +9,23 @@ if (!isset($arSelectFields) || !is_array($arSelectFields))
 
 $fieldsSeparator = ",";
 
-$dbOrderList = CSaleOrder::GetList(
-		array($by => $order),
-		$arFilter,
-		false,
-		false,
-		$arSelectFields
-	);
 
+$filter = array(
+	'filter' => $arFilter,
+	'select' => $arSelectFields,
+	'runtime' => $runtimeFields
+);
+
+if (!empty($by))
+{
+	$order = (!empty($order) && $order == "DESC" ? "DESC" : "ASC");
+	$filter['order'] = array($by => $order);
+}
+
+$dbOrderList = \Bitrix\Sale\Internals\OrderTable::getList($filter);
 ob_start();
 
-for ($i = 0; $i < count($arShownFieldsParams); $i++)
+for ($i = 0, $max = count($arShownFieldsParams); $i < $max; $i++)
 {
 	switch ($arShownFieldsParams[$i]["KEY"])
 	{
@@ -41,9 +47,9 @@ for ($i = 0; $i < count($arShownFieldsParams); $i++)
 }
 echo "\n";
 
-while ($arOrder = $dbOrderList->Fetch())
+while ($arOrder = $dbOrderList->fetch())
 {
-	for ($i = 0; $i < count($arShownFieldsParams); $i++)
+	for ($i = 0, $max = count($arShownFieldsParams); $i < $max; $i++)
 	{
 		switch ($arShownFieldsParams[$i]["KEY"])
 		{

@@ -47,4 +47,6 @@ $MESS["SPOD_REPEAT_PAY"] = "Повторить оплату";
 $MESS["SPOD_CUR_ORDERS"] = "В список заказов";
 $MESS["SPOD_NUM_SIGN"] = "№";
 $MESS['SOA_TEMPL_ORDER_PS_ERROR'] = "Ошибка выбранного способа оплаты. Обратитесь к Администрации сайта, либо выберите другой способ оплаты.";
+$MESS["SPOD_ORDER_TRACKING_STATUS"] = "Статус отправления";
+$MESS["SPOD_ORDER_TRACKING_DESCRIPTION"] = "Описание статуса отправления";
 ?>

@@ -1,45 +1,19 @@
-<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?>
-<?
-include(GetLangFileName(dirname(__FILE__)."/", "/liqpay.php"));
+<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true)
+	die();
 
-$merchant_id = CSalePaySystemAction::GetParamValue("MERCHANT_ID");
-$signature = CSalePaySystemAction::GetParamValue("SIGN");
-$url = "https://liqpay.com/?do=clickNbuy";
+$entityId = (strlen(CSalePaySystemAction::GetParamValue("PAYMENT_ID")) > 0) ? CSalePaySystemAction::GetParamValue("PAYMENT_ID") : $GLOBALS["SALE_INPUT_PARAMS"]["PAYMENT"]["ID"];
+list($orderId, $paymentId) = \Bitrix\Sale\PaySystem\Manager::getIdsByPayment($entityId);
 
-$resultUrl = CSalePaySystemAction::GetParamValue("PATH_TO_RESULT_URL");
-$serverUrl = CSalePaySystemAction::GetParamValue("PATH_TO_SERVER_URL");
+/** @var \Bitrix\Sale\Order $order */
+$order = \Bitrix\Sale\Order::load($orderId);
 
-$orderID = (strlen(CSalePaySystemAction::GetParamValue("ORDER_ID")) > 0) ? CSalePaySystemAction::GetParamValue("ORDER_ID") : $GLOBALS["SALE_INPUT_PARAMS"]["ORDER"]["ID"];
-$currency = (strlen(CSalePaySystemAction::GetParamValue("CURRENCY")) > 0) ? CSalePaySystemAction::GetParamValue("CURRENCY") : $GLOBALS["SALE_INPUT_PARAMS"]["ORDER"]["CURRENCY"];
-$phone = CSalePaySystemAction::GetParamValue("PHONE");
-$pay_method = CSalePaySystemAction::GetParamValue("PAY_METHOD");
+/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+$paymentCollection = $order->getPaymentCollection();
 
-?>
-<?=GetMessage("PAYMENT_DESCRIPTION_PS")?> <b>LiqPAY.com</b>.<br /><br />
-<?=GetMessage("PAYMENT_DESCRIPTION_SUM")?>: <b><?=CurrencyFormat(CSalePaySystemAction::GetParamValue("SHOULD_PAY"), $currency)?></b><br /><br />
-<?
-if ($currency == "RUB")
-	$currency = "RUR";
+/** @var \Bitrix\Sale\Payment $payment */
+$payment = $paymentCollection->getItemById($paymentId);
 
-$xml = "<request>
-		<version>1.2</version>
-		<result_url>".$resultUrl."</result_url>
-		<server_url>".$serverUrl."</server_url>
-		<merchant_id>".$merchant_id."</merchant_id>
-		<order_id>ORDER_".$orderID."</order_id>
-		<payment_id>PAYMENT_".CSalePaySystemAction::GetParamValue("ORDER_PAYMENT_ID")."</payment_id>
-		<amount>".CSalePaySystemAction::GetParamValue("SHOULD_PAY")."</amount>
-		<currency>".$currency."</currency>
-		<description>Payment for Order ".$orderID."</description>
-		<default_phone>".$phone."</default_phone>
-		<pay_way>".$pay_method."</pay_way>
-		</request>";
+$data = \Bitrix\Sale\PaySystem\Manager::getById($payment->getPaymentSystemId());
 
-$xml_encoded = base64_encode($xml);
-$lqsignature = base64_encode(sha1($signature.$xml.$signature,1));
-?>
-<form action="<?= $url?>" method="post">
-	<input type="hidden" name="operation_xml" value="<?= $xml_encoded?>" />
-	<input type="hidden" name="signature" value="<?= $lqsignature?>" />
-	<input type="submit" value="<?= GetMessage("PAYMENT_PAY")?>" />
-</form>
+$service = new \Bitrix\Sale\PaySystem\Service($data);
+$service->initiatePay($payment);

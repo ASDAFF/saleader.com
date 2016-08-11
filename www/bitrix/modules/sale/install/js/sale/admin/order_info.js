@@ -42,7 +42,10 @@ BX.Sale.Admin.OrderInfo =
 		var span = BX("order_info_buyer_email");
 
 		if(span)
-			span.innerHTML = email;
+		{
+			email = BX.util.htmlspecialchars(email);
+			span.innerHTML = '<a href="mailto:'+email+'">'+email+'</a>';
+		}
 	},
 
 	setOrderStatus: function(statusId)

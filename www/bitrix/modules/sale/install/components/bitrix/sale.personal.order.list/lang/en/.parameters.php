@@ -10,6 +10,6 @@ $MESS["SPOL_ID"] = "Order ID";
 $MESS["SPOL_SAVE_IN_SESSION"] = "Store filter settings in user session";
 $MESS["SPOL_NAV_TEMPLATE"] = "Breadcrumbs Navigation Template";
 $MESS["SPOL_ACTIVE_DATE_FORMAT"] = "Date format";
-$MESS["SPOL_HISTORIC_STATUSES"] = "History statuses";
+$MESS["SPOL_HISTORIC_STATUSES"] = "Archive orders in these statuses";
 $MESS["SPOL_CACHE_GROUPS"] = "Respect access permission";
 ?>

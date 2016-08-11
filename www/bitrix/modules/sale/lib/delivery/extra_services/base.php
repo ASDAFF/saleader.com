@@ -4,6 +4,7 @@ namespace Bitrix\Sale\Delivery\ExtraServices;
 
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Sale\Internals\Input;
+use Bitrix\Sale\Shipment;
 
 abstract class Base
 {
@@ -27,7 +28,6 @@ abstract class Base
 	protected $operatingCurrency = "";
 
 	abstract public function getClassTitle();
-	abstract public function getCost();
 
 	public function __construct($id, array $initParams, $currency, $value = null, array $additionalParams = array())
 	{
@@ -102,17 +102,17 @@ abstract class Base
 		return $result;
 	}
 
-	protected function convertToOperatingCurrency($value)
+	protected function convertToOtherCurrency($value, $currency)
 	{
 		$result = floatval($value);
 
 		if($result <= 0)
 			return $value;
 
-		if(strlen($this->currency) <= 0 || strlen($this->operatingCurrency) <= 0)
+		if(strlen($this->currency) <= 0 || strlen($currency) <= 0)
 			return $value;
 
-		if($this->currency == $this->operatingCurrency)
+		if($this->currency == $currency)
 			return $value;
 
 		static $rates = null;
@@ -126,11 +126,16 @@ abstract class Base
 		}
 
 		if($rates)
-			$result = $rates->convertCurrency($result,  $this->currency, $this->operatingCurrency);
+			$result = $rates->convertCurrency($result,  $this->currency, $currency);
 		else
 			$result = $value;
 
 		return $result;
+	}
+
+	protected function convertToOperatingCurrency($value)
+	{
+		return $this->convertToOtherCurrency($value, $this->operatingCurrency);
 	}
 
 	public static function prepareParamsToSave(array $params)
@@ -181,5 +186,31 @@ abstract class Base
 	public function getOperatingCurrency()
 	{
 		return $this->operatingCurrency;
+	}
+
+	public function getCode()
+	{
+		return $this->code;
+	}
+
+
+	public function getCostShipment(Shipment $shipment = null)
+	{
+		return $this->getCost();
+	}
+
+	/**
+	 * @return float
+	 * @deprecated
+	 * use \Bitrix\Sale\Delivery\ExtraServices\Base::getCostShipment()
+	 */
+	public function getCost()
+	{
+		return 0;
+	}
+
+	public static function isEmbeddedOnly()
+	{
+		return false;
 	}
 }

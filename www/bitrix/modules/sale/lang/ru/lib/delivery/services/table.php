@@ -12,6 +12,3 @@ $MESS["DELIVERY_SERVICE_ENTITY_MARGIN_FIELD"] = "Наценка";
 $MESS["DELIVERY_SERVICE_ENTITY_CURRENCY_FIELD"] = "Валюта";
 $MESS["DELIVERY_SERVICE_ENTITY_STORE_FIELD"] = "Склады";
 $MESS["DELIVERY_SERVICE_ENTITY_CLASS_NAME_FIELD"] = "Класс-обработчик";
-$MESS["DELIVERY_SERVICE_ENTITY_ERROR_DELETE_IN_ORDERS_EXIST"] = "Нельзя удалить эту службу доставки, так как она используется в заказах";
-$MESS["DELIVERY_SERVICE_ENTITY_ERROR_DELETE_IN_ORDERS_EXIST_CHLD"] = "Нельзя удалить эту службу доставки, так как нижележащая служба используется в заказах";
-?>

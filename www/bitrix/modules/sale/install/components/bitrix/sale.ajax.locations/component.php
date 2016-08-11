@@ -331,20 +331,23 @@ if (($arParams["COUNTRY"] > 0 || count($arResult["COUNTRY_LIST"]) <= 0) && (strl
 	}
 }
 
-ksort($regionSortIndex);
-$regionListSorted = array();
-foreach($regionSortIndex as $s => &$v)
+if(is_array($regionSortIndex))
 {
-	ksort($v, SORT_STRING);
-	foreach($v as $regionId)
+	ksort($regionSortIndex);
+	$regionListSorted = array();
+	foreach($regionSortIndex as $s => &$v)
 	{
-		if($regionId < 0)
+		ksort($v, SORT_STRING);
+		foreach($v as $regionId)
 		{
-			$regionListSorted[$regionId] = $arResult["REGION_LIST"][$regionId];
-		}
-		else
-		{
-			$regionListSorted[] = $arResult["REGION_LIST"][$regionId];
+			if($regionId < 0)
+			{
+				$regionListSorted[$regionId] = $arResult["REGION_LIST"][$regionId];
+			}
+			else
+			{
+				$regionListSorted[] = $arResult["REGION_LIST"][$regionId];
+			}
 		}
 	}
 }

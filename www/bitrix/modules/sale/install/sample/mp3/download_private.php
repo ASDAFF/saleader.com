@@ -10,8 +10,8 @@ function initialize_params($url)
 		foreach ($arr1 as $pair)
 		{
 			$arr2 = explode("=",$pair);
-			global $$arr2[0];
-			$$arr2[0] = $arr2[1];
+			global ${$arr2[0]};
+			${$arr2[0]} = $arr2[1];
 		}
 	}
 }

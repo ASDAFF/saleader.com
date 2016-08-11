@@ -650,7 +650,8 @@
 
 			// first fill items themselves
 			for(var k in items)
-				this.addItem2Cache(items[k]);
+				if(items.hasOwnProperty(k))
+					this.addItem2Cache(items[k]);
 
 			if(typeof key == 'number' && key != 0){
 
@@ -658,7 +659,8 @@
 					sv.cache.search[key] = [];
 
 				for(var k in items)
-					sv.cache.search[key].push(items[k].VALUE);
+					if(items.hasOwnProperty(k))
+						sv.cache.search[key].push(items[k].VALUE);
 			}
 		},
 
@@ -1061,7 +1063,13 @@
 
 			var base = sv.displayedIndex.length;
 
-			for(var k in items){
+			for(var k in items)
+			{
+				if(!items.hasOwnProperty(k))
+					continue;
+
+				if(!items[k])
+					continue;
 
 				var domItem = this.whenRenderVariant(items[k], base + parseInt(k))[0];
 

@@ -47,4 +47,6 @@ $MESS["SPOD_CUR_ORDERS"] = "View orders";
 $MESS["SPOD_NUM_SIGN"] = "No.";
 $MESS["SOA_TEMPL_ORDER_PS_ERROR"] = "The selected payment method failed. Please contact the site administrator or select another method.";
 $MESS["SPOD_ORDER_SHIPMENT_BASKET"] = "Shipping list";
+$MESS["SPOD_ORDER_TRACKING_STATUS"] = "Shipment status";
+$MESS["SPOD_ORDER_TRACKING_DESCRIPTION"] = "Shipment status description";
 ?>

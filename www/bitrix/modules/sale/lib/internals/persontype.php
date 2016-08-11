@@ -67,6 +67,12 @@ class PersonTypeTable extends Main\Entity\DataManager
 				'required' => true,
 				'validation' => array(__CLASS__, 'validateLid'),
 			),
+			new Main\Entity\ReferenceField(
+				'PERSON_TYPE_SITE',
+				'\Bitrix\Sale\Internals\PersonTypeSiteTable',
+				array('=this.ID' => 'ref.PERSON_TYPE_ID'),
+				array('join_type' => 'LEFT')
+			),
 			'NAME' => array(
 				'data_type' => 'string',
 				'required' => true,

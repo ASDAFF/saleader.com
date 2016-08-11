@@ -16,7 +16,6 @@ $aMenuLinksExt = $APPLICATION->IncludeComponent(
 	),
 	false
 );
-AddMessage2Log($aMenuLinksExt);
 
 $aMenuLinks = array_merge($aMenuLinks, $aMenuLinksExt); 
 ?>

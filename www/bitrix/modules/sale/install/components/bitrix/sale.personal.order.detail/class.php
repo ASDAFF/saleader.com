@@ -177,7 +177,7 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			// BUT the better way is to show it in template.php, as it required by MVC paradigm
 			if(!$this->arParams['AUTH_FORM_IN_TEMPLATE'])
 			{
-				$APPLICATION->AuthForm($msg);
+				$APPLICATION->AuthForm($msg, false, false, 'N', false);
 			}
 
 			throw new Main\SystemException($msg, self::E_NOT_AUTHORIZED);
@@ -1073,30 +1073,15 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			'STATUS_ID',
 			'DATE_STATUS',
 
-			'PAY_VOUCHER_NUM',
-			'PAY_VOUCHER_DATE',
 			'EMP_STATUS_ID',
 
 			'PRICE_DELIVERY',
-			'ALLOW_DELIVERY',
-			'DATE_ALLOW_DELIVERY',
-			'EMP_ALLOW_DELIVERY_ID',
 
-			'DEDUCTED',
-			'DATE_DEDUCTED',
-			'EMP_DEDUCTED_ID',
-
-			'REASON_UNDO_DEDUCTED',
-
-			'RESERVED',
 			'PRICE',
 			'CURRENCY',
 			'DISCOUNT_VALUE',
 
-			'SUM_PAID',
 			'USER_ID',
-			'PAY_SYSTEM_ID',
-			'DELIVERY_ID',
 
 			'DATE_INSERT',
 			'DATE_INSERT_FORMAT',
@@ -1105,14 +1090,6 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			'USER_DESCRIPTION',
 			'ADDITIONAL_INFO',
 
-			'PS_STATUS',
-			'PS_STATUS_CODE',
-			'PS_STATUS_DESCRIPTION',
-			'PS_STATUS_MESSAGE',
-			'PS_SUM',
-			'PS_CURRENCY',
-			'PS_RESPONSE_DATE',
-
 			'COMMENTS',
 
 			'TAX_VALUE',
@@ -1120,29 +1097,9 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			'RECURRING_ID',
 			'RECOUNT_FLAG',
 
-			'USER_LOGIN',
-			'USER_NAME',
-			'USER_LAST_NAME',
-			'USER_EMAIL',
-
-			'DELIVERY_DOC_NUM',
-			'DELIVERY_DOC_DATE',
-			'DELIVERY_DATE_REQUEST',
-			'STORE_ID',
 			'ORDER_TOPIC',
 
-			'RESPONSIBLE_ID',
-			'RESPONSIBLE_LOGIN',
-			'RESPONSIBLE_NAME',
-			'RESPONSIBLE_LAST_NAME',
-			'RESPONSIBLE_SECOND_NAME',
-			'RESPONSIBLE_EMAIL',
-			'RESPONSIBLE_WORK_POSITION',
-			'RESPONSIBLE_PERSONAL_PHOTO',
-			'DATE_PAY_BEFORE',
-			'DATE_BILL',
 			'ACCOUNT_NUMBER',
-			'TRACKING_NUMBER',
 			'XML_ID',
 		);
 		$sort = array("ID" => "ASC");
@@ -1154,9 +1111,16 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 		$arOrder = false;
 		if ($this->options['USE_ACCOUNT_NUMBER']) // supporting order ACCOUNT_NUMBER or ID in the URL
 		{
-			$dbOrder = CSaleOrder::GetList($sort, $filter, false, false, $select);
-			if ($arOrder = $dbOrder->Fetch())
+
+			$res = \Bitrix\Sale\OrderTable::getList(array(
+				'filter' => $filter,
+				'select' => $select
+			 ));
+
+			if ($arOrder = $res->fetch())
+			{
 				$this->requestData["ID"] = $arOrder["ID"];
+			}
 		}
 
 		if (!$arOrder)
@@ -1166,9 +1130,20 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 				"ID" => $this->requestData["ID"],
 			);
 
-			$dbOrder = CSaleOrder::GetList($sort, $filter, false, false, $select);
-			$arOrder = $dbOrder->Fetch();
+			$res = \Bitrix\Sale\OrderTable::getList(array(
+														'filter' => $filter,
+														'select' => $select
+													));
 
+			$arOrder = $res->fetch();
+		}
+
+		if (empty($arOrder))
+		{
+			throw new Main\SystemException(
+				str_replace("#ID#", $this->requestData["ID"], Localization\Loc::getMessage("SPOD_NO_ORDER")),
+				self::E_ORDER_NOT_FOUND
+			);
 		}
 
 
@@ -1184,6 +1159,8 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 				'ID',
 				'DELIVERY_ID',
 				'TRACKING_NUMBER',
+				'TRACKING_STATUS',
+				'TRACKING_DESCRIPTION',
 				'ALLOW_DELIVERY',
 				'DATE_ALLOW_DELIVERY',
 				'EMP_ALLOW_DELIVERY_ID',
@@ -1207,10 +1184,15 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			$shipmentItems = array();
 			while ($shipmentItem = $dbShipmentItem->fetch())
 			{
+				$shipmentItem['QUANTITY'] = \Bitrix\Sale\BasketItem::formatQuantity($shipmentItem['QUANTITY']);
 				$shipmentItems[$shipmentItem['BASKET_ID']] = $shipmentItem;
 			}
 
 			$arShipment['ITEMS'] = $shipmentItems;
+			$arShipment['TRACKING_STATUS'] = \Bitrix\Sale\Delivery\Tracking\Manager::getStatusName(
+				$arShipment['TRACKING_STATUS']
+			);
+
 			$arOShipment[] = $arShipment;
 		}
 		$arOrder['SHIPMENT'] = $arOShipment;
@@ -1300,14 +1282,6 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 			}
 		}
 
-		if (empty($arOrder))
-		{
-			throw new Main\SystemException(
-				str_replace("#ID#", $this->requestData["ID"], Localization\Loc::getMessage("SPOD_NO_ORDER")),
-				self::E_ORDER_NOT_FOUND
-			);
-		}
-
 		$this->dbResult = $arOrder;
 	}
 
@@ -1373,57 +1347,79 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 	{
 		if (empty($this->dbResult["ID"]))
 			return;
+
 		foreach ($this->dbResult['PAYMENT'] as &$payment)
 		{
 			if (intval($payment["PAY_SYSTEM_ID"]))
 			{
-				$payment["PAY_SYSTEM"] = CSalePaySystem::GetByID($payment["PAY_SYSTEM_ID"], $this->dbResult["PERSON_TYPE_ID"]);
+				$payment["PAY_SYSTEM"] = \Bitrix\Sale\PaySystem\Manager::getById($payment["PAY_SYSTEM_ID"]);
 				$payment["PAY_SYSTEM"]['NAME'] = htmlspecialcharsbx($payment["PAY_SYSTEM"]['NAME']);
 			}
 			if ($payment["PAID"] != "Y" && $this->dbResult["CANCELED"] != "Y")
 			{
-				if (intval($payment["PAY_SYSTEM_ID"]))
+				$payment['BUFFERED_OUTPUT'] = '';
+				$payment['ERROR'] = '';
+				$service = new \Bitrix\Sale\PaySystem\Service($payment["PAY_SYSTEM"]);
+				if ($service)
 				{
-					$dbPaySysAction = CSalePaySystemAction::GetList(
-						array(),
-						array(
-							"PAY_SYSTEM_ID" => $payment["PAY_SYSTEM_ID"],
-							"PERSON_TYPE_ID" => $this->dbResult["PERSON_TYPE_ID"]
-						),
-						false,
-						false,
-						array("NAME", "ACTION_FILE", "NEW_WINDOW", "PARAMS", "ENCODING")
-					);
-					if ($arPaySysAction = $dbPaySysAction->Fetch())
+					$payment["CAN_REPAY"] = "Y";
+					if ($service->getField("NEW_WINDOW") == "Y")
 					{
-						if (strlen($arPaySysAction["ACTION_FILE"]))
+						$payment["PAY_SYSTEM"]["PSA_ACTION_FILE"] = htmlspecialcharsbx($this->arParams["PATH_TO_PAYMENT"]).'?ORDER_ID='.urlencode(urlencode($this->dbResult["ACCOUNT_NUMBER"])).'&PAYMENT_ID='.$payment['ID'];
+					}
+					else
+					{
+						CSalePaySystemAction::InitParamArrays($this->dbResult, $this->requestData["ID"], '', array(), $payment);
+
+						// for compatibility
+						$actionFile = $service->getField('ACTION_FILE');
+						$map = CSalePaySystemAction::getOldToNewHandlersMap();
+						$oldHandler = array_search($actionFile, $map);
+						if ($oldHandler !== false && !$service->isCustom())
+							$actionFile = $oldHandler;
+
+						$pathToAction = Main\Application::getDocumentRoot().$actionFile;
+						$pathToAction = str_replace("\\", "/", $pathToAction);
+						while (substr($pathToAction, strlen($pathToAction) - 1, 1) == "/")
+							$pathToAction = substr($pathToAction, 0, strlen($pathToAction) - 1);
+						if (file_exists($pathToAction))
 						{
-							$payment["CAN_REPAY"] = "Y";
-							if ($arPaySysAction["NEW_WINDOW"] == "Y")
+							if (is_dir($pathToAction) && file_exists($pathToAction."/payment.php"))
+								$pathToAction .= "/payment.php";
+							$payment["PAY_SYSTEM"]["PSA_ACTION_FILE"] = $pathToAction;
+						}
+
+						$encoding = $service->getField("ENCODING");
+						if (strlen($encoding) > 0)
+						{
+							define("BX_SALE_ENCODING", $encoding);
+							AddEventHandler("main", "OnEndBufferContent", array($this, "changeBodyEncoding"));
+						}
+						/** @var \Bitrix\Sale\Order $order */
+						$order = \Bitrix\Sale\Order::load($this->dbResult["ID"]);
+
+						if ($order)
+						{
+							/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+							$paymentCollection = $order->getPaymentCollection();
+
+							if ($paymentCollection)
 							{
-								$payment["PAY_SYSTEM"]["PSA_ACTION_FILE"] = htmlspecialcharsbx($this->arParams["PATH_TO_PAYMENT"]).'?ORDER_ID='.urlencode(urlencode($this->dbResult["ACCOUNT_NUMBER"])).'&PAYMENT_ID='.$payment['ID'];
-							}
-							else
-							{
-								CSalePaySystemAction::InitParamArrays($this->dbResult, $this->requestData["ID"], $arPaySysAction["PARAMS"], array(), $payment);
-								$pathToAction = $_SERVER["DOCUMENT_ROOT"].$arPaySysAction["ACTION_FILE"];
-								$pathToAction = str_replace("\\", "/", $pathToAction);
-								while (substr($pathToAction, strlen($pathToAction) - 1, 1) == "/")
-									$pathToAction = substr($pathToAction, 0, strlen($pathToAction) - 1);
-								if (file_exists($pathToAction))
+								/** @var \Bitrix\Sale\Payment $paymentItem */
+								$paymentItem = $paymentCollection->getItemById($payment['ID']);
+								if ($paymentItem)
 								{
-									if (is_dir($pathToAction) && file_exists($pathToAction."/payment.php"))
-										$pathToAction .= "/payment.php";
-									$payment["PAY_SYSTEM"]["PSA_ACTION_FILE"] = $pathToAction;
-								}
-								if (strlen($arPaySysAction["ENCODING"]))
-								{
-									define("BX_SALE_ENCODING", $arPaySysAction["ENCODING"]);
-									AddEventHandler("main", "OnEndBufferContent", array($this, "changeBodyEncoding"));
+									$initResult = $service->initiatePay($paymentItem, null, \Bitrix\Sale\PaySystem\BaseServiceHandler::STRING);
+									if ($initResult->isSuccess())
+										$payment['BUFFERED_OUTPUT'] = $initResult->getTemplate();
+									else
+										$payment['ERROR'] = implode('\n', $initResult->getErrorMessages());
 								}
 							}
 						}
 					}
+
+					$payment["PAY_SYSTEM"]["PSA_NEW_WINDOW"] = $payment["PAY_SYSTEM"]["NEW_WINDOW"];
 				}
 			}
 		}
@@ -1883,6 +1879,7 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 	{
 		try
 		{
+			$this->setFramemode(false);
 			$this->checkRequiredModules();
 
 			$this->checkAuthorized();

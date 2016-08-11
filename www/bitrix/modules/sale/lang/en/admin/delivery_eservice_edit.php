@@ -18,4 +18,5 @@ $MESS["SALE_ESDE_FIELD_CODE"] = "Mnemonic code";
 $MESS["SALE_ESDE_ERROR_SAVE"] = "Error saving extra service";
 $MESS["SALE_ESDE_CONFIRM_DEL_MESSAGE"] = "Are you sure you want to delete this extra service?";
 $MESS["SALE_ESDE_TO_LIST"] = "Back to delivery service";
+$MESS["SALE_ESDE_ERROR_CODE_EXIST"] = "Additional service with this ID for this delivery service already exists";
 ?>

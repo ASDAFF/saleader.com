@@ -62,6 +62,7 @@ class CBitrixBasketComponent extends CBitrixComponent
 		$this->countDiscount4AllQuantity = $this->arParams["COUNT_DISCOUNT_4_ALL_QUANTITY"];
 		$this->priceVatShowValue = $this->arParams["PRICE_VAT_SHOW_VALUE"];
 		$this->hideCoupon = $this->arParams["HIDE_COUPON"];
+		$this->showDelay = $this->arParams["SHOW_DELAY"];
 		$this->usePrepayment = $this->arParams["USE_PREPAYMENT"];
 		$this->pathToOrder = $this->arParams["PATH_TO_ORDER"];
 
@@ -187,12 +188,17 @@ class CBitrixBasketComponent extends CBitrixComponent
 		$arBasketItems = array();
 		$arSku2Parent = array();
 		$arSetParentWeight = array();
+		$basketItemsFilter = array(
+			"USER_ID" => $this->userId,
+			"ORDER_ID" => "NULL"
+		);
+		if($this->showDelay != 'Y')
+		{
+			$basketItemsFilter['DELAY'] = 'N';
+		}
 		$dbItems = CSaleBasket::GetList(
 			array("ID" => "ASC"),
-			array(
-				"USER_ID" => $this->userId,
-				"ORDER_ID" => "NULL"
-			),
+			$basketItemsFilter,
 			false,
 			false,
 			array(

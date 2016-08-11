@@ -48,7 +48,14 @@ abstract class CollectionBase
 	 */
 	public function offsetSet($offset, $value)
 	{
-		$this->collection[$offset] = $value;
+		if($offset === null)
+		{
+			$this->collection[] = $value;
+		}
+		else
+		{
+			$this->collection[$offset] = $value;
+		}
 	}
 
 	/**

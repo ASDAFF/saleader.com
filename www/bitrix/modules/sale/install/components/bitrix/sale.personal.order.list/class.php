@@ -169,7 +169,7 @@ class CBitrixPersonalOrderListComponent extends CBitrixComponent
 			// BUT the better way is to show it in template.php, as it required by MVC paradigm
 			if(!$this->arParams['AUTH_FORM_IN_TEMPLATE'])
 			{
-				$APPLICATION->AuthForm($msg);
+				$APPLICATION->AuthForm($msg, false, false, 'N', false);
 			}
 
 			throw new Main\SystemException($msg, self::E_NOT_AUTHORIZED);
@@ -309,8 +309,26 @@ class CBitrixPersonalOrderListComponent extends CBitrixComponent
 		$this->filterRestore();
 		$this->filterStore();
 
+
+		$tableFieldNameList = array();
+
+		$tableMap = \Bitrix\Sale\Internals\OrderTable::getMap();
+
+		/** @var Main\Entity\Field $tableField */
+		foreach ($tableMap as $tableField)
+		{
+			$tableFieldNameList[] = $tableField->getName();
+		}
+
+		if (isset($_REQUEST["by"]) && strval($_REQUEST['by']) != '')
+		{
+			if (!in_array($_REQUEST['by'], $tableFieldNameList))
+				$_REQUEST["by"] = 'ID';
+		}
+
 		$this->sortBy = (strlen($_REQUEST["by"]) ? $_REQUEST["by"]: "ID");
-		$this->sortOrder = (strlen($_REQUEST["order"]) ? $_REQUEST["order"]: "DESC");
+		$this->sortOrder = (strlen($_REQUEST["order"]) != "" && $_REQUEST["order"] == "ASC" ? "ASC": "DESC");
+
 
 		$this->prepareFilter();
 	}
@@ -575,40 +593,19 @@ class CBitrixPersonalOrderListComponent extends CBitrixComponent
 					'SET_PARENT_ID', 'TYPE', 'ID',
 					'PRODUCT_ID', 'PRODUCT_PRICE_ID', 'PRICE', 'CURRENCY', 'WEIGHT', 'QUANTITY', 'LID',
 					'NAME', 'CALLBACK_FUNC', 'MODULE', 'NOTES', 'PRODUCT_PROVIDER_CLASS', 'CANCEL_CALLBACK_FUNC',
-					'ORDER_CALLBACK_FUNC', 'PAY_CALLBACK_FUNC', 'DETAIL_PAGE_URL', 'CATALOG_XML_ID', 'PRODUCT_XML_ID', 'VAT_RATE'
+					'ORDER_CALLBACK_FUNC', 'PAY_CALLBACK_FUNC', 'DETAIL_PAGE_URL', 'CATALOG_XML_ID', 'PRODUCT_XML_ID',
+					'VAT_RATE', 'MEASURE_NAME', 'MEASURE_CODE', 'BASE_PRICE', 'VAT_INCLUDED'
 				)
 			);
 			$success = false;
 			$item = new CSaleBasket;
-			while ($arBasket = $dbBasket->Fetch())
+			while ($basketFields = $dbBasket->Fetch())
 			{
-				if (CSaleBasketHelper::isSetItem($arBasket))
+				if (CSaleBasketHelper::isSetItem($basketFields))
 					continue;
 
-				$arFields = array(
-					"PRODUCT_ID"			=> $arBasket["PRODUCT_ID"],
-					"PRODUCT_PRICE_ID"		=> $arBasket["PRODUCT_PRICE_ID"],
-					"PRICE"					=> $arBasket["PRICE"],
-					"CURRENCY"				=> $arBasket["CURRENCY"],
-					"WEIGHT"				=> $arBasket["WEIGHT"],
-					"QUANTITY"				=> $arBasket["QUANTITY"],
-					"LID"					=> $arBasket["LID"],
-					"NAME"					=> $arBasket["NAME"],
-					"CALLBACK_FUNC"			=> $arBasket["CALLBACK_FUNC"],
-					"MODULE"				=> $arBasket["MODULE"],
-					"NOTES"					=> $arBasket["NOTES"],
-					"PRODUCT_PROVIDER_CLASS"	=> $arBasket["PRODUCT_PROVIDER_CLASS"],
-					"CANCEL_CALLBACK_FUNC"	=> $arBasket["CANCEL_CALLBACK_FUNC"],
-					"ORDER_CALLBACK_FUNC"	=> $arBasket["ORDER_CALLBACK_FUNC"],
-					"PAY_CALLBACK_FUNC"		=> $arBasket["PAY_CALLBACK_FUNC"],
-					"DETAIL_PAGE_URL"		=> $arBasket["DETAIL_PAGE_URL"],
-					"CATALOG_XML_ID" 		=> $arBasket["CATALOG_XML_ID"],
-					"PRODUCT_XML_ID" 		=> $arBasket["PRODUCT_XML_ID"],
-					"VAT_RATE" 				=> $arBasket["VAT_RATE"],
-					"PROPS"					=> $this->getBasketItemProps($arBasket["ID"]),
-					"TYPE"                  => $arBasket["TYPE"]
-				);
-				$newID = (int)$item->Add($arFields);
+				$basketFields['PROPS'] = $this->getBasketItemProps($basketFields['ID']);
+				$newID = (int)$item->Add($basketFields);
 				if ($newID > 0)
 					$success = true;
 			}
@@ -1009,6 +1006,7 @@ class CBitrixPersonalOrderListComponent extends CBitrixComponent
 	{
 		try
 		{
+			$this->setFramemode(false);
 			$this->checkRequiredModules();
 			$this->checkAuthorized();
 			$this->setTitle();

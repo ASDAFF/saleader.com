@@ -3,9 +3,25 @@ IncludeModuleLangFile(__FILE__);
 
 class CAllSaleTax
 {
-	static function DoProcessOrderBasket(&$arOrder, $arOptions, &$arErrors)
+	public static function DoProcessOrderBasket(&$arOrder, $arOptions, &$arErrors)
 	{
 		if ((!array_key_exists("TAX_LOCATION", $arOrder) || intval($arOrder["TAX_LOCATION"]) <= 0) && (!$arOrder["USE_VAT"] || $arOrder["USE_VAT"]!="Y"))
+			return;
+
+		$arOrder["TAX_LOCATION"] = \CSaleLocation::tryTranslateIDToCode($arOrder["TAX_LOCATION"]);
+
+		static::calculateTax($arOrder, $arOptions, $arErrors);
+	}
+
+	/**
+	 * @internal
+	 * @param $arOrder
+	 * @param $arOptions
+	 * @param $arErrors
+	 */
+	public static function calculateTax(&$arOrder, $arOptions, &$arErrors)
+	{
+		if ((!array_key_exists("TAX_LOCATION", $arOrder) || strval(trim($arOrder["TAX_LOCATION"])) == "") && (!$arOrder["USE_VAT"] || $arOrder["USE_VAT"]!="Y"))
 			return;
 
 		if (!$arOrder["USE_VAT"])
@@ -41,7 +57,7 @@ class CAllSaleTax
 							"LID" => $arOrder["SITE_ID"],
 							"PERSON_TYPE_ID" => $arOrder["PERSON_TYPE_ID"],
 							"ACTIVE" => "Y",
-							"LOCATION" => $arOrder["TAX_LOCATION"],
+							"LOCATION_CODE" => $arOrder["TAX_LOCATION"],
 						)
 					);
 					while ($arTaxRate = $dbTaxRate->GetNext())
@@ -50,7 +66,7 @@ class CAllSaleTax
 						{
 							if ($arTaxRate["IS_PERCENT"] != "Y")
 							{
-								$arTaxRate["VALUE"] = RoundEx(CCurrencyRates::ConvertCurrency($arTaxRate["VALUE"], $arTaxRate["CURRENCY"], $arOrder["CURRENCY"]), SALE_VALUE_PRECISION);
+								$arTaxRate["VALUE"] = \Bitrix\Sale\PriceMaths::roundPrecision(CCurrencyRates::ConvertCurrency($arTaxRate["VALUE"], $arTaxRate["CURRENCY"], $arOrder["CURRENCY"]));
 								$arTaxRate["CURRENCY"] = $arOrder["CURRENCY"];
 							}
 							$arOrder["TAX_LIST"][] = $arTaxRate;
@@ -95,8 +111,11 @@ class CAllSaleTax
 
 					foreach ($arOrder["TAX_LIST"] as $arTax)
 					{
-						if ($arTax["IS_IN_PRICE"] != "Y")
+						if ($arTax["IS_IN_PRICE"] != "Y"
+							|| (!empty($arOptions['ENABLE_INCLUSIVE_TAX']) && $arOptions['ENABLE_INCLUSIVE_TAX'] == "Y"))
+						{
 							$arOrder["TAX_PRICE"] += $arTax["VALUE_MONEY"];
+						}
 					}
 				}
 				else
@@ -126,13 +145,28 @@ class CAllSaleTax
 			}
 		}
 
-		$arOrder["TAX_PRICE"] = roundEx($arOrder["TAX_PRICE"], SALE_VALUE_PRECISION);
-
+		$arOrder["TAX_PRICE"] = \Bitrix\Sale\PriceMaths::roundPrecision($arOrder["TAX_PRICE"]);
 	}
 
-	static function DoProcessOrderDelivery(&$arOrder, $arOptions, &$arErrors)
+	public static function DoProcessOrderDelivery(&$arOrder, $arOptions, &$arErrors)
 	{
 		if ((!array_key_exists("TAX_LOCATION", $arOrder) || intval($arOrder["TAX_LOCATION"]) <= 0) && (!$arOrder["USE_VAT"] || $arOrder["USE_VAT"]!="Y"))
+			return;
+
+		$arOrder["TAX_LOCATION"] = \CSaleLocation::tryTranslateIDToCode($arOrder["TAX_LOCATION"]);
+
+		static::calculateDeliveryTax($arOrder, $arOptions, $arErrors);
+	}
+
+	/**
+	 * @internal
+	 * @param $arOrder
+	 * @param $arOptions
+	 * @param $arErrors
+	 */
+	public static function calculateDeliveryTax(&$arOrder, $arOptions, &$arErrors)
+	{
+		if ((!array_key_exists("TAX_LOCATION", $arOrder) || strval(trim($arOrder["TAX_LOCATION"])) == "") && (!$arOrder["USE_VAT"] || $arOrder["USE_VAT"]!="Y"))
 			return;
 
 		if (!array_key_exists("COUNT_DELIVERY_TAX", $arOptions))
@@ -165,32 +199,20 @@ class CAllSaleTax
 						"LID" => $arOrder["SITE_ID"],
 						"PERSON_TYPE_ID" => $arOrder["PERSON_TYPE_ID"],
 						"ACTIVE" => "Y",
-						"LOCATION" => $arOrder["TAX_LOCATION"],
+						"LOCATION_CODE" => $arOrder["TAX_LOCATION"],
 					)
 				);
 				while ($arTaxRate = $dbTaxRate->GetNext())
 				{
-					if (!in_array(intval($arTaxRate["TAX_ID"]), $arOrder["TAX_EXEMPT"]))
+					if (is_array($arOrder["TAX_EXEMPT"]) && !in_array(intval($arTaxRate["TAX_ID"]), $arOrder["TAX_EXEMPT"]))
 					{
 						if ($arTaxRate["IS_PERCENT"] != "Y")
 						{
-							$arTaxRate["VALUE"] = RoundEx(CCurrencyRates::ConvertCurrency($arTaxRate["VALUE"], $arTaxRate["CURRENCY"], $arOrder["CURRENCY"]), SALE_VALUE_PRECISION);
+							$arTaxRate["VALUE"] = \Bitrix\Sale\PriceMaths::roundPrecision(CurrencyRates::ConvertCurrency($arTaxRate["VALUE"], $arTaxRate["CURRENCY"], $arOrder["CURRENCY"]));
 							$arTaxRate["CURRENCY"] = $arOrder["CURRENCY"];
 						}
 						$arOrder["TAX_LIST"][] = $arTaxRate;
 					}
-				}
-			}
-			else
-			{
-				if (!empty($arOrder["TAX_LIST"]) && is_array($arOrder["TAX_LIST"]))
-				{
-					foreach ($arOrder["TAX_LIST"] as &$taxValue)
-					{
-						if (isset($taxValue['VALUE_MONEY']))
-							unset($taxValue['VALUE_MONEY']);
-					}
-					unset($taxValue);
 				}
 			}
 
@@ -205,13 +227,14 @@ class CAllSaleTax
 				$arOrder["TAX_PRICE"] = 0;
 				foreach ($arOrder["TAX_LIST"] as &$arTax)
 				{
-					$arTax["VALUE_MONEY"] += roundEx($arTax["TAX_VAL"], SALE_VALUE_PRECISION);
-					$arTax["TAX_VAL"] += roundEx($arTax["TAX_VAL"], SALE_VALUE_PRECISION);
-
+					$arTax["VALUE_MONEY"] += \Bitrix\Sale\PriceMaths::roundPrecision($arTax["TAX_VAL"]);
 					$arTax['VALUE_MONEY_FORMATED'] = SaleFormatCurrency($arTax["VALUE_MONEY"], $arOrder["CURRENCY"]);
 
-					if ($arTax["IS_IN_PRICE"] != "Y")
+					if ($arTax["IS_IN_PRICE"] != "Y"
+						|| (!empty($arOptions['ENABLE_INCLUSIVE_TAX']) && $arOptions['ENABLE_INCLUSIVE_TAX'] == "Y"))
+					{
 						$arOrder["TAX_PRICE"] += $arTax["VALUE_MONEY"];
+					}
 
 				}
 				unset($arTax);
@@ -242,9 +265,9 @@ class CAllSaleTax
 			//}
 		}
 
-		$arOrder["TAX_PRICE"] = roundEx($arOrder["TAX_PRICE"], SALE_VALUE_PRECISION);
-		$arOrder["VAT_SUM"] = roundEx($arOrder["VAT_SUM"], SALE_VALUE_PRECISION);
-		$arOrder["VAT_DELIVERY"] = roundEx($arOrder["VAT_DELIVERY"], SALE_VALUE_PRECISION);
+		$arOrder["TAX_PRICE"] = \Bitrix\Sale\PriceMaths::roundPrecision($arOrder["TAX_PRICE"]);
+		$arOrder["VAT_SUM"] = \Bitrix\Sale\PriceMaths::roundPrecision($arOrder["VAT_SUM"]);
+		$arOrder["VAT_DELIVERY"] = \Bitrix\Sale\PriceMaths::roundPrecision($arOrder["VAT_DELIVERY"]);
 
 	}
 
@@ -272,6 +295,8 @@ class CAllSaleTax
 			}
 		}
 
+		$isChanged = false;
+
 		if (is_array($taxList))
 		{
 			foreach ($taxList as $itemData)
@@ -288,15 +313,27 @@ class CAllSaleTax
 				);
 
 				$hash = $itemData["NAME"]."|".$itemData["CODE"];
+				$isNew = false;
 
 				if (array_key_exists($hash, $idList))
 				{
-					CSaleOrderTax::Update($idList[$hash], $fields);
+					$taxId = CSaleOrderTax::Update($idList[$hash], $fields);
 					unset($idList[$hash]);
 				}
 				elseif (!array_key_exists($hash, $duplicateList))
 				{
-					CSaleOrderTax::Add($fields);
+					$isNew = true;
+					$taxId = CSaleOrderTax::Add($fields);
+				}
+
+				if ($orderId > 0)
+				{
+					\Bitrix\Sale\OrderHistory::addLog('TAX', $orderId, $isNew ? 'TAX_ADD' : 'TAX_UPDATE', $taxId, null, array(
+						"NAME" => $itemData["NAME"],
+						"CODE" => $itemData["CODE"]
+					), \Bitrix\Sale\OrderHistory::SALE_ORDER_HISTORY_LOG_LEVEL_1);
+
+					$isChanged = true;
 				}
 			}
 		}
@@ -304,6 +341,10 @@ class CAllSaleTax
 		foreach ($idList as $code => $id)
 		{
 			CSaleOrderTax::Delete($id);
+			if ($orderId > 0)
+			{
+				\Bitrix\Sale\OrderHistory::addLog('TAX', $orderId, 'TAX_DELETED', $id, null, array(), \Bitrix\Sale\OrderHistory::SALE_ORDER_HISTORY_LOG_LEVEL_1);
+			}
 		}
 
 		if (!empty($duplicateList))
@@ -311,7 +352,17 @@ class CAllSaleTax
 			foreach ($duplicateList as $hash => $id)
 			{
 				CSaleOrderTax::Delete($id);
+				\Bitrix\Sale\OrderHistory::addLog('TAX', $orderId, 'TAX_DUPLICATE_DELETED', $id, null, array(), \Bitrix\Sale\OrderHistory::SALE_ORDER_HISTORY_LOG_LEVEL_1);
 			}
+		}
+
+		if ($isChanged)
+		{
+			\Bitrix\Sale\OrderHistory::addAction(
+				'TAX',
+				$orderId,
+				"TAX_SAVED"
+			);
 		}
 	}
 

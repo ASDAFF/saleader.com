@@ -36,3 +36,4 @@ $MESS["SALE_EBAY_WARNING"] = "Предупреждение";
 $MESS["SALE_EBAY_EXCHANGE_OK"] = "Обмен данными успешно завершён";
 $MESS["SALE_EBAY_EXCHANGE_ERROR"] = "При обмене данными произошла ошибка";
 $MESS["SALE_EBAY_SETTINGS_SAVED"] = "Настройки успешно сохранены";
+$MESS["SALE_EBAY_SETTINGS_SAVING_SITE_ERROR"] = "Обмен информацией невозможен. Для того чтобы обмен стал возможен необходимо #A1#настроить#A2# сайт \"#S#\".";

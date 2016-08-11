@@ -20,3 +20,4 @@ $MESS['SSEN_NOTIFY_LINK'] = 'Почтовый шаблон статуса';
 $MESS['SSEN_TASKS_LINK'] = 'Уровни доступа';
 $MESS['SSEN_GROUPS_LINK'] = 'Группы пользователей';
 $MESS['SSEN_INVALID_TASK_ID_FOR'] = 'Не правильный уровень доступа для';
+$MESS['SALE_STATUS_WRONG_TYPE'] = "Статусу \"#STATUS_ID#\" нельзя установить тип \"#STATUS_TYPE#\"";

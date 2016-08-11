@@ -27,4 +27,6 @@ $MESS["SBBL_PERSONAL"] = "Personal section";
 $MESS["SBBL_AUTHOR"] = "Authorization";
 $MESS["SBBL_SHOW_AUTHOR"] = "Allow authorization in the cart";
 $MESS["SBBL_LIST"] = "Product list";
+$MESS["SBBL_HIDE_ON_BASKET_PAGES"] = "Don't show on shopping cart and checkout pages";
+$MESS["HIDE_ON_BASKET_PAGES_TIP"] = "The option hides the component  on shopping cart and checkout pages. It is highly recommended to keep this option enabled to avoid extra system load on these pages. ";
 ?>

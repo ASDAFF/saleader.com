@@ -1,12 +1,9 @@
 <?php
 namespace Bitrix\Sale\Delivery\Restrictions;
 
-use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Sale\Delivery\DeliveryLocationTable;
-use Bitrix\Sale\Location\Connector;
-use Bitrix\Sale\Location\LocationTable;
-use Bitrix\Sale\Location\Admin\LocationHelper;
+use Bitrix\Sale\Internals\CollectableEntity;
 
 Loc::loadMessages(__FILE__);
 
@@ -17,7 +14,6 @@ Loc::loadMessages(__FILE__);
  */
 class ByLocation extends Base
 {
-	const CONN_ENTITY_NAME = 'Bitrix\Sale\Delivery\DeliveryLocation';
 	public static $easeSort = 200;
 
 	public static function getClassTitle()
@@ -33,8 +29,14 @@ class ByLocation extends Base
 	/**
 	 * This function should accept only location CODE, not ID, being a part of modern API
 	 */
-	public function check($locationCode, array $restrictionParams, $deliveryId = 0)
+	public static function check($locationCode, array $restrictionParams, $deliveryId = 0)
 	{
+		if(intval($deliveryId) <= 0)
+			return true;
+
+		if(strlen($locationCode) <= 0)
+			return false;
+
 		try
 		{
 			return DeliveryLocationTable::checkConnectionExists(
@@ -51,24 +53,21 @@ class ByLocation extends Base
 		}
 	}
 
-	public function checkByShipment(\Bitrix\Sale\Shipment $shipment, array $restrictionParams, $deliveryId = 0)
+	protected static function extractParams(CollectableEntity $shipment)
 	{
-		if(intval($deliveryId) <= 0)
-			return true;
-
 		/** @var \Bitrix\Sale\Order $order */
 		$order = $shipment->getCollection()->getOrder();
 
 		if(!$props = $order->getPropertyCollection())
-			return true;
+			return '';
 
 		if(!$locationProp = $props->getDeliveryLocation())
-			return true;
+			return '';
 
 		if(!$locationCode = $locationProp->getValue())
-			return true;
+			return '';
 
-		return $this->check($locationCode, $restrictionParams, $deliveryId);
+		return $locationCode;
 	}
 
 	protected static function prepareParamsForSaving(array $params = array(), $deliveryId = 0)
@@ -129,23 +128,15 @@ class ByLocation extends Base
 		return $result;
 	}
 
-	public function save(array $fields, $restrictionId = 0)
+	public static function save(array $fields, $restrictionId = 0)
 	{
-		$fields["PARAMS"] = $this->prepareParamsForSaving($fields["PARAMS"], $fields["DELIVERY_ID"]);
+		$fields["PARAMS"] = self::prepareParamsForSaving($fields["PARAMS"], $fields["SERVICE_ID"]);
 		return parent::save($fields, $restrictionId);
 	}
 
-	public function delete($restrictionId)
+	public static function delete($restrictionId, $deliveryId = 0)
 	{
-		$dbRes = Table::getList(array(
-			'filter' => array(
-				'ID' => $restrictionId
-			)
-		));
-
-		if($fields = $dbRes->fetch())
-			DeliveryLocationTable::resetMultipleForOwner($fields["DELIVERY_ID"]);
-
+		DeliveryLocationTable::resetMultipleForOwner($deliveryId);
 		return parent::delete($restrictionId);
 	}
 }

@@ -22,4 +22,5 @@ $MESS["SALE_OVIEW_TAB_HISTORY"] = "История изменений";
 $MESS["SALE_OVIEW_TAB_ANALYSIS"] = "Анализ заказа";
 $MESS["SALE_OVIEW_ORDER_COPY"] = "Копировать заказ";
 $MESS["SALE_OVIEW_ORDER_COPY_TITLE"] = "Копировать заказ";
+$MESS["SALE_OVIEW_UNLOCK"] = "Разблокировать заказ";
 ?>

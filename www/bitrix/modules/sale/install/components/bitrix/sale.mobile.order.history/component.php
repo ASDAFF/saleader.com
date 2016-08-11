@@ -64,6 +64,7 @@ if (!function_exists("convertHistoryToNewFormat"))
 
 $arHistoryData = array();
 $bUseOldHistory = false;
+$usersIds = array();
 
 // collect records from old history to show in the new order changes list
 $dbHistory = CSaleOrder::GetHistoryList(
@@ -80,6 +81,9 @@ while ($arHistory = $dbHistory->Fetch())
 
 	if ($res)
 	{
+		if(!in_array($res["USER_ID"], $usersIds))
+			$usersIds[] = $res["USER_ID"];
+
 		$arHistoryData[] = $res;
 		$bUseOldHistory = true;
 	}
@@ -95,7 +99,12 @@ $dbOrderChange = CSaleOrderChange::GetList(
 );
 
 while ($arChangeRecord = $dbOrderChange->Fetch())
+{
+	if(!in_array($arChangeRecord["USER_ID"], $usersIds))
+		$usersIds[] = $arChangeRecord["USER_ID"];
+
 	$arHistoryData[] = $arChangeRecord;
+}
 
 // advancing sorting is necessary if old history results are mixed with new order changes
 if ($bUseOldHistory)
@@ -136,30 +145,24 @@ while ($arPaySystemList = $dbPaySystemList->Fetch())
 
 $userCache = array();
 $deliveryCache = array();
+$usersList = array();
+
+$dbUser = \Bitrix\Main\UserTable::getList(array(
+	'filter' => array(
+		'ID' => $usersIds
+	),
+	'select' => array("ID", "LOGIN", "NAME", "LAST_NAME")
+));
+
+while($user = $dbUser->fetch())
+	$usersList[$user["ID"]] = $user;
 
 while ($arHistory = $dbRecords->Fetch())
 {
-	if(isset($userCache[$arResult["ORDER"]["USER_ID"]]))
-	{
-		$arHistory["USER"] = $userCache[$arResult["ORDER"]["USER_ID"]];
-	}
-	else
-	{
-		$dbUser = CUser::GetByID($arResult["ORDER"]["USER_ID"]);
-
-		if($arUser = $dbUser->Fetch())
-		{
-
-			$arHistory["USER"]["LOGIN"] = $arUser["LOGIN"];
-			$arHistory["USER"]["NAME"] = htmlspecialcharsbx($arUser["NAME"]);
-			$arHistory["USER"]["LAST_NAME"] = htmlspecialcharsbx($arUser["LAST_NAME"]);
-
-			$userCache[$arResult["ORDER"]["USER_ID"]] = $arHistory["USER"];
-		}
-	}
-
+	$arHistory["USER"]["LOGIN"] = $usersList[$arHistory["USER_ID"]]["LOGIN"];
+	$arHistory["USER"]["NAME"] = $usersList[$arHistory["USER_ID"]]["NAME"];
+	$arHistory["USER"]["LAST_NAME"] = $usersList[$arHistory["USER_ID"]]["LAST_NAME"];
 	$arHistory = array_merge($arHistory, CSaleOrderChange::GetRecordDescription($arHistory["TYPE"], $arHistory["DATA"]));
-
 	$arResult["HISTORY"][] = $arHistory;
 }
 

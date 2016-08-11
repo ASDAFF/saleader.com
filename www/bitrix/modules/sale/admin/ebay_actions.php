@@ -108,7 +108,7 @@ if(isset($_REQUEST["action"]))
 				if(BX.Sale.EbayAdmin.showAlertOpener(message))
 					window.close();
 				else
-					window.location.href = 'sale_ebay.php?lang=<?=LANGUAGE_ID?>';
+					window.location.href = 'sale_ebay_general.php?lang=<?=LANGUAGE_ID?>';
 			</script>
 			<?
 

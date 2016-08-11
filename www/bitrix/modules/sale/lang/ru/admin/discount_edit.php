@@ -47,4 +47,5 @@ $MESS["BX_SALE_DISCOUNT_COUPON_PERIOD_INTERVAL"] = "Интервал";
 $MESS["BX_SALE_DISCOUNT_EDIT_FIELDS_COUPON_TYPE"] = "Тип купонов:";
 $MESS["BX_SALE_DISCOUNT_EDIT_FIELDS_COUPON_MAX_USE"] = "Максимальное число использований:";
 $MESS["BX_SALE_DISCOUNT_EDIT_ERR_COUPONS_COUNT"] = "Не указано число создаваемых купонов";
+$MESS["BX_SALE_DISCOUNT_EDIT_ERR_MODULE_CATALOG_IS_ABSENT"] = "Не удалось загрузить модуль Торговый каталог. Интерфейс условий и действий правил корзины невозможно подключить.";
 ?>

@@ -235,9 +235,11 @@ BX.merge(BX.ui.scrollablePager.prototype, {
 		else if(BX.type.isDomNode(data))
 			BX.append(data, wrapper);
 		else if('length' in data && data.length > 0){
-			for(var k in data){
-				if(BX.type.isDomNode(data[k]))
-					BX.append(data[k], wrapper);
+			for(var k in data)
+			{
+				if(data.hasOwnProperty(k))
+					if(BX.type.isDomNode(data[k]))
+						BX.append(data[k], wrapper);
 			}
 		}else
 			return false; // smth strange passed

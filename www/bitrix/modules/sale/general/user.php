@@ -639,7 +639,7 @@ class CAllSaleUserAccount
 					"DEBIT" => (($sum > 0) ? "Y" : "N"),
 					"ORDER_ID" => (($orderID > 0) ? $orderID : False),
 					"PAYMENT_ID" => (($paymentId > 0) ? $paymentId : false),
-					"DESCRIPTION" => ((strlen($description) > 0) ? $description : False),
+					"DESCRIPTION" => ((strlen($description) > 0) ? $description : null),
 					"NOTES" => ((strlen($notes) > 0) ? $notes : False),
 					"EMPLOYEE_ID" => ($GLOBALS["USER"]->IsAuthorized() ? $GLOBALS["USER"]->GetID() : False)
 				);

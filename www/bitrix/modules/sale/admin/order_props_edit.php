@@ -129,8 +129,10 @@ switch ($property['TYPE'])
 		if (! $variants)
 		{
 			$result = CSaleOrderPropsVariant::GetList(($b='SORT'), ($o='ASC'), Array('ORDER_PROPS_ID' => $propertyId));
-			while ($row = $result->GetNext())
+			while ($row = $result->Fetch())
+			{
 				$variants []= $row;
+			}
 		}
 
 		break;
@@ -209,6 +211,13 @@ if ($property['TYPE'] == 'ENUM')
 
 	$commonSettings['DEFAULT_VALUE']['OPTIONS'] = &$defaultOptions;
 }
+elseif ($property['TYPE'] == 'LOCATION')
+{
+	if ($property['IS_LOCATION'] == "Y" || $property['IS_LOCATION4TAX'] == "Y")
+	{
+		unset($commonSettings['MULTIPLE']);
+	}
+}
 
 // string settings
 
@@ -231,7 +240,7 @@ while ($row = $result->Fetch())
 $locationSettings = array(
 	'IS_LOCATION'          => array('TYPE' => 'Y/N' , 'LABEL' => Loc::getMessage('F_IS_LOCATION'     ), 'DESCRIPTION' => Loc::getMessage('F_IS_LOCATION_DESCR'    ), 'ONCLICK' => $reload),
 	'INPUT_FIELD_LOCATION' => array('TYPE' => 'ENUM', 'LABEL' => Loc::getMessage('F_ANOTHER_LOCATION'), 'DESCRIPTION' => Loc::getMessage('F_INPUT_FIELD_DESCR'    ), 'OPTIONS' => $locationOptions, 'VALUE' => 0),
-	'IS_LOCATION4TAX'      => array('TYPE' => 'Y/N' , 'LABEL' => Loc::getMessage('F_IS_LOCATION4TAX' ), 'DESCRIPTION' => Loc::getMessage('F_IS_LOCATION4TAX_DESCR')),
+	'IS_LOCATION4TAX'      => array('TYPE' => 'Y/N' , 'LABEL' => Loc::getMessage('F_IS_LOCATION4TAX' ), 'DESCRIPTION' => Loc::getMessage('F_IS_LOCATION4TAX_DESCR'), 'ONCLICK' => $reload),
 );
 
 // prepare property settings for view
@@ -264,7 +273,7 @@ elseif ($property['TYPE'] == 'LOCATION')
 
 // payment system options
 
-$paymentOptions = array('' => Loc::getMessage('SALE_PROPERTY_SELECT_ALL'));
+$paymentOptions = array();
 $result = CSalePaySystem::GetList(
 	array("SORT"=>"ASC", "NAME"=>"ASC"),
 	array("ACTIVE" => "Y"),
@@ -276,32 +285,17 @@ while ($row = $result->Fetch())
 	$paymentOptions[$row['ID']] = $row['NAME'] . ($row['LID'] ? " ({$row['LID']}) " : ' ') . "[{$row['ID']}]";
 
 // delivery system options
+$deliveryOptions = array();
 
-$deliveryOptions = array('' => Loc::getMessage('SALE_PROPERTY_SELECT_ALL'));
-
-$result = CSaleDelivery::GetList(
-	array("SORT"=>"ASC", "NAME"=>"ASC"),
-	array("ACTIVE" => "Y"),
-	false,
-	false,
-	array("ID", "NAME", "ACTIVE", "SORT")
-);
-while ($row = $result->Fetch())
-	$deliveryOptions[$row['ID']] = $row['NAME']." [".$row['ID']."]";
-
-$result = CSaleDeliveryHandler::GetList(
-	array("SORT" => "ASC"),
-	array("SITE_ID" => trim($personType['LID']))
-);
-while ($row = $result->GetNext())
+foreach(\Bitrix\Sale\Delivery\Services\Manager::getActiveList(true) as $deliveryId => $deliveryFields)
 {
-	$dsName = $row['LID'] ? " ({$row['LID']})" : '';
-	foreach ($row['PROFILES'] as $profileId => $arDeliveryProfile)
-		if ($arDeliveryProfile['ACTIVE'] == 'Y')
-		{
-			$id = $row['SID'].':'.$profileId;
-			$deliveryOptions[$id] = $row['NAME']." ({$arDeliveryProfile["TITLE"]}) [$id] $dsName";
-		}
+	$name = $deliveryFields["NAME"]." [".$deliveryId."]";
+	$sites = \Bitrix\Sale\Delivery\Restrictions\Manager::getSitesByServiceId($deliveryId);
+
+	if(!empty($sites))
+		$name .= " (".implode(", ", $sites).")";
+
+	$deliveryOptions[$deliveryId] = $name;
 }
 
 $relationsSettings = array(
@@ -696,8 +690,14 @@ if ($errors)
 	<?$tabControl->BeginNextTab()?>
 
 	<?foreach ($relationsSettings as $name => $input):
-		if (! $value = $relations[$name])
-			$value = array('');
+		if (empty($relations[$name]))
+		{
+			$value = array('-1');
+		}
+		else
+		{
+			$value = $relations[$name];
+		}
 		?>
 		<tr>
 			<?

@@ -176,6 +176,7 @@ if (isset($_REQUEST['dontsave']) && $_REQUEST['dontsave'] == 'Y')
 {
 	$intLockUserID = 0;
 	$strLockTime = '';
+	DiscountCouponsManager::clear(true);
 	if (!CSaleOrder::IsLocked($ID, $intLockUserID, $strLockTime))
 		CSaleOrder::UnLock($ID);
 	LocalRedirect("sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
@@ -184,6 +185,7 @@ if ($saleModulePermissions >= "W" && isset($_REQUEST['unlock']) && 'Y' == $_REQU
 {
 	$intLockUserID = 0;
 	$strLockTime = '';
+	DiscountCouponsManager::clear(true);
 	if (CSaleOrder::IsLocked($ID, $intLockUserID, $strLockTime))
 		CSaleOrder::UnLock($ID);
 	LocalRedirect("sale_order_new.php?ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
@@ -1114,7 +1116,7 @@ if (
 					}
 				}
 
-				
+
 			}
 			if ($ID > 0 AND empty($arErrors))
 			{
@@ -1205,10 +1207,10 @@ if (
 	{
 		if ($crmMode)
 			CRMModeOutput($ID);
+		DiscountCouponsManager::clear(true);
 
 		if (isset($save) AND strlen($save) > 0)
 		{
-			DiscountCouponsManager::clear(true);
 			CSaleOrder::UnLock($ID);
 			LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID."&LID=".urlencode($LID).GetFilterParams("filter_", false));
 		}
@@ -1222,6 +1224,7 @@ if (
 
 if (!empty($dontsave))
 {
+	DiscountCouponsManager::clear(true);
 	CSaleOrder::UnLock($ID);
 	if ($crmMode)
 		CRMModeOutput($ID);
@@ -2535,10 +2538,7 @@ function getLocation(country_id, region_id, city_id, arParams, site_id, admin_se
 	arParams.REGION = parseInt(region_id);
 	arParams.SITE_ID = '<?=LANGUAGE_ID?>';
 
-	if (admin_section && admin_section == "Y")
-	{
-		arParams.ADMIN_SECTION = "Y";
-	}
+	arParams.ADMIN_SECTION = "Y";
 
 	var url = '/bitrix/components/bitrix/sale.ajax.locations/templates/.default/ajax.php';
 	BX.ajax.post(url, arParams, getLocationResult);
@@ -6237,9 +6237,15 @@ $tabControl->BeginCustomField("BASKET_CONTAINER", GetMessage("NEWO_BASKET_CONTAI
 			if (!!obCartFix && obCartFix.value == 'Y')
 			{
 				if (!BX('PAYED') || !BX('PAYED').checked)
+				{
 					obCartFix.value = 'N';
+				}
 				else
+				{
 					recalcAllowed = false;
+					alert('<?=CUtil::JSEscape(GetMessage('COUPONS_RECALC_BLOCKED')); ?>');
+					obCoupon.value = '';
+				}
 			}
 			if (recalcAllowed)
 				fRecalProduct('', '', 'N', 'Y', { 'coupon' : obCoupon.value });

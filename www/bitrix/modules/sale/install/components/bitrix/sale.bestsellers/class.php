@@ -1,7 +1,9 @@
 <?php
-use \Bitrix\Main\Localization\Loc as Loc;
-use \Bitrix\Main\SystemException as SystemException;
-use \Bitrix\Main\Loader as Loader;
+use Bitrix\Main\Localization\Loc,
+	Bitrix\Main\SystemException,
+	Bitrix\Main\Loader,
+	Bitrix\Sale;
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 CBitrixComponent::includeComponentClass("bitrix:catalog.viewed.products");
@@ -64,27 +66,6 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 		if(!isset($params['FILTER']) || empty($params['FILTER']) || !is_array($params['FILTER']))
 			$params['FILTER'] = array();
 
-		if(Loader::includeModule("sale"))
-		{
-			$statuses = array(
-				"CANCELED",
-				"ALLOW_DELIVERY",
-				"PAYED",
-				"DEDUCTED"
-			);
-			$saleStatusIterator = CSaleStatus::GetList(array("SORT" => "ASC"), array("LID" => $this->getLanguageId()), false, false, array("ID"));
-			while ($row = $saleStatusIterator->Fetch())
-			{
-				$statuses[] = $row['ID'];
-			}
-
-			foreach($params['FILTER'] as $key => $status)
-			{
-				if(!in_array($status, $statuses))
-					unset($params['FILTER'][$key]);
-			}
-		}
-
 		return $params;
 	}
 
@@ -99,7 +80,7 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 			return false;
 
 		$userGroups = implode(",", Bitrix\Main\UserTable::getUserGroupIds($this->getUserId()));
-		return !($this->StartResultCache(false, $userGroups));
+		return !($this->startResultCache(false, $userGroups));
 	}
 
 	protected function putDataToCache()
@@ -109,7 +90,7 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 
 	protected function abortDataCache()
 	{
-		$this->AbortResultCache();
+		$this->abortResultCache();
 	}
 
 	/**
@@ -157,10 +138,13 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 						}
 						else
 						{
-							$subFilter[] = array(
-								"=STATUS_ID" => $field,
-								">=DATE_UPDATE" => $date,
-							);
+							if (empty($this->data['ORDER_STATUS']) || in_array($field, $this->data['ORDER_STATUS']))
+							{
+								$subFilter[] = array(
+									"=STATUS_ID" => $field,
+									">=DATE_UPDATE" => $date,
+								);
+							}
 						}
 					}
 					unset($field);
@@ -178,9 +162,12 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 					}
 					else
 					{
-						$subFilter[] = array(
-							"=STATUS_ID" => $field,
-						);
+						if (empty($this->data['ORDER_STATUS']) || in_array($field, $this->data['ORDER_STATUS']))
+						{
+							$subFilter[] = array(
+								"=STATUS_ID" => $field,
+							);
+						}
 					}
 				}
 				unset($field);
@@ -229,5 +216,19 @@ class CSaleBestsellersComponent extends CCatalogViewedProductsComponent
 		parent::checkModules();
 		if(!$this->isSale)
 			throw new SystemException(Loc::getMessage("CVP_SALE_MODULE_NOT_INSTALLED"));
+	}
+
+	/**
+	 * Get additional data for cache
+	 *
+	 * @return array
+	 */
+	protected function getAdditionalRefereneces()
+	{
+		if (!$this->isSale)
+			return array();
+		return array(
+			'ORDER_STATUS' => Sale\OrderStatus::getAllStatuses()
+		);
 	}
 }

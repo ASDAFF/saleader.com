@@ -9,7 +9,9 @@ namespace Bitrix\Sale\Internals;
 
 use Bitrix\Main;
 use Bitrix\Main\Application;
+use Bitrix\Main\Entity\Event;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Sale\Discount\Gift;
 
 Loc::loadMessages(__FILE__);
 
@@ -37,7 +39,7 @@ Loc::loadMessages(__FILE__);
  * <li> CREATED_BY int optional
  * <li> PRIORITY int optional default 1
  * <li> LAST_DISCOUNT bool optional default 'Y'
- * <li> VERSION int optional default 1
+ * <li> VERSION int optional default 3
  * <li> CONDITIONS text optional
  * <li> CONDITIONS_LIST text optional
  * <li> UNPACK text optional
@@ -56,6 +58,7 @@ class DiscountTable extends Main\Entity\DataManager
 {
 	const VERSION_OLD = 0x0001;
 	const VERSION_NEW = 0x0002;
+	const VERSION_15 = 0x0003;
 
 	protected static $deleteCoupons = false;
 
@@ -148,8 +151,8 @@ class DiscountTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('DISCOUNT_ENTITY_LAST_DISCOUNT_FIELD')
 			)),
 			'VERSION' => new Main\Entity\EnumField('VERSION', array(
-				'values' => array(self::VERSION_OLD, self::VERSION_NEW),
-				'default_value' => self::VERSION_NEW,
+				'values' => array(self::VERSION_OLD, self::VERSION_NEW, self::VERSION_15),
+				'default_value' => self::VERSION_15,
 				'title' => Loc::getMessage('DISCOUNT_ENTITY_VERSION_FIELD')
 			)),
 			'CONDITIONS_LIST' => new Main\Entity\TextField('CONDITIONS_LIST', array(
@@ -190,6 +193,12 @@ class DiscountTable extends Main\Entity\DataManager
 			'COUPON' => new Main\Entity\ReferenceField(
 				'COUPON',
 				'Bitrix\Sale\Internals\DiscountCoupon',
+				array('=this.ID' => 'ref.DISCOUNT_ID'),
+				array('join_type' => 'LEFT')
+			),
+			'DISCOUNT_ENTITY' => new Main\Entity\ReferenceField(
+				'DISCOUNT_ENTITY',
+				'Bitrix\Sale\Internals\DiscountEntities',
 				array('=this.ID' => 'ref.DISCOUNT_ID'),
 				array('join_type' => 'LEFT')
 			)
@@ -295,6 +304,25 @@ class DiscountTable extends Main\Entity\DataManager
 	}
 
 	/**
+	 * Default onAfterAdd handler. Absolutely necessary.
+	 *
+	 * @param Main\Entity\Event $event		Event object.
+	 * @return void
+	 */
+	public static function onAfterAdd(Main\Entity\Event $event)
+	{
+		$fields = $event->getParameter('fields');
+		if(isset($fields['ACTIONS_LIST']))
+		{
+			$giftManager = Gift\Manager::getInstance();
+			if(!$giftManager->existsDiscountsWithGift() && $giftManager->isContainGiftAction($fields))
+			{
+				$giftManager->enableExistenceDiscountsWithGift();
+			}
+		}
+	}
+
+	/**
 	 * Default onBeforeUpdate handler. Absolutely necessary.
 	 *
 	 * @param Main\Entity\Event $event		Event object.
@@ -333,6 +361,15 @@ class DiscountTable extends Main\Entity\DataManager
 		$data = $event->getParameter('fields');
 		if (isset($data['ACTIVE']))
 			DiscountGroupTable::changeActiveByDiscount($id, $data['ACTIVE']);
+
+		if(isset($fields['ACTIONS_LIST']))
+		{
+			$giftManager = Gift\Manager::getInstance();
+			if(!$giftManager->existsDiscountsWithGift() && $giftManager->isContainGiftAction($data))
+			{
+				$giftManager->enableExistenceDiscountsWithGift();
+			}
+		}
 		unset($data, $id);
 	}
 
@@ -375,6 +412,8 @@ class DiscountTable extends Main\Entity\DataManager
 			DiscountCouponTable::deleteByDiscount(self::$deleteCoupons);
 			self::$deleteCoupons = false;
 		}
+		Gift\RelatedDataTable::deleteByDiscount($id);
+
 		unset($id);
 	}
 
@@ -402,6 +441,11 @@ class DiscountTable extends Main\Entity\DataManager
 			' set '.$helper->quote('USE_COUPONS').' = \''.$use.'\' where '.
 			$helper->quote('ID').' in ('.implode(',', $discountList).')'
 		);
+
+		if($use === 'Y')
+		{
+			Gift\RelatedDataTable::deleteByDiscounts($discountList);
+		}
 	}
 
 	/**

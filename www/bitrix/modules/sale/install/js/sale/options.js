@@ -52,7 +52,8 @@
 			BX.selectUtils.addNewOption(BX(BX.Sale.Options.cityPrf+siteId), "", BX.message("SMO_LOCATION_ALL"), false, false);
 
 			for(var i in regions)
-				BX.selectUtils.addNewOption(locSelRegions, i, regions[i], false, false);
+				if(regions.hasOwnProperty(i))
+					BX.selectUtils.addNewOption(locSelRegions, i, regions[i], false, false);
 		},
 
 		getLocationRegions: function(countryIds, siteId)
@@ -179,7 +180,8 @@
 			BX.selectUtils.addNewOption(locSelCities, "", BX.message("SMO_LOCATION_ALL"), false, false);
 
 			for(var i in cities)
-				BX.selectUtils.addNewOption(locSelCities, i, cities[i], false, false);
+				if(cities.hasOwnProperty(i))
+					BX.selectUtils.addNewOption(locSelCities, i, cities[i], false, false);
 		}
 	};
 

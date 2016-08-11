@@ -48,4 +48,10 @@ $MESS["SALE_DH_PECOM_AS_PAYMENT_KASSA"] = " ";
 $MESS["SALE_DH_PECOM_AS_PAYMENT_BANK"] = " ";
 $MESS["SALE_DH_PECOM_FEATURE_ENABLED"] = " ";
 $MESS["SALE_DH_PECOM_PERIOD_DAYS"] = "days";
+$MESS["SALE_DH_PECOM_LOC_INSTALL"] = "PEK handler requires the e-store locations to be mapped to those of PEK. The mapping can take up to 60 minutes.";
+$MESS["SALE_DH_PECOM_LOC_INSTALL_START"] = "Start";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST"] = "Electronic shipment notification";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST_SENT"] = "sent";
+$MESS["SALE_DH_PECOM_PRELIMINARY_SEND_REQUEST"] = "Send shipment notification";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST_NOT_SENT"] = "not sent";
 ?>

@@ -6,7 +6,6 @@ define("STATISTIC_SKIP_ACTIVITY_CHECK", true);
 
 if (isset($_REQUEST["type"]) && $_REQUEST["type"] == "crm")
 {
-	define("LANG", "en");
 	define("ADMIN_SECTION", true);
 }
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
@@ -48,6 +47,7 @@ elseif($type=="crm")
 		$IMPORT_SIZE = intval($_GET["IMPORT_SIZE"]);
 		$GZ_COMPRESSION_SUPPORTED = intval($_GET["GZ_COMPRESSION_SUPPORTED"]);
 	}
+
 	$APPLICATION->IncludeComponent("bitrix:sale.export.1c", "", Array(
 			"CRM_MODE" => "Y",
 			"ORDER_ID" => $orderId,
@@ -117,14 +117,38 @@ elseif($type=="listen")
 {
 	$APPLICATION->RestartBuffer();
 
+	CModule::IncludeModule('sale');
+	CSaleExport::setVersionSchema(\Bitrix\Main\Application::getInstance()->getContext()->getRequest()->get("version"));
+
+	$timeLimit = 240;//4 minute
+	$startExecTime  = time();
+	$max_execution_time = (intval(ini_get("max_execution_time")) * 0.75);
+	$max_execution_time = ($max_execution_time > $timeLimit )? $timeLimit:$max_execution_time;
+
 	if(CModule::IncludeModule("sale") && defined("CACHED_b_sale_order"))
 	{
 		while(!$CACHE_MANAGER->getImmediate(CACHED_b_sale_order, "sale_orders"))
 		{
 			usleep(1000);
+
+			if(CSaleExport::getVersionSchema() > CSaleExport::DEFAULT_VERSION)
+			{
+				if(intVal(time() - $startExecTime) > $max_execution_time)
+				{
+					break;
+				}
+			}
 		}
 	}
-	echo "success\n";
+
+	if($CACHE_MANAGER->getImmediate(CACHED_b_sale_order, "sale_orders"))
+	{
+		echo "success\n";
+	}
+	elseif(CSaleExport::getVersionSchema() > CSaleExport::DEFAULT_VERSION)
+	{
+		CHTTP::SetStatus("304 Not Modified");
+	}
 }
 else
 {

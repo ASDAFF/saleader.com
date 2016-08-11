@@ -24,4 +24,8 @@ $MESS["SALE_SLRI_STAGE_INITIAL"] = "awaiting start";
 $MESS["SALE_SLRI_SURE_REINDEX"] = "Are you sure you want to re-index now?";
 $MESS["SALE_SLRI_HEAVY_DUTY_NOTICE"] = "Re-indexing can take much time from half hour to several hours depending on your web settings and hardware.";
 $MESS["SALE_SLRI_HEAVY_DUTY_HOST_NOTICE"] = "Re-indexing may increase database and server load. If you are about to re-index large amount of data, it is recommended to consult your hosting helpdesk before doing that.";
+$MESS["SALE_SLRI_TYPES4INDEX_2"] = "Use fast search for types";
+$MESS["SALE_SLRI_ALL_TYPES_2"] = "All types";
+$MESS["SALE_SLRI_LANGS4INDEX_2"] = "Use fast search for languages";
+$MESS["SALE_SLRI_ALL_LANGS_2"] = "All languages";
 ?>

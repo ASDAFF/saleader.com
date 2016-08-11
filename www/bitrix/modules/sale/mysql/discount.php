@@ -42,6 +42,18 @@ class CSaleDiscount extends CAllSaleDiscount
 				self::updateDiscountHandlers($ID, $arFields['HANDLERS'], false);
 			if (isset($arFields['ENTITIES']))
 				Internals\DiscountEntitiesTable::updateByDiscount($ID, $arFields['ENTITIES'], false);
+			if(isset($arFields['ACTIONS']) && is_string($arFields['ACTIONS']))
+			{
+				$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance();
+				if($giftManager->isContainGiftAction($arFields))
+				{
+					if(!$giftManager->existsDiscountsWithGift())
+					{
+						$giftManager->enableExistenceDiscountsWithGift();
+					}
+					\Bitrix\Sale\Discount\Gift\RelatedDataTable::fillByDiscount($arFields + array('ID' => $ID));
+				}
+			}
 		}
 
 		return $ID;
@@ -94,6 +106,20 @@ class CSaleDiscount extends CAllSaleDiscount
 			self::updateDiscountHandlers($ID, $arFields['HANDLERS'], true);
 		if (isset($arFields['ENTITIES']))
 			Internals\DiscountEntitiesTable::updateByDiscount($ID, $arFields['ENTITIES'], true);
+		if(isset($arFields['ACTIONS']) && is_string($arFields['ACTIONS']))
+		{
+			\Bitrix\Sale\Discount\Gift\RelatedDataTable::deleteByDiscount($ID);
+
+			$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance();
+			if($giftManager->isContainGiftAction($arFields))
+			{
+				if(!$giftManager->existsDiscountsWithGift())
+				{
+					$giftManager->enableExistenceDiscountsWithGift();
+				}
+				\Bitrix\Sale\Discount\Gift\RelatedDataTable::fillByDiscount($arFields + array('ID' => $ID));
+			}
+		}
 
 		return $ID;
 	}

@@ -107,17 +107,29 @@ if (($ids = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 			case "delete":
 				@set_time_limit(0);
 
-				$conn->startTransaction();
+				$dbRes = \Bitrix\Sale\Internals\OrderTable::getList(array(
+					'select' => array('ID'),
+					'filter' => array(
+						'LOGIC' => 'OR',
+						'SHIPMENT.COMPANY_ID' => $id,
+						'PAYMENT.COMPANY_ID' => $id
+					)
+				));
+
+				if ($dbRes->fetch())
+				{
+					$lAdmin->AddGroupError(Loc::getMessage("SALE_COMPANY_ERROR_DELETE_LINK"), $id);
+					continue;
+				}
+
 				$result = CompanyTable::delete($id);
 				if (!$result->isSuccess())
 				{
-					$conn->rollbackTransaction();
 					if ($error = $result->getErrorMessages())
 						$lAdmin->AddGroupError(join("\n", $error), $id);
 					else
 						$lAdmin->AddGroupError(Loc::getMessage("SALE_COMPANY_ERROR_DELETE"), $id);
 				}
-				$conn->commitTransaction();
 				break;
 		}
 	}
@@ -188,19 +200,26 @@ $allSelectedFields = array_merge($allSelectedFields, array_fill_keys($selectedFi
 
 while ($company = $dbResultList->NavNext(true, "f_"))
 {
-	$res = \Bitrix\Sale\Location\LocationTable::getPathToNodeByCode(
-		$company['LOCATION_ID'],
-		array(
-			'select' => array('CHAIN' => 'NAME.NAME'),
-			'filter' => array('NAME.LANGUAGE_ID' => Application::getInstance()->getContext()->getLanguage())
-		)
-	);
-	$path = array();
-	while($item = $res->fetch())
-	    $path[] = $item['CHAIN'];
+	try
+	{
+		$res = \Bitrix\Sale\Location\LocationTable::getPathToNodeByCode(
+				$company['LOCATION_ID'],
+				array(
+						'select' => array('CHAIN' => 'NAME.NAME'),
+						'filter' => array('NAME.LANGUAGE_ID' => Application::getInstance()->getContext()->getLanguage())
+				)
+		);
 
-	$company['LOCATION_ID'] = implode(', ', array_reverse($path));
+		$path = array();
+		while ($item = $res->fetch())
+			$path[] = $item['CHAIN'];
 
+		$company['LOCATION_ID'] = implode(', ', array_reverse($path));
+	}
+	catch (\Bitrix\Main\SystemException $e)
+	{
+		$company['LOCATION_ID'] = '';
+	}
 
 	$row = &$lAdmin->AddRow($f_ID, $company, "sale_company_edit.php?ID=".$f_ID."&lang=".$lang, Loc::getMessage("SALE_COMPANY_EDIT_DESCR"));
 

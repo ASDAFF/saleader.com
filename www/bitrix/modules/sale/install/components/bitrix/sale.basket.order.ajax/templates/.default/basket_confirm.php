@@ -43,21 +43,42 @@ if (!empty($arResult["ORDER"]))
 						}
 						else
 						{
-							if (strlen($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"])>0)
-							{
-								try
-								{
-									include($arResult["PAY_SYSTEM"]["PATH_TO_ACTION"]);
-								}
-								catch(\Bitrix\Main\SystemException $e)
-								{
-									if($e->getCode() == CSalePaySystemAction::GET_PARAM_VALUE)
-										$message = GetMessage("SOA_TEMPL_ORDER_PS_ERROR");
-									else
-										$message = $e->getMessage();
+							$service = \Bitrix\Sale\PaySystem\Manager::getObjectById($arResult['PAY_SYSTEM_ID']);
 
-									echo '<span style="color:red;">'.$message.'</span>';
+							if ($service)
+							{
+								$orderId = $arResult['ORDER_ID'];
+
+								/** @var \Bitrix\Sale\Order $order */
+								$order = \Bitrix\Sale\Order::load($orderId);
+
+								if ($order === null)
+								{
+									$data = \Bitrix\Sale\Internals\OrderTable::getRow(array(
+										'select' => array('ID'),
+										'filter' => array('ACCOUNT_NUMBER' => $orderId)
+									));
+
+									$order = \Bitrix\Sale\Order::load($data['ID']);
 								}
+
+								/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+								$paymentCollection = $order->getPaymentCollection();
+
+								/** @var \Bitrix\Sale\Payment $payment */
+								foreach ($paymentCollection as $payment)
+								{
+									if (!$payment->isInner())
+									{
+										$context = \Bitrix\Main\Application::getInstance()->getContext();
+										$service->initiatePay($payment, $context->getRequest());
+										break;
+									}
+								}
+							}
+							else
+							{
+								echo '<span style="color:red;">'.GetMessage("SOA_TEMPL_ORDER_PS_ERROR").'</span>';
 							}
 						}
 						?>

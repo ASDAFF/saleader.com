@@ -1536,38 +1536,55 @@ class CSaleCondCtrlOrderFields extends CSaleCondCtrlComplex
 			$arSalePaySystemList[$arPaySystem['ID']] = $arPaySystem['NAME'];
 		}
 
-		$arSaleDeliveryList = array();
-		$arFilter = array();
-		if (static::$boolInit)
+		$linearDeliveryList = array();
+		$deliveryList = array();
+		$deliveryIterator = Sale\Delivery\Services\Table::getList(array(
+			'select' => array('ID', 'CODE', 'NAME', 'PARENT_ID'),
+			'order' => array('PARENT_ID' => 'ASC', 'SORT' =>'ASC', 'NAME' => 'ASC')
+		));
+		while ($delivery = $deliveryIterator->fetch())
 		{
-			if (isset(static::$arInitParams['SITE_ID']))
-				$arFilter['LID'] = static::$arInitParams['SITE_ID'];
-		}
-
-		$rsDeliverySystems = CSaleDelivery::GetList(array(), $arFilter, false, false, array('ID', 'NAME'));
-		while ($arDelivery = $rsDeliverySystems->Fetch())
-			$arSaleDeliveryList[$arDelivery['ID']] = $arDelivery['NAME'];
-		unset($arDelivery, $rsDeliverySystems);
-
-		$arFilter = array();
-		if (static::$boolInit)
-		{
-			if (isset(static::$arInitParams['SITE_ID']))
-				$arFilter['SITE'] = static::$arInitParams['SITE_ID'];
-		}
-
-		$rsDeliveryHandlers = CSaleDeliveryHandler::GetList(array(),$arFilter);
-		while ($arDeliveryHandler = $rsDeliveryHandlers->Fetch())
-		{
-			$boolSep = true;
-			if (!empty($arDeliveryHandler['PROFILES']) && is_array($arDeliveryHandler['PROFILES']))
+			$deliveryId = (int)$delivery['ID'];
+			$parentId = (int)$delivery['PARENT_ID'];
+			if ($parentId > 0)
 			{
-				foreach ($arDeliveryHandler['PROFILES'] as $key => $arProfile)
+				if (isset($deliveryList[$parentId]))
 				{
-					$arSaleDeliveryList[$arDeliveryHandler['SID'].':'.$key] = $arDeliveryHandler['NAME'];
+					$deliveryList[$parentId]['PROFILES'][$deliveryId] = array(
+						'ID' => $deliveryId,
+						'TITLE' => $delivery['NAME'],
+					);
 				}
 			}
+			else
+			{
+				$deliveryList[$deliveryId] = array(
+					'ID' => $deliveryId,
+					'TITLE' => $delivery['NAME'],
+					'PROFILES' => array()
+				);
+			}
+			unset($parentId, $deliveryId);
 		}
+		unset($delivery, $deliveryIterator);
+		if (!empty($deliveryList))
+		{
+			foreach ($deliveryList as &$delivery)
+			{
+				if (empty($delivery['PROFILES']))
+				{
+					$linearDeliveryList[$delivery['ID']] = $delivery['TITLE'];
+				}
+				else
+				{
+					foreach ($delivery['PROFILES'] as $profile)
+						$linearDeliveryList[$profile['ID']] = $profile['TITLE'];
+					unset($profile);
+				}
+			}
+			unset($delivery);
+		}
+		unset($deliveryList);
 
 		$arLabels = array(
 			BT_COND_LOGIC_EQ => Loc::getMessage('BT_SALE_AMOUNT_LOGIC_EQ_LABEL'),
@@ -1643,7 +1660,7 @@ class CSaleCondCtrlOrderFields extends CSaleCondCtrlComplex
 				'JS_VALUE' => array(
 					'type' => 'select',
 					'multiple' => 'Y',
-					'values' => $arSaleDeliveryList,
+					'values' => $linearDeliveryList,
 					'show_value' => 'Y'
 				),
 				'PHP_VALUE' => array(

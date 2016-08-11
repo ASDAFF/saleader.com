@@ -1,27 +1,28 @@
 <?php
 namespace Bitrix\Sale\Helpers\Admin;
 
-use Bitrix\Main\Config\Option;
-use Bitrix\Sale\Discount;
+use Bitrix\Main\Error;
 use Bitrix\Sale\Fuser;
-use Bitrix\Sale\Internals\CompanyTable;
 use Bitrix\Sale\Order;
 use Bitrix\Main\Loader;
 use Bitrix\Sale\Basket;
+use Bitrix\Sale\PriceMaths;
+use Bitrix\Sale\Result;
 use Bitrix\Sale\Provider;
 use Bitrix\Main\UserTable;
 use Bitrix\Sale\BasketItem;
+use Bitrix\Sale\Discount;
 use Bitrix\Main\Page\Asset;
-use Bitrix\Main\Entity\Result;
+use Bitrix\Main\Config\Option;
 use Bitrix\Highloadblock as HL;
 use Bitrix\Main\SystemException;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Entity\EntityError;
-use Bitrix\Sale\ResultError;
 use Bitrix\Sale\UserMessageException;
 use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\ArgumentTypeException;
 use Bitrix\Sale\DiscountCouponsManager;
+use Bitrix\Sale\Internals\CompanyTable;
 use Bitrix\Sale\Helpers\Admin\Blocks\OrderBasket;
 
 Loc::loadMessages(__FILE__);
@@ -118,8 +119,7 @@ class OrderEdit
 		}
 
 		$curFormat = \CCurrencyLang::getCurrencyFormat($currencyId);
-		$currencyLang = trim(str_replace("#", '', $curFormat["FORMAT_STRING"]));
-
+		$currencyLang = preg_replace("/(^|[^&])#/", '$1', $curFormat["FORMAT_STRING"]);
 		$langPhrases = array("SALE_ORDEREDIT_DISCOUNT_UNKNOWN", "SALE_ORDEREDIT_REFRESHING_DATA", "SALE_ORDEREDIT_FIX", "SALE_ORDEREDIT_UNFIX");
 
 		$result = '
@@ -150,15 +150,16 @@ class OrderEdit
 	}
 
 	/**
-	 * @param int $userId
+	 * @param int $userId.
+	 * @param string $siteId.
 	 * @return string User name.
 	 */
-	public static function getUserName($userId, $addLogin = true)
+	public static function getUserName($userId, $siteId = "")
 	{
 		if(intval($userId) <= 0)
 			return Loc::getMessage("SALE_ORDEREDIT_NAME_NULL");
 
-		static $userNames;
+		static $userNames = array();
 
 		if(!isset($userNames[$userId]))
 		{
@@ -166,16 +167,15 @@ class OrderEdit
 
 			if($buyer = $res->fetch())
 			{
-				$userNames[$userId] = "";
-
-				if($addLogin)
-					$userNames[$userId]  .= "(".$buyer["LOGIN"].")";
-
-				if ($buyer["NAME"] != "")
-					$userNames[$userId] .= " ".$buyer["NAME"];
-
-				if ($buyer["LAST_NAME"] != "")
-					$userNames[$userId] .= " ".$buyer["LAST_NAME"];
+				$userNames[$userId] = \CUser::FormatName(
+					\CSite::GetNameFormat(
+						null,
+						$siteId
+					),
+					$buyer,
+					true,
+					false
+				);
 			}
 		}
 
@@ -184,15 +184,16 @@ class OrderEdit
 
 	/**
 	 * @param string $text The order problem description.
+	 * @param int $orderId
 	 * @return string HTML Problem block.
 	 */
-	public static function getProblemBlockHtml($text)
+	public static function getProblemBlockHtml($text, $orderId)
 	{
 		if(strlen($text) <= 0)
 			$result = "";
 		else
 			$result = '
-				<div class="adm-bus-orderproblem">
+				<div class="adm-bus-orderproblem" id="sale-adm-order-problem-block">
 					<div class="adm-bus-orderproblem-container">
 						<table>
 							<tr>
@@ -200,7 +201,7 @@ class OrderEdit
 								<td class="adm-bus-orderproblem-text">'.$text.'</td>
 							</tr>
 						</table>
-						<span class="adm-bus-orderproblem-close" title="'.Loc::getMessage("SALE_ORDEREDIT_CLOSE").'"></span>
+						<span class="adm-bus-orderproblem-close" title="'.Loc::getMessage("SALE_ORDEREDIT_CLOSE").'" onclick="BX.Sale.Admin.OrderEditPage.onProblemCloseClick(\''.$orderId.'\',\'sale-adm-order-problem-block\');"></span>
 					</div>
 				</div>';
 
@@ -296,20 +297,12 @@ class OrderEdit
 
 	protected static function getUserId($order, $formData, $createUserIfNeed, \Bitrix\Sale\Result &$result)
 	{
-		$anonymousUserId = \CSaleUser::GetAnonymousUserID();
-
-		if(intval($formData["USER_ID"]) > 0 && $formData["USER_ID"] != $anonymousUserId)
-			return $formData["USER_ID"];
+		if(intval($formData["USER_ID"]) > 0)
+			return intval($formData["USER_ID"]);
 
 		$userId = 0;
 
-		if($createUserIfNeed
-			&& (
-				$formData["USER_ID"] == $anonymousUserId
-				|| !isset($formData["USER_ID"])
-				|| intval($formData["USER_ID"]) <= 0
-			)
-		)
+		if($createUserIfNeed && (!isset($formData["USER_ID"]) || intval($formData["USER_ID"]) <= 0))
 		{
 			try
 			{
@@ -320,9 +313,6 @@ class OrderEdit
 				$result->addError( new EntityError($e->getMessage()));
 			}
 		}
-
-		if(intval($userId) <= 0)
-			$userId = $anonymousUserId;
 
 		return $userId;
 	}
@@ -346,6 +336,7 @@ class OrderEdit
 
 		/** @var \Bitrix\Sale\Result $res */
 		$res = self::fillSimpleFields($order, $formData, $creatorUserId);
+
 		if(!$res->isSuccess())
 			$opResult->addErrors($res->getErrors());
 
@@ -371,8 +362,26 @@ class OrderEdit
 		//init basket
 		if(isset($formData["PRODUCT"]) && is_array($formData["PRODUCT"]))
 		{
-			$basket = \Bitrix\Sale\Basket::create($formData["SITE_ID"], $fUserId);
-			sortByColumn($formData["PRODUCT"], array("BASE_PRICE" => SORT_DESC, "PRICE" => SORT_DESC));
+			$isStartField = $order->isStartField();
+			$basket = \Bitrix\Sale\Basket::create($formData["SITE_ID"]);
+
+			$res = $order->setBasket($basket);
+
+			if(!$res->isSuccess())
+				$opResult->addErrors($res->getErrors());
+
+			$basket->setFUserId($fUserId);
+			\Bitrix\Sale\ProviderBase::setUsingTrustData(true);
+
+			$sort = 100;
+
+			foreach($formData["PRODUCT"] as $basketCode => $productData)
+			{
+				$formData["PRODUCT"][$basketCode]["SORT"] = $sort;
+				$sort += 100;
+			}
+
+			sortByColumn($formData["PRODUCT"], array("BASE_PRICE" => SORT_DESC, "PRICE" => SORT_DESC), '', null, true);
 
 			foreach($formData["PRODUCT"] as $basketCode => $productData)
 			{
@@ -396,9 +405,7 @@ class OrderEdit
 					if(!empty($productData["PROVIDER_DATA"]))
 					{
 						$providerData = unserialize($productData["PROVIDER_DATA"]);
-
-						if(is_array($providerData) && !empty($providerData))
-							self::setProviderTrustData($item, $order, $providerData);
+						self::setProviderTrustData($item, $order, $providerData);
 					}
 
 					if(!empty($productData["SET_ITEMS_DATA"]))
@@ -428,7 +435,10 @@ class OrderEdit
 					$fbRes = self::fillBasketItem($item, $productData, $order, $basket, $needDataUpdate);
 
 					if(!$fbRes->isSuccess())
+					{
 						$opResult->addErrors($fbRes->getErrors());
+						return null;
+					}
 
 					if(isset($productData["PROPS"]) && !empty($productData["PROPS"]) && is_array($productData["PROPS"]))
 					{
@@ -439,10 +449,17 @@ class OrderEdit
 				}
 			}
 
-			$res = $order->setBasket($basket);
+			if ($isStartField)
+			{
+				$hasMeaningfulFields = $order->hasMeaningfulField();
 
-			if(!$res->isSuccess())
-				$opResult->addErrors($res->getErrors());
+				/** @var Result $r */
+				$r = $order->doFinalAction($hasMeaningfulFields);
+				if (!$r->isSuccess())
+				{
+					$opResult->addErrors($r->getErrors());
+				}
+			}
 
 			if(isset($formData["DISCOUNTS"]) && is_array($formData["DISCOUNTS"]))
 				$order->getDiscount()->setApplyResult($formData["DISCOUNTS"]);
@@ -457,7 +474,7 @@ class OrderEdit
 
 	public static function saveCoupons($userId, $formData)
 	{
-		if($userId == \CSaleUser::GetAnonymousUserID())
+		if(intval($userId) <= 0)
 			return false;
 
 		// init discount coupons
@@ -484,17 +501,15 @@ class OrderEdit
 	{
 		$result = new Result();
 		$errors = array();
+		$name = "";
 
-		if(!$profileName = $order->getPropertyCollection()->getProfileName())
-		{
-			$result->addError(new EntityError(Loc::getMessage("SALE_ORDEREDIT_PROFILE_ERROR_NAME")));
-			return $result;
-		}
+		if($profileName = $order->getPropertyCollection()->getProfileName())
+			$name = $profileName->getValue();
 
 		$res = \CSaleOrderUserProps::DoSaveUserProfile(
 			$order->getUserId(),
 			$profileId,
-			$profileName->getValue(),
+			$name,
 			$order->getPersonTypeId(),
 			$propCollection = $formData["PROPERTIES"],
 			$errors
@@ -518,8 +533,8 @@ class OrderEdit
 
 	/**
 	 * @param array $formData
-	 * @param $order
-	 * @param $userId
+	 * @param Order $order
+	 * @param int $userId
 	 * @param bool $createUserIfNeed
 	 * @param array $files
 	 * @param \Bitrix\Sale\Result $result
@@ -527,10 +542,11 @@ class OrderEdit
 	 * @throws SystemException
 	 * @throws \Bitrix\Main\ObjectNotFoundException
 	 */
-	public static function editOrderByFormData(array $formData, $order, $userId, $createUserIfNeed = true, array $files = array(), \Bitrix\Sale\Result &$result)
+	public static function editOrderByFormData(array $formData, Order $order, $userId, $createUserIfNeed = true, array $files = array(), \Bitrix\Sale\Result &$result)
 	{
 		/** @var \Bitrix\Sale\Result $res */
 		$res = self::fillSimpleFields($order, $formData, $userId);
+
 		if(!$res->isSuccess())
 			$result->addErrors($res->getErrors());
 
@@ -555,21 +571,32 @@ class OrderEdit
 
 		if(isset($formData["PRODUCT"]) && is_array($formData["PRODUCT"]))
 		{
-			sortByColumn($formData["PRODUCT"], array("BASE_PRICE" => SORT_DESC, "PRICE" => SORT_DESC));
+			$sort = 100;
+
+			foreach($formData["PRODUCT"] as $basketCode => $productData)
+			{
+				$formData["PRODUCT"][$basketCode]["SORT"] = $sort;
+				$sort += 100;
+			}
+
+			sortByColumn($formData["PRODUCT"], array("BASE_PRICE" => SORT_DESC, "PRICE" => SORT_DESC), '', null, true);
 
 			foreach($formData["PRODUCT"] as $basketCode => $productData)
 			{
 				if (!isset($productData["PROPS"]))
 					$productData["PROPS"] = array();
+
 				$item = $basket->getExistsItem($productData["MODULE"], $productData["OFFER_ID"], $productData["PROPS"]);
 
+				if ($item == null)
+					DiscountCouponsManager::useSavedCouponsForApply(false);
 				if($item == null && $basketCode != "new")
 					$item = $basket->getItemByBasketCode($basketCode);
 
 				if($item && $item->isBundleChild())
 					continue;
 
-				if (!$item)
+				if(!$item)
 					continue;
 
 				$itemsBasketCodes[] = $item->getBasketCode();
@@ -578,7 +605,7 @@ class OrderEdit
 
 		/** @var  \Bitrix\Sale\BasketItem  $item */
 		$basketItems = $basket->getBasketItems();
-		$res = new \Bitrix\Sale\Result();
+
 		foreach($basketItems as $item)
 		{
 			if(!in_array($item->getBasketCode(), $itemsBasketCodes))
@@ -587,22 +614,28 @@ class OrderEdit
 
 				if (!$res->isSuccess())
 				{
-					$errMess = "Can't delete item from basket with basketCode: '".$item->getBasketCode()."'\n";
+					$errMess = "";
 
 					foreach($res->getErrors() as $error)
 						$errMess .= $error->getMessage()."\n";
 
-					throw new SystemException($errMess);
+					if(strlen($errMess) <= 0)
+						$errMess = Loc::getMessage("SALE_ORDEREDIT_BASKET_ITEM_DEL_ERROR");
+
+					$result->addError(new Error($errMess));
 				}
 			}
 		}
 
+		\Bitrix\Sale\ProviderBase::setUsingTrustData(true);
+		$isStartField = $order->isStartField();
 
 		if(isset($formData["PRODUCT"]) && is_array($formData["PRODUCT"]))
 		{
-			$isStartField = $order->isStartField();
 			foreach($formData["PRODUCT"] as $basketCode => $productData)
 			{
+				$providerData = array();
+
 				if($productData["IS_SET_ITEM"] == "Y")
 					continue;
 
@@ -611,8 +644,15 @@ class OrderEdit
 
 				$item = $basket->getExistsItem($productData["MODULE"], $productData["OFFER_ID"], $productData["PROPS"]);
 
+				//sku was changed
 				if($item == null && $basketCode != "new")
-					$item = $basket->getItemByBasketCode($basketCode);
+				{
+					if($item = $basket->getItemByBasketCode($basketCode))
+					{
+						$item->delete();
+						$item = null;
+					}
+				}
 
 				if($item && $item->isBundleChild())
 					$item = null;
@@ -641,7 +681,10 @@ class OrderEdit
 					$res = self::fillBasketItem($item, $productData, $order, $basket, $needDataUpdate);
 
 					if(!$res->isSuccess())
+					{
 						$result->addErrors($res->getErrors());
+						return null;
+					}
 
 					if(!$productAdded)
 						$productAdded = true;
@@ -664,14 +707,13 @@ class OrderEdit
 							$itemFields["MEASURE_NAME"] = $measures[$itemFields["MEASURE_CODE"]];
 					}
 
-					//Let's extract cached provider product data from field
 					if(!empty($productData["PROVIDER_DATA"]))
 					{
 						$providerData = unserialize($productData["PROVIDER_DATA"]);
-
-						if(is_array($providerData) && !empty($providerData))
-							self::setProviderTrustData($item, $order, $providerData);
 					}
+
+					if(is_array($providerData) && !empty($providerData))
+						self::setProviderTrustData($item, $order, $providerData);
 
 					if(!empty($productData["SET_ITEMS_DATA"]))
 						$productData["SET_ITEMS"] = unserialize($productData["SET_ITEMS_DATA"]);
@@ -711,13 +753,9 @@ class OrderEdit
 			$result->addError(new EntityError(Loc::getMessage("SALE_ORDEREDIT_ERROR_NO_PRODUCTS")));
 		}
 
-
-		if (!$res->isSuccess())
-			$result->addErrors($res->getErrors());
-
 		if($productAdded)
 		{
-			$res = $basket->refreshData(array('PRICE', 'BASE_PRICE', 'QUANTITY', 'COUPONS'));
+			$res = $basket->refreshData(array('PRICE', 'QUANTITY', 'COUPONS'));
 
 			if (!$res->isSuccess())
 				$result->addErrors($res->getErrors());
@@ -825,62 +863,103 @@ class OrderEdit
 	 */
 	public static function fillBasketItem(BasketItem &$item, array $productData, Order $order, Basket $basket, $needDataUpdate = false)
 	{
+		$result = new Result();
 		$basketCode = $item->getBasketCode();
 
 		if(isset($productData["PRODUCT_PROVIDER_CLASS"]) && strlen($productData["PRODUCT_PROVIDER_CLASS"]) > 0)
 			$item->setField("PRODUCT_PROVIDER_CLASS", trim($productData["PRODUCT_PROVIDER_CLASS"]));
 
-		$item->setField("QUANTITY", $productData["QUANTITY"]);
-		$product = array();
 		$data = array();
+
+		/*
+		 * Let's extract cached provider product data from field
+		 * in case activity is through ajax.
+		 */
+		if(self::$isTrustProductFormData && !$needDataUpdate)
+		{
+			if(!empty($productData["PROVIDER_DATA"]))
+				$data[$basketCode] = unserialize($productData["PROVIDER_DATA"]);
+
+			// if quantity changed we must get fresh data from provider
+			if(!empty($data[$basketCode]) && $data[$basketCode] == $productData["QUANTITY"])
+			{
+				if(!empty($productData["SET_ITEMS_DATA"]))
+					$productData["SET_ITEMS"] = unserialize($productData["SET_ITEMS_DATA"]);
+
+				if(is_array($data[$basketCode]) && !empty($data[$basketCode]))
+					self::setProviderTrustData($item, $order, $data[$basketCode]);
+			}
+			else
+			{
+				unset($data[$basketCode]);
+			}
+		}
+
+		$item->setField("NAME", $productData["NAME"]);
+		$res = $item->setField("QUANTITY", $productData["QUANTITY"]);
+
+		if(!$res->isSuccess())
+		{
+			$result->addErrors($res->getErrors());
+			return $result;
+		}
+
+		$product = array();
 
 		/* Get actual info from provider
 		 *	cases:
 		 *	 1) add new product to basket;
 		 *	 2) saving operation;
+		 * 	 3) changing quantity;
 		 */
-		if(!self::$isTrustProductFormData || $needDataUpdate)
+		if(empty($data[$basketCode]) || !self::$isTrustProductFormData || $needDataUpdate)
 		{
-			$data = Provider::getProductData($basket, array("PRICE"), $item);
+			$data = Provider::getProductData($basket, array("PRICE", "AVAILABLE_QUANTITY"), $item);
 
-			if(isset($data[$basketCode]))
+			if(empty($data[$basketCode]) && strlen($productData["PRODUCT_PROVIDER_CLASS"]) > 0)
 			{
-				$product = $data[$basketCode];
+				$name = "";
 
-				if (isset($product['DISCOUNT_PRICE']))
-				{
-					$product['DISCOUNT_PRICE'] = roundEx($product['DISCOUNT_PRICE'], SALE_VALUE_PRECISION);
-				}
+				if(!empty($productData["NAME"]))
+					$name = $productData["NAME"];
 
-				if (isset($product['BASE_PRICE']))
-				{
-					$product['PRICE'] = $product['BASE_PRICE'] - $product['DISCOUNT_PRICE'];
-				}
+				if(!empty($productData["PRODUCT_ID"]))
+					$name .= " (".$productData['PRODUCT_ID'].")";
 
-				$discount = $order->getDiscount();
-				if ($discount !== null)
-				{
-					if (isset($data[$basketCode]['BASE_PRICE']) && isset($data[$basketCode]['CURRENCY']))
-						$discount->setBasketItemBasePrice($basketCode, $data[$basketCode]['BASE_PRICE'], $data[$basketCode]['CURRENCY']);
-					if (!empty($data[$basketCode]['DISCOUNT_LIST']))
-						$discount->setBasketItemDiscounts($basketCode, $data[$basketCode]['DISCOUNT_LIST']);
-				}
+				$result->addError(
+					new Error(
+						Loc::getMessage(
+							"SALE_ORDEREDIT_PRODUCT_IS_NOT_AVAILABLE",
+							array(
+								"#NAME_ID#" => $name
+							)
+						)
+					)
+				);
+
+				return $result;
 			}
+
+			if(is_array($data[$basketCode]) && !empty($data[$basketCode]))
+				self::setProviderTrustData($item, $order, $data[$basketCode]);
 		}
 
-		/*
-		 * Let's extract cached provider product data from field
-		 * cases:
-		 *  1) all activity through ajax
-		 */
-		if(empty($data[$basketCode]) && !empty($productData["PROVIDER_DATA"]))
-			$data[$basketCode] = unserialize($productData["PROVIDER_DATA"]);
+		if(isset($data[$basketCode]) && !empty($data[$basketCode]))
+		{
+			$product = $data[$basketCode];
 
-		if(!empty($productData["SET_ITEMS_DATA"]))
-			$productData["SET_ITEMS"] = unserialize($productData["SET_ITEMS_DATA"]);
+			if(isset($product['DISCOUNT_PRICE']))
+				$product['DISCOUNT_PRICE'] = PriceMaths::roundByFormatCurrency($product['DISCOUNT_PRICE'], $order->getCurrency());
 
-		if(is_array($data[$basketCode]) && !empty($data[$basketCode]))
-			self::setProviderTrustData($item, $order, $data[$basketCode]);
+			if(isset($productData['PRICE']) && isset($productData['CUSTOM_PRICE']) && $productData['CUSTOM_PRICE'] == 'Y')
+				$product['PRICE'] = $productData['PRICE'];
+			elseif(isset($product['BASE_PRICE']))
+				$product['PRICE'] = $product['BASE_PRICE'] - $product['DISCOUNT_PRICE'];
+
+			$discount = $order->getDiscount();
+			if ($discount instanceof Discount)
+				$discount->setBasketItemData($basketCode, $data[$basketCode]);
+		}
 
 		if(!self::$isTrustProductFormData)
 		{
@@ -931,12 +1010,12 @@ class OrderEdit
 		return $result;
 	}
 
-	protected static function setProviderTrustData(BasketItem $item, Order $order, array $data)
+	public static function setProviderTrustData(BasketItem $item, Order $order, array $data)
 	{
 		if(empty($data))
 			return false;
 
-		Provider::setTrustData($order->getSiteId(), 'sale', $item->getProductId(), $data);
+		Provider::setTrustData($order->getSiteId(), $item->getField('MODULE'), $item->getProductId(), $data);
 
 		if ($item->isBundleParent())
 		{
@@ -1024,18 +1103,25 @@ class OrderEdit
 	/**
 	 * @param $newUserId
 	 * @param int $orderId
-	 * @param int $oldUserId
+	 * @param int|null $oldUserId
 	 */
 	public static function initCouponsData($newUserId, $orderId = 0, $oldUserId = 0)
 	{
-		$params = array('userId' => intval($newUserId));
+		$newUserId = (int)$newUserId;
+		$orderId = (int)$orderId;
 
-		if(intval($oldUserId) != intval($newUserId))
-			$params["oldUserId"] = intval($oldUserId);
+		$params = array('userId' => $newUserId);
 
-		if (intval($orderId) > 0)
+		if ($oldUserId !== null)
 		{
-			$params['orderId'] = intval($orderId);
+			$oldUserId = (int)$oldUserId;
+			if ($oldUserId != $newUserId)
+				$params["oldUserId"] = $oldUserId;
+		}
+
+		if ($orderId > 0)
+		{
+			$params['orderId'] = $orderId;
 
 			DiscountCouponsManager::init(
 				DiscountCouponsManager::MODE_ORDER,
@@ -1177,9 +1263,7 @@ class OrderEdit
 			$result['DELIVERY_DISCOUNT'] = 0;
 
 		$result['PRICE_DELIVERY'] = $result['PRICE_DELIVERY_DISCOUNTED'] + $result['DELIVERY_DISCOUNT'];
-		$basketData = $orderBasket->prepareData(array(
-			"DISCOUNTS" => $discountsList
-		));
+		$basketData = $orderBasket->getPrices($discountsList);
 		$result["PRICE_BASKET_DISCOUNTED"] = $basketData["BASKET_PRICE"];
 		$result["PRICE_BASKET"] = $basketData["BASKET_PRICE_BASE"];
 
@@ -1196,10 +1280,10 @@ class OrderEdit
 	public static function setProductDetails($productId, $userId, $siteId, array $params)
 	{
 		if(strlen($productId) <= 0)
-			throw new ArgumentNullException("productId");
+			return;
 
 		if(strlen($userId) <= 0)
-			throw new ArgumentNullException("userId");
+			$userId = "0";
 
 		if(strlen($siteId) <= 0)
 			throw new ArgumentNullException("siteId");
@@ -1213,7 +1297,7 @@ class OrderEdit
 			throw new ArgumentNullException("productId");
 
 		if(strlen($userId) <= 0)
-			throw new ArgumentNullException("userId");
+			$userId = "0";
 
 		if(strlen($siteId) <= 0)
 			throw new ArgumentNullException("siteId");
@@ -1244,5 +1328,45 @@ class OrderEdit
 		}
 
 		return self::$companies;
+	}
+
+	public static function getLockingMessage($orderId)
+	{
+		$intLockUserID = 0;
+		$strLockTime = '';
+		$r = \Bitrix\Sale\Order::getLockedStatus($orderId);
+
+		if ($r->isSuccess())
+		{
+			$lockResult = $r->getData();
+
+			if (array_key_exists('LOCKED_BY', $lockResult) && intval($lockResult['LOCKED_BY']) > 0)
+				$intLockUserID = intval($lockResult['LOCKED_BY']);
+
+			if (array_key_exists('DATE_LOCK', $lockResult) && $lockResult['DATE_LOCK'] instanceof \Bitrix\Main\Type\DateTime)
+				$strLockTime = $lockResult['DATE_LOCK']->toString();
+		}
+
+		$strLockUserInfo = $intLockUserID;
+
+		$userIterator = \Bitrix\Main\UserTable::getList(array(
+				'select' => array('ID', 'LOGIN', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'EMAIL'),
+				'filter' => array('=ID' => $intLockUserID)
+		));
+
+		if ($arOneUser = $userIterator->fetch())
+		{
+			$strNameFormat = \CSite::GetNameFormat(true);
+			$strLockUser = \CUser::FormatName($strNameFormat, $arOneUser);
+			$strLockUserInfo = '<a href="/bitrix/admin/user_edit.php?lang='.LANGUAGE_ID.'&ID='.$intLockUserID.'">'.$strLockUser.'</a>';
+		}
+
+		return Loc::getMessage(
+			'SALE_ORDEREDIT_LOCKED',
+			array(
+				'#ID#' => $strLockUserInfo,
+				'#DATE#' => $strLockTime,
+			)
+		);
 	}
 }

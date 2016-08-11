@@ -208,7 +208,7 @@ class CAllSaleRecurring
 		if ($arProduct["WITHOUT_ORDER"] == "Y" || $arRecur["SUCCESS_PAYMENT"] == "Y")
 		{
 			$baseSiteCurrency = CSaleLang::GetLangCurrency($arOrder["LID"]);
-			$productPrice = roundEx(CCurrencyRates::ConvertCurrency($arProduct["PRICE"], $arProduct["CURRENCY"], $baseSiteCurrency), SALE_VALUE_PRECISION);
+			$productPrice = \Bitrix\Sale\PriceMaths::roundPrecision(CCurrencyRates::ConvertCurrency($arProduct["PRICE"], $arProduct["CURRENCY"], $baseSiteCurrency));
 
 			// Delivery
 			$deliveryPrice = 0;
@@ -242,7 +242,7 @@ class CAllSaleRecurring
 					);
 				while ($arDelivery = $dbDelivery->Fetch())
 				{
-					$deliveryPriceTmp = roundEx(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $baseSiteCurrency), SALE_VALUE_PRECISION);
+					$deliveryPriceTmp = \Bitrix\Sale\PriceMaths::roundPrecision(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $baseSiteCurrency));
 					if (IntVal($arDelivery["ID"]) == $arOrder["DELIVERY_ID"])
 					{
 						$deliveryID = IntVal($arDelivery["ID"]);
@@ -253,6 +253,16 @@ class CAllSaleRecurring
 					{
 						$deliveryID = IntVal($arDelivery["ID"]);
 						$deliveryPrice = $deliveryPriceTmp;
+					}
+				}
+
+				if ($deliveryID <= 0)
+				{
+					$deliveryID = \Bitrix\Sale\Delivery\Services\EmptyDeliveryService::getEmptyDeliveryServiceId();
+
+					if ($deliveryID > 0)
+					{
+						$deliveryID = \CSaleDelivery::getCodeById($deliveryID);
 					}
 				}
 
@@ -283,17 +293,17 @@ class CAllSaleRecurring
 			{
 				if ($arDiscount["DISCOUNT_TYPE"] == "P")
 				{
-					$discountProduct = roundEx($productPrice * $arDiscount["DISCOUNT_VALUE"] / 100, SALE_VALUE_PRECISION);
-					$discount = roundEx($discountProduct * DoubleVal($arProduct["QUANTITY"]), SALE_VALUE_PRECISION); // Changed by Sigurd, 2007-08-16
+					$discountProduct = \Bitrix\Sale\PriceMaths::roundPrecision($productPrice * $arDiscount["DISCOUNT_VALUE"] / 100);
+					$discount = \Bitrix\Sale\PriceMaths::roundPrecision($discountProduct * DoubleVal($arProduct["QUANTITY"])); // Changed by Sigurd, 2007-08-16
 					$discountPrice = $productPrice - $discountProduct;
 				}
 				else
 				{
 					$discountValue = CCurrencyRates::ConvertCurrency($arDiscount["DISCOUNT_VALUE"], $arDiscount["CURRENCY"], $baseSiteCurrency);
-					$discountValue = roundEx($discountValue, SALE_VALUE_PRECISION);
+					$discountValue = \Bitrix\Sale\PriceMaths::roundPrecision($discountValue);
 
-					$discountProduct = roundEx(1.0 * $discountValue / DoubleVal($arProduct["QUANTITY"]), SALE_VALUE_PRECISION);// Changed by Sigurd, 2007-08-16
-					$discount = roundEx($curDiscount * DoubleVal($arProduct["QUANTITY"]), SALE_VALUE_PRECISION);
+					$discountProduct = \Bitrix\Sale\PriceMaths::roundPrecision(1.0 * $discountValue / DoubleVal($arProduct["QUANTITY"]));// Changed by Sigurd, 2007-08-16
+					$discount = \Bitrix\Sale\PriceMaths::roundPrecision($curDiscount * DoubleVal($arProduct["QUANTITY"]));
 					$discountPrice = $productPrice - $discountProduct;
 				}
 			}
@@ -400,7 +410,7 @@ class CAllSaleRecurring
 				}
 				else
 				{
-					$arTaxList[0]["VALUE_MONEY"] = (($discountPrice / ($vatRate +1)) * $vatRate) * DoubleVal($arProduct["QUANTITY"]);
+					$arTaxList[0]["VALUE_MONEY"] = \Bitrix\Sale\PriceMaths::roundPrecision((($discountPrice / ($vatRate +1)) * $vatRate) * DoubleVal($arProduct["QUANTITY"]));
 					$taxVatPrice = $arTaxList[0]["VALUE_MONEY"];
 				}
 			}

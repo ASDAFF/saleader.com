@@ -703,7 +703,7 @@ foreach ($arBasketOrder as $arBasket):
 	</td>
 	<td class=xl40>---</td>
 	<td class=xl40 width=40 style='border-top:none;border-left:none;width:30pt'><?=$arBasket['MEASURE_TEXT']?></td>
-	<td class=xl41 style='border-top:none;border-left:none'><?echo $arQuantities[$mi] ?></td>
+	<td class=xl41 style='border-top:none;border-left:none'><?echo Bitrix\Sale\BasketItem::formatQuantity($arQuantities[$mi]);?></td>
 	<td align="right" class=xl42 style='border-top:none;border-left:none'><?echo number_format($item_price, 2, ',', ' ');?></td>
 	<td class=xl42 align=right style='border-top:none;border-left:none' x:num><?echo number_format($item_price * $arQuantities[$mi], 2, ',', ' ');  $total_price += ($item_price*$arQuantities[$mi]);?></td>
 	<td class=xl43 style='border-top:none;border-left:none'>&nbsp;</td>

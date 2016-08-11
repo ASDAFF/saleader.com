@@ -211,4 +211,5 @@ $MESS["SALE_F_DATE_PAID"] = "Payment date";
 $MESS["SO_XML_ID"] = "External order ID";
 $MESS["SALE_F_SOURCE"] = "Order source";
 $MESS["SALE_F_NONE"] = "no source";
+$MESS["SALE_F_DELIVERY_SERVICE"] = "Delivery services";
 ?>

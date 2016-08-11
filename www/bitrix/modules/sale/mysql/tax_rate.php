@@ -40,7 +40,9 @@ class CSaleTaxRate extends CAllSaleTaxRate
 		for ($i=0; $i < $countFilteKey; $i++)
 		{
 			$val = $DB->ForSql($arFilter[$filter_keys[$i]]);
-			if (strlen($val)<=0) continue;
+
+			if (strval($val) == "")
+				$val = 0;
 
 			$key = $filter_keys[$i];
 			if ($key[0]=="!")
@@ -90,7 +92,7 @@ class CSaleTaxRate extends CAllSaleTaxRate
 						try
 						{
 							$class = self::CONN_ENTITY_NAME.'Table';
-							$arSqlSearch[] = "	TR.ID in (".$class::getConnectedEntitiesQuery(IntVal($val), 'id', array('select' => array('ID'))).") ";
+							$arSqlSearch[] = "	TR.ID in (".$class::getConnectedEntitiesQuery(intval($val), 'id', array('select' => array('ID'))).") ";
 						}
 						catch(Exception $e)
 						{
@@ -107,6 +109,16 @@ class CSaleTaxRate extends CAllSaleTaxRate
 							"	LEFT JOIN b_sale_location2location_group L2LG ON (TR2L.LOCATION_TYPE = 'G' AND TR2L.LOCATION_CODE = L2LG.LOCATION_GROUP_ID) ";
 					}
 
+					break;
+				case "LOCATION_CODE":
+						try
+						{
+							$class = self::CONN_ENTITY_NAME.'Table';
+							$arSqlSearch[] = "	TR.ID in (".$class::getConnectedEntitiesQuery($val, 'code', array('select' => array('ID'))).") ";
+						}
+						catch(Exception $e)
+						{
+						}
 					break;
 			}
 		}

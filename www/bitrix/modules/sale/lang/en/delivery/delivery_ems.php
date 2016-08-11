@@ -15,4 +15,6 @@ $MESS["SALE_DH_EMS_ERROR_NO_CITY_TO"] = "The delivery service does not deliver t
 $MESS["SALE_DH_EMS_ERROR_NO_CITY_FROM"] = "The delivery service does not deliver from #CITY#.";
 $MESS["SALE_DH_EMS_ERROR_NO_COUNTRY_TO"] = "The delivery service does not deliver to #COUNTRY#.";
 $MESS["SALE_DH_EMS_DAYS"] = "days";
+$MESS["SALE_DH_EMS_CORRECT_REGIONS"] = "Update regions.";
+$MESS["SALE_DH_EMS_ERROR_NO_LOCATION_TO"] = "Delivery service cannot ship to this location";
 ?>

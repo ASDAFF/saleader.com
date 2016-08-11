@@ -79,9 +79,8 @@ class CAllSaleOrderPropsGroup
 			$DB->Query("DELETE FROM b_sale_order_props_variant WHERE ORDER_PROPS_ID = ".$arOrderProps["ID"]."", true);
 			$DB->Query("UPDATE b_sale_order_props_value SET ORDER_PROPS_ID = NULL WHERE ORDER_PROPS_ID = ".$arOrderProps["ID"]."", true);
 			$DB->Query("DELETE FROM b_sale_order_props_relation WHERE PROPERTY_ID = ".$arOrderProps["ID"]."", true);
-			$DB->Query("DELETE FROM b_sale_user_props_value WHERE ORDER_PROPS_ID = ".$arOrderProps["ID"]."", true);
 		}
-		$DB->Query("DELETE FROM b_sale_order_props WHERE PROPS_GROUP_ID = ".$ID."", true);
+		$DB->Query("UPDATE b_sale_order_props SET PROPS_GROUP_ID = NULL WHERE PROPS_GROUP_ID = ".$ID."", true);
 		CSaleOrderUserProps::ClearEmpty();
 
 		return $DB->Query("DELETE FROM b_sale_order_props_group WHERE ID = ".$ID."", true);

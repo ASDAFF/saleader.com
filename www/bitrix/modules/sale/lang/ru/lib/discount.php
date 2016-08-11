@@ -1,7 +1,9 @@
 <?
-$MESS["BX_SALE_DISCOUNT_APPLY_MODE_ADD"] = "дополнять уже примененные скидки";
-$MESS["BX_SALE_DISCOUNT_APPLY_MODE_LAST"] = "не действовать, если есть флаг \"Прекратить дальнейшее применение скидок\"";
-$MESS["BX_SALE_DISCOUNT_APPLY_MODE_DISABLE"] = "не действовать, если уже были применены любые скидки";
+$MESS["BX_SALE_DISCOUNT_APPLY_MODE_ADD_EXT"] = "дополнять для товаров уже примененные скидки";
+$MESS["BX_SALE_DISCOUNT_APPLY_MODE_LAST_EXT"] = "не действовать на товар, если к нему были применены скидки с флагом \"Прекратить дальнейшее применение скидок\"";
+$MESS["BX_SALE_DISCOUNT_APPLY_MODE_DISABLE_EXT"] = "не действовать на товар, если к нему уже были применены любые скидки";
+$MESS["BX_SALE_DISCOUNT_APPLY_MODE_FULL_LAST"] = "отключать все правила корзины, если к товарам были применены скидки с флагом \"Прекратить дальнейшее применение скидок\"";
+$MESS["BX_SALE_DISCOUNT_APPLY_MODE_FULL_DISABLE"] = "отключать все правила корзины, если к товарам уже были применены любые скидки";
 $MESS["BX_SALE_DISCOUNT_ERR_BASKET_EMPTY"] = "Отсутствуют товары заказа";
 $MESS["BX_SALE_DISCOUNT_ERR_BASKET_BUNDLE_EMPTY"] = "Отсутствуют элементы комплекта";
 $MESS["BX_SALE_DISCOUNT_ERR_TOO_MANY_SHIPMENT"] = "В создаваемом заказе несколько отгрузок";

@@ -34,4 +34,7 @@ $MESS ["SALE_DH_RP_FEATURE_ENABLED"] = "включена";
 $MESS ["SALE_DH_RP_ERROR_LOCATION_NOT_FOUND"] = "Местоположение не найдено";
 $MESS ["SALE_DH_RP_SET_DEFAULT_TARIF_ZONES"] = "Почтовые зоны по умолчанию";
 $MESS ["SALE_DH_RP_SET_DEFAULT_TARIF_ZONES_SET"] = "установить";
+$MESS ["SALE_DH_RP_SET_DEFAULT_TARIF"] = "Тарифы по умолчанию";
+$MESS ["SALE_DH_RP_SET_DEFAULT_TARIF_SET"] = "установить";
+$MESS ["SALE_DH_RP_CALCULATE_ERROR"] = "Не удалось рассчитать стоимость доставки";
 ?>

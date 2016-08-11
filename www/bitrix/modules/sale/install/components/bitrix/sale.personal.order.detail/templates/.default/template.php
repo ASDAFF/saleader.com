@@ -194,22 +194,10 @@
 						<tr>
 							<td colspan="2">
 								<?
-									$ORDER_ID = $ID;
-
-									try
-									{
-										include($payment["PAY_SYSTEM"]["PSA_ACTION_FILE"]);
-									}
-									catch(\Bitrix\Main\SystemException $e)
-									{
-										if($e->getCode() == CSalePaySystemAction::GET_PARAM_VALUE)
-											$message = GetMessage("SOA_TEMPL_ORDER_PS_ERROR");
-										else
-											$message = $e->getMessage();
-
-										ShowError($message);
-									}
-
+									if (array_key_exists('ERROR', $payment) && strlen($payment['ERROR']) > 0)
+										ShowError($payment['ERROR']);
+									elseif (array_key_exists('BUFFERED_OUTPUT', $payment))
+										echo $payment['BUFFERED_OUTPUT'];
 								?>
 							</td>
 						</tr>
@@ -345,7 +333,23 @@
 							<td><?=GetMessage('SPOD_ORDER_TRACKING_NUMBER')?>:</td>
 							<td><?=$shipment["TRACKING_NUMBER"]?></td>
 						</tr>
+
+						<?if(isset($shipment["TRACKING_STATUS"])):?>
+							<tr>
+								<td><?=GetMessage('SPOD_ORDER_TRACKING_STATUS')?>:</td>
+								<td><?=$shipment["TRACKING_STATUS"]?></td>
+							</tr>
+						<?endif?>
+
+						<?if(!empty($shipment["TRACKING_DESCRIPTION"])):?>
+							<tr>
+								<td><?=GetMessage('SPOD_ORDER_TRACKING_DESCRIPTION')?>:</td>
+								<td><?=$shipment["TRACKING_DESCRIPTION"]?></td>
+							</tr>
+						<?endif?>
+
 					<?endif?>
+
 
 					<tr>
 						<td><?=GetMessage('SPOD_ORDER_SHIPMENT_BASKET')?>:</td>
@@ -499,14 +503,6 @@
 						<td class="custom_t2"><?=$tax["VALUE_MONEY_FORMATED"]?></td>
 					</tr>	
 				<?endforeach?>
-
-				<? ///// TAX SUM ?>
-				<?if(floatval($arResult["TAX_VALUE"])):?>
-					<tr>
-						<td class="custom_t1"><?=GetMessage('SPOD_TAX')?>:</td>
-						<td class="custom_t2"><?=$arResult["TAX_VALUE_FORMATED"]?></td>
-					</tr>
-				<?endif?>
 
 				<? ///// DISCOUNT ?>
 				<?if(floatval($arResult["DISCOUNT_VALUE"])):?>

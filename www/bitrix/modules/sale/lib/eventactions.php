@@ -28,8 +28,48 @@ class EventActions
 	const EVENT_ON_BASKET_SAVED = "OnSaleBasketSaved";
 
 	const EVENT_ON_SHIPMENT_TRACKING_NUMBER_CHANGE = "OnShipmentTrackingNumberChange";
+	const EVENT_ON_SHIPMENT_ALLOW_DELIVERY = "OnShipmentAllowDelivery";
+	const EVENT_ON_SHIPMENT_DEDUCTED = "OnShipmentDeducted";
 
 	const EVENT_ON_BEFORE_ORDER_STATUS_CHANGE = "OnSaleBeforeStatusOrderChange";
 	const EVENT_ON_ORDER_STATUS_CHANGE = "OnSaleStatusOrderChange";
 	const EVENT_ON_ORDER_STATUS_CHANGE_SEND_MAIL = "OnSaleOrderStatusChangeSendEmail";
+
+	const ENTITY_ORDER = '\Bitrix\Sale\Order';
+	const ENTITY_SHIPMENT = '\Bitrix\Sale\Shipment';
+
+	/**
+	 * @return array
+	 */
+	public static function getEventNotifyMap()
+	{
+		return array(
+			static::EVENT_ON_ORDER_SAVED => array(
+				"ENTITY" => static::ENTITY_ORDER,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendOrderNew"),
+			),
+			static::EVENT_ON_ORDER_CANCELED => array(
+				"ENTITY" => static::ENTITY_ORDER,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendOrderCancel"),
+			),
+			static::EVENT_ON_ORDER_PAID => array(
+				"ENTITY" => static::ENTITY_ORDER,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendOrderPaid"),
+			),
+
+			static::EVENT_ON_ORDER_STATUS_CHANGE => array(
+				"ENTITY" => static::ENTITY_ORDER,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendOrderStatusChange"),
+			),
+			static::EVENT_ON_SHIPMENT_TRACKING_NUMBER_CHANGE => array(
+				"ENTITY" => static::ENTITY_SHIPMENT,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendShipmentTrackingNumberChange"),
+			),
+			static::EVENT_ON_SHIPMENT_ALLOW_DELIVERY => array(
+				"ENTITY" => static::ENTITY_SHIPMENT,
+				"METHOD" => array('\Bitrix\Sale\Notify', "sendShipmentAllowDelivery"),
+			),
+		);
+	}
+
 }

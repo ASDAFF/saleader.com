@@ -14,10 +14,10 @@ if(is_array($arResult["HISTORY"]) && !empty($arResult["HISTORY"]))
 					"ROWS" => array(
 						array(
 							"TITLE" => GetMessage("SMOH_USER").":",
-							"VALUE" => $arItemHistory['USER']['LOGIN']),
+							"VALUE" => htmlspecialcharsbx($arItemHistory['USER']['LOGIN'])),
 						array(
 							"TITLE" => GetMessage("SMOH_FIO").":",
-							"VALUE" => ($arItemHistory['USER']['NAME']." ".$arItemHistory['USER']['LAST_NAME'])),
+							"VALUE" => htmlspecialcharsbx($arItemHistory['USER']['NAME']." ".$arItemHistory['USER']['LAST_NAME'])),
 						array(
 							"TITLE" => GetMessage("SMOH_OPERATION").":",
 							"VALUE" => $arItemHistory["NAME"])

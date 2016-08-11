@@ -25,7 +25,8 @@ $arTransactTypes = array(
 	"MANUAL" => GetMessage("STA_THAND"),
 	"DEL_ACCOUNT" => GetMessage("STA_TDEL"),
 	"AFFILIATE" => GetMessage("STA_AF_VIP"),
-	"EXCESS_SUM_PAID" => GetMessage("STA_TTRANSF_EXCESS_SUM_PAID")
+	"EXCESS_SUM_PAID" => GetMessage("STA_TTRANSF_EXCESS_SUM_PAID"),
+	"ORDER_PART_RETURN" => GetMessage("STA_TRETURN")
 );
 
 $sTableID = "tbl_sale_transact";

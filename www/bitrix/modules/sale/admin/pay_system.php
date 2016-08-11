@@ -2,6 +2,8 @@
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_before.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/include.php");
 
+use Bitrix\Main\Localization\Loc;
+
 $saleModulePermissions = $APPLICATION->GetGroupRight("sale");
 if ($saleModulePermissions < "W")
 	$APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
@@ -10,69 +12,68 @@ IncludeModuleLangFile(__FILE__);
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 
 $sTableID = "tbl_sale_pay_system";
+$instance = \Bitrix\Main\Application::getInstance();
+$context = $instance->getContext();
+$request = $context->getRequest();
 
 $oSort = new CAdminSorting($sTableID, "ID", "asc");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
 $arFilterFields = array(
-	//"filter_lang",
-	"filter_currency",
 	"filter_active",
 	"filter_person_type",
 );
 
 $lAdmin->InitFilter($arFilterFields);
 
-$arFilter = array();
+$filter = array();
 
-//if (strlen($filter_lang)>0 && $filter_lang!="NOT_REF") $arFilter["LID"] = Trim($filter_lang);
-if (strlen($filter_currency)>0) $arFilter["CURRENCY"] = Trim($filter_currency);
-if (strlen($filter_active)>0 && $filter_active != "NOT_REF") $arFilter["ACTIVE"] = Trim($filter_active);
+if (strlen($filter_active) > 0 && $filter_active != "NOT_REF")
+	$filter["ACTIVE"] = trim($filter_active);
 
-if (!empty($filter_person_type) && !in_array("NOT_REF", $filter_person_type))
-	$arFilter["PSA_PERSON_TYPE_ID"] = $filter_person_type;
-else
-	$filter_person_type = Array();
+if (empty($filter_person_type) || in_array("NOT_REF", $filter_person_type))
+	$filter_person_type = array();
 
-if (($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
+if (($ids = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 {
-	if ($_REQUEST['action_target']=='selected')
+	if ($request->get('action_target')=='selected')
 	{
-		$arID = Array();
-		$dbResultList = CSalePaySystem::GetList(
-			array($by => $order),
-			$arFilter,
-			false,
-			false,
-			array("ID")
+		$ids = array();
+		$dbRes = \Bitrix\Sale\Internals\PaySystemActionTable::getList(
+			array(
+				'select' => array('ID'),
+				'filter' => $filter,
+				'order' => array(ToUpper($by) => ToUpper($order))
+			)
 		);
-		while ($arResult = $dbResultList->Fetch())
-			$arID[] = $arResult['ID'];
+
+		while ($arResult = $dbRes->fetch())
+			$ids[] = $arResult['ID'];
 	}
 
-	foreach ($arID as $ID)
+	foreach ($ids as $id)
 	{
-		if (strlen($ID) <= 0)
+		if ((int)$id <= 0)
 			continue;
 
 		switch ($_REQUEST['action'])
 		{
 			case "delete":
-				@set_time_limit(0);
-
-				$DB->StartTransaction();
-
-				if (!CSalePaySystem::Delete($ID))
+				$dbRes = \Bitrix\Sale\Internals\PaymentTable::getList(array('filter' => array('PAY_SYSTEM_ID' => $id)));
+				if ($dbRes->fetch())
 				{
-					$DB->Rollback();
-
-					if ($ex = $APPLICATION->GetException())
-						$lAdmin->AddGroupError($ex->GetString(), $ID);
-					else
-						$lAdmin->AddGroupError(GetMessage("SPSAN_ERROR_DELETE"), $ID);
+					$lAdmin->AddGroupError(Loc::getMessage("SALE_DELETE_ERROR"), $id);
+					continue;
 				}
 
-				$DB->Commit();
+				$result = \Bitrix\Sale\PaySystem\Manager::delete($id);
+				if (!$result->isSuccess())
+				{
+					if ($result->getErrorMessages())
+						$lAdmin->AddGroupError(join(', ', $result->getErrorMessages()), $id);
+					else
+						$lAdmin->AddGroupError(GetMessage("SPSAN_ERROR_DELETE"), $id);
+				}
 
 				break;
 
@@ -80,15 +81,16 @@ if (($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 			case "deactivate":
 
 				$arFields = array(
-					"ACTIVE" => (($_REQUEST['action']=="activate") ? "Y" : "N")
+					"ACTIVE" => (($_REQUEST['action'] == 'activate') ? 'Y' : 'N')
 				);
 
-				if (!CSalePaySystem::Update($ID, $arFields))
+				$result = \Bitrix\Sale\Internals\PaySystemActionTable::update($id, $arFields);
+				if (!$result->isSuccess())
 				{
-					if ($ex = $APPLICATION->GetException())
-						$lAdmin->AddGroupError($ex->GetString(), $ID);
+					if ($result->getErrorMessages())
+						$lAdmin->AddGroupError(join(', ', $result->getErrorMessages()), $id);
 					else
-						$lAdmin->AddGroupError(GetMessage("SPSAN_ERROR_UPDATE"), $ID);
+						$lAdmin->AddGroupError(GetMessage("SPSAN_ERROR_UPDATE"), $id);
 				}
 
 				break;
@@ -96,108 +98,130 @@ if (($arID = $lAdmin->GroupAction()) && $saleModulePermissions >= "W")
 	}
 }
 
-$arPersonTypeList = array();
-$dbPersonType = CSalePersonType::GetList(array("SORT" => "ASC", "NAME" => "ASC"), array());
-
-while ($arPersonType = $dbPersonType->Fetch())
-	$arPersonTypeList[$arPersonType["ID"]] = $arPersonType["NAME"];
-
-$arFilter["!ID"] = \Bitrix\Sale\Internals\PaySystemInner::getId();
-
-$dbResultList = CSalePaySystem::GetList(
-	array($by => $order),
-	$arFilter,
-	false,
-	false,
-	array("ID", "LID", "CURRENCY", "NAME", "ACTIVE", "SORT", "DESCRIPTION")
-	//array("ID", "NAME", "ACTIVE", "SORT", "DESCRIPTION")
+$params = array(
+	'select' => array('ID', 'NAME', 'SORT', 'DESCRIPTION', 'ACTIVE', 'ACTION_FILE', 'LOGOTIP'),
+	'filter' => $filter
 );
 
-$siteList = array();
-$rsSites = CSite::GetList($b = "sort", $o = "asc", Array());
+if (ToUpper($by) != 'LID' && ToUpper($by) != 'CURRENCY')
+	$params['order'] = array(ToUpper($by) => ToUpper($order));
 
-while($arRes = $rsSites->Fetch())
-	$siteList[$arRes['ID']] = $arRes['NAME'];
+$dbRes = \Bitrix\Sale\Internals\PaySystemActionTable::getList($params);
 
-$dbResultList = new CAdminResult($dbResultList, $sTableID);
-$dbResultList->NavStart();
+$result = array();
 
-$lAdmin->NavText($dbResultList->GetNavPrint(GetMessage("SALE_PRLIST")));
+while ($paySystem = $dbRes->fetch())
+{
+	if (!empty($filter_person_type) && !in_array("NOT_REF", $filter_person_type))
+	{
+		$filter_person_type['PERSON_TYPE_ID'] = $filter_person_type;
+		$dbRestriction = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
+			'filter' => array(
+				'SERVICE_ID' => $paySystem['ID'],
+				'SERVICE_TYPE' => \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::SERVICE_TYPE_PAYMENT,
+				'=CLASS_NAME' => '\Bitrix\Sale\Services\PaySystem\Restrictions\PersonType'
+			)
+		));
+
+		while ($restriction = $dbRestriction->fetch())
+		{
+			if (!CSalePaySystemAction::checkRestriction($restriction, $filter_person_type))
+				continue(2);
+		}
+	}
+
+	$result[] = $paySystem;
+}
+
+$dbRes = new CDBResult();
+$dbRes->InitFromArray($result);
+
+$dbRes = new CAdminResult($dbRes, $sTableID);
+$dbRes->NavStart();
+
+$lAdmin->NavText($dbRes->GetNavPrint(GetMessage("SALE_PRLIST")));
 
 $lAdmin->AddHeaders(array(
-	array("id"=>"ID", "content"=>"ID", 	"sort"=>"id", "default"=>true),
-	array("id"=>"NAME","content"=>GetMessage("SALE_NAME"), "sort"=>"NAME", "default"=>true),
-	array("id"=>"ACTIVE", "content"=>GetMessage("SALE_ACTIVE"),  "sort"=>"ACTIVE", "default"=>true),
 	array("id"=>"SORT", "content"=>GetMessage("SALE_SORT"),  "sort"=>"SORT", "default"=>true),
-	array("id"=>"LID", "content"=>GetMessage('SALE_LID'),	"sort"=>"LID", "default"=>false),
-	array("id"=>"CURRENCY", "content"=>GetMessage("SALE_H_CURRENCY"),  "sort"=>"CURRENCY", "default"=>false),
-	array("id"=>"DESCRIPTION", "content"=>GetMessage("SALE_H_DESCRIPTION"), "default"=>false),
+	array("id"=>"NAME","content"=>GetMessage("SALE_NAME"), "sort"=>"NAME", "default"=>true),
+	array("id"=>"DESCRIPTION", "content"=>GetMessage("SALE_H_DESCRIPTION"), "default"=>true),
+	array("id"=>"LOGOTIP", "content"=>GetMessage("SALE_LOGOTIP"),  "default"=>true),
+	array("id"=>"ACTIVE", "content"=>GetMessage("SALE_ACTIVE"),  "sort"=>"ACTIVE", "default"=>true),
 	array("id"=>"PERSON_TYPES", "content"=>GetMessage("SALE_H_PERSON_TYPES"), "default"=>false),
+	array("id"=>"LID", "content"=>GetMessage('SALE_LID'), "default"=>false),
 	array("id"=>"ACTION_FILES", "content"=>GetMessage("SALE_H_ACTION_FILES"), "default"=>false),
-
+	array("id"=>"ID", "content"=>"ID", 	"sort"=>"ID", "default"=>true),
 ));
 
 $arVisibleColumns = $lAdmin->GetVisibleHeaderColumns();
 
-while ($arCCard = $dbResultList->NavNext(true, "f_"))
+while ($arCCard = $dbRes->NavNext(true, "f_"))
 {
 	$row =& $lAdmin->AddRow($f_ID, $arCCard, "sale_pay_system_edit.php?ID=".$f_ID."&lang=".LANG, GetMessage("SALE_EDIT_DESCR"));
 
 	$row->AddField("ID", "<a href=\"sale_pay_system_edit.php?ID=".$f_ID."&lang=".LANG."\">".$f_ID."</a>");
 	$row->AddField("NAME", $f_NAME);
-	$row->AddField("LID", $siteList[$f_LID]." (".$f_LID.")");
-	$row->AddField("CURRENCY", $f_CURRENCY);
 	$row->AddField("ACTIVE", (($f_ACTIVE=="Y") ? GetMessage("SPS_YES") : GetMessage("SPS_NO")));
 	$row->AddField("SORT", $f_SORT);
+
+	if ($f_LOGOTIP > 0)
+	{
+		$logoFileArray = CFile::GetFileArray($f_LOGOTIP);
+		$f_LOGOTIP = CFile::ShowImage($logoFileArray, 100, 100, "border=0", "", false);
+	}
+
+	$row->AddField("LOGOTIP", $f_LOGOTIP);
 	$row->AddField("DESCRIPTION", $f_DESCRIPTION);
 
 	$pTypes = '';
 	$aFiles = '';
-	$dbPSAction = CSalePaySystemAction::GetList(
-			array(),
-			array("PAY_SYSTEM_ID" => $f_ID),
-			false,
-			false,
-			array("PERSON_TYPE_ID", "ACTION_FILE")
-		);
-	while ($arPSAction = $dbPSAction->Fetch())
-	{
-		if(isset($arPersonTypeList[$arPSAction["PERSON_TYPE_ID"]]))
-			$pTypes .= "<div>".$arPersonTypeList[$arPSAction["PERSON_TYPE_ID"]]."</div>";
 
-		$psActFilename = $_SERVER["DOCUMENT_ROOT"].$arPSAction["ACTION_FILE"];
-		$psActTitle = "";
-		$psActName = "";
+	$dbRestriction = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
+		'select' => array('PARAMS'),
+		'filter' => array(
+			'SERVICE_ID' => $f_ID,
+			'SERVICE_TYPE' => \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::SERVICE_TYPE_PAYMENT,
+			'=CLASS_NAME' => '\Bitrix\Sale\Services\PaySystem\Restrictions\PersonType'
+		)
+	));
 
-		if (is_dir($psActFilename))
-		{
-			$psActTitle = CSalePaySystemsHelper::getPSActionTitle($psActFilename."/.description.php");
-			$psActName = substr(strrchr($psActFilename, '/'), 1 );
-
-		}
-		elseif (is_file($psActFilename))
-		{
-			$psActTitle = CSalePaySystemsHelper::getPSActionTitle_old($psActFilename);
-			$psActName = $arPSAction["ACTION_FILE"];
-		}
-
-		if (strlen($psActTitle) <= 0)
-			$psActTitle = $psActName;
-		else
-			$psActTitle .= " (".$psActName.")";
-
-		$aFiles .= "<div>".$psActTitle."</div>";
-	}
+	 if ($restriction = $dbRestriction->fetch())
+	 {
+		 $ptRes = \Bitrix\Sale\PersonTypeTable::getList(array('select' => array('NAME'), 'filter' => array('ID' => $restriction['PARAMS']['PERSON_TYPE_ID'])));
+		 while ($personType = $ptRes->fetch())
+		    $pTypes .= "<div>".$personType['NAME']."</div>";
+	 }
 
 	$row->AddField("PERSON_TYPES", $pTypes);
-	$row->AddField("ACTION_FILES", $aFiles);
+
+	$dbRestriction = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
+		'select' => array('PARAMS'),
+		'filter' => array(
+			'SERVICE_ID' => $f_ID,
+			'SERVICE_TYPE' => \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::SERVICE_TYPE_PAYMENT,
+			'=CLASS_NAME' => '\Bitrix\Sale\Services\PaySystem\Restrictions\Site'
+		)
+	));
+
+	$pSite = '';
+	if ($restriction = $dbRestriction->fetch())
+	{
+		$siteRes = \Bitrix\Main\SiteTable::getList(array('select' => array('NAME', 'LID'), 'filter' => array('LID' => $restriction['PARAMS']['SITE_ID'], 'LANGUAGE_ID' => $context->getLanguage())));
+		while ($site = $siteRes->fetch())
+			$pSite .= "<div>".$site['NAME']." (".$site['LID'].")</div>";
+	}
+
+	$row->AddField("LID", $pSite);
+
+	$description = \Bitrix\Sale\PaySystem\Manager::getHandlerDescription($f_ACTION_FILE);
+	$row->AddField("ACTION_FILES", $description['NAME']);
 
 	$arActions = array(
 		array(
 			"ICON" => "edit",
 			"TEXT" => GetMessage("SALE_EDIT"),
 			"TITLE" => GetMessage("SALE_EDIT_DESCR"),
-			"ACTION" => $lAdmin->ActionRedirect("sale_pay_system_edit.php?ID=".$f_ID."&lang=".LANG),
+			"ACTION" => $lAdmin->ActionRedirect("sale_pay_system_edit.php?ID=".$f_ID."&lang=".$context->getLanguage()),
 			"DEFAULT" => true,
 		),
 	);
@@ -219,7 +243,7 @@ $lAdmin->AddFooter(
 	array(
 		array(
 			"title" => GetMessage("MAIN_ADMIN_LIST_SELECTED"),
-			"value" => $dbResultList->SelectedRowsCount()
+			"value" => $dbRes->SelectedRowsCount()
 		),
 		array(
 			"counter" => true,
@@ -239,33 +263,12 @@ $lAdmin->AddGroupActionTable(
 	)
 );
 
-	$arDDMenu = array();
-
-	/*
-	$arDDMenu[] = array(
-		"TEXT" => "<b>".GetMessage("SOPAN_4NEW_PROMT")."</b>",
-		"ACTION" => false
-	);
-	*/
-/*
-	$dbRes = CLang::GetList(($by1="sort"), ($order1="asc"));
-	while(($arRes = $dbRes->Fetch()))
-	{
-		$arDDMenu[] = array(
-			"TEXT" => "[".$arRes["LID"]."] ".$arRes["NAME"],
-			"ACTION" => "window.location = 'sale_pay_system_edit.php?lang=".LANG."&LID=".$arRes["LID"]."';"
-		);
-	}
-*/
-
-
 	$aContext = array(
 		array(
 			"TEXT" => GetMessage("SPSAN_ADD_NEW"),
 			"TITLE" => GetMessage("SPSAN_ADD_NEW_ALT"),
 			"LINK" => "sale_pay_system_edit.php?lang=".LANG,
-			"ICON" => "btn_new",
-			//"MENU" => $arDDMenu
+			"ICON" => "btn_new"
 		),
 	);
 	$lAdmin->AddAdminContextMenu($aContext);
@@ -273,10 +276,6 @@ $lAdmin->AddGroupActionTable(
 
 $lAdmin->CheckListMode();
 
-
-/****************************************************************************/
-/***********  MAIN PAGE  ****************************************************/
-/****************************************************************************/
 $APPLICATION->SetTitle(GetMessage("SALE_SECTION_TITLE"));
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_admin_after.php");
 ?>
@@ -292,12 +291,6 @@ $oFilter = new CAdminFilter(
 
 $oFilter->Begin();
 ?>
-	<!--<tr>
-		<td><?echo GetMessage("SALE_F_LANG");?>:</td>
-		<td>
-			<?echo CLang::SelectBox("filter_lang", $filter_lang, "(".GetMessage("SALE_ALL").")") ?>
-		</td>
-	</tr>-->
 	<tr>
 		<td><?echo GetMessage("SALE_F_ACTIVE")?>:</td>
 		<td>

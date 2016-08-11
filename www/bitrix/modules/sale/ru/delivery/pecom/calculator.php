@@ -89,7 +89,7 @@ class Calculator
 					$price += intval($arInfo["take"][2]);
 
 
-				if(isset($arInfo["deliver"][2]) && \CDeliveryPecom::isConfCheckedVal($this->arConfig, 'SERVICE_TAKE_ENABLED'))
+				if(isset($arInfo["deliver"][2]) && \CDeliveryPecom::isConfCheckedVal($this->arConfig, 'SERVICE_DELIVERY_ENABLED'))
 					$price += intval($arInfo["deliver"][2]);
 
 				foreach($arInfo as $key => $value)

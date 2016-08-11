@@ -102,6 +102,9 @@ $arComponentParameters = Array(
 		"OFFERS_PROPS" => array(
 			"NAME" => GetMessage("SBB_OFFERS_PROPS"),
 		),
+		"GIFTS" => array(
+			"NAME" => GetMessage("SBB_GIFTS"),
+		),
 	),
 	"PARAMETERS" => Array(
 		"PATH_TO_ORDER" => Array(
@@ -178,14 +181,141 @@ $arComponentParameters = Array(
 			"ADDITIONAL_VALUES"=>"N",
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
+		"AUTO_CALCULATION" => array(
+			"NAME" => GetMessage('SBB_AUTO_CALCULATION'),
+			"TYPE" => "CHECKBOX",
+			"MULTIPLE" => "N",
+			"DEFAULT" => "Y",
+			"ADDITIONAL_VALUES"=>"N",
+			"PARENT" => "ADDITIONAL_SETTINGS",
+		),
 		"SET_TITLE" => Array(),
 		"ACTION_VARIABLE" => array(
 			"NAME" => GetMessage('SBB_ACTION_VARIABLE'),
 			"TYPE" => "STRING",
 			"MULTIPLE" => "N",
-			"DEFAULT" => "action",
+			"DEFAULT" => "basketAction",
 			"ADDITIONAL_VALUES"=>"N",
 			"PARENT" => "ADDITIONAL_SETTINGS",
 		),
-	)
+
+		"USE_GIFTS" => array(
+			"PARENT" => "GIFTS",
+			"NAME" => GetMessage("SBB_GIFTS_USE_GIFTS"),
+			"TYPE" => "CHECKBOX",
+			"DEFAULT" => "Y",
+			"REFRESH" => "Y",
+		),
+	),
 );
+
+if(!Loader::includeModule('catalog'))
+{
+	unset($arComponentParameters["PARAMETERS"]["USE_GIFTS"]);
+	unset($arComponentParameters["GROUPS"]["GIFTS"]);
+}
+elseif($arCurrentValues["USE_GIFTS"] === null && $arComponentParameters['PARAMETERS']['USE_GIFTS']['DEFAULT'] == 'Y' || $arCurrentValues["USE_GIFTS"] == "Y")
+{
+	$arComponentParameters['PARAMETERS'] = array_merge(
+		$arComponentParameters['PARAMETERS'],
+		array(
+			"GIFTS_PLACE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("SGB_PARAMS_PLACE_GIFT"),
+				"TYPE" => "LIST",
+				"DEFAULT" => "BOTTOM",
+				"VALUES" => array(
+					"TOP" => GetMessage('SGB_PARAMS_PLACE_GIFT_TOP'),
+					"BOTTOM" => GetMessage('SGB_PARAMS_PLACE_GIFT_BOTTOM'),
+				),
+			),
+			"GIFTS_BLOCK_TITLE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("SGB_PARAMS_BLOCK_TITLE"),
+				"TYPE" => "STRING",
+				"DEFAULT" => GetMessage("SGB_PARAMS_BLOCK_TITLE_DEFAULT"),
+			),
+			"GIFTS_HIDE_BLOCK_TITLE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("SGB_PARAMS_HIDE_BLOCK_TITLE"),
+				"TYPE" => "CHECKBOX",
+				"DEFAULT" => "",
+			),
+			"GIFTS_TEXT_LABEL_GIFT" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("SGB_PARAMS_TEXT_LABEL_GIFT"),
+				"TYPE" => "STRING",
+				"DEFAULT" => GetMessage("SGB_PARAMS_TEXT_LABEL_GIFT_DEFAULT"),
+			),
+			"GIFTS_PRODUCT_QUANTITY_VARIABLE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("CVP_PRODUCT_QUANTITY_VARIABLE"),
+				"TYPE" => "STRING",
+				"DEFAULT" => "quantity",
+				"HIDDEN" => (isset($arCurrentValues['USE_PRODUCT_QUANTITY']) && $arCurrentValues['USE_PRODUCT_QUANTITY'] == 'Y' ? 'N' : 'Y')
+			),
+			"GIFTS_PRODUCT_PROPS_VARIABLE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("CVP_PRODUCT_PROPS_VARIABLE"),
+				"TYPE" => "STRING",
+				"DEFAULT" => "prop",
+				"HIDDEN" => (isset($arCurrentValues['ADD_PROPERTIES_TO_BASKET']) && $arCurrentValues['ADD_PROPERTIES_TO_BASKET'] == 'N' ? 'Y' : 'N')
+			),
+			"GIFTS_SHOW_OLD_PRICE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("CVP_SHOW_OLD_PRICE"),
+				"TYPE" => "CHECKBOX",
+				"VALUES" => "Y",
+			),
+			'GIFTS_SHOW_DISCOUNT_PERCENT' => array(
+				'PARENT' => 'GIFTS',
+				'NAME' => GetMessage('CVP_SHOW_DISCOUNT_PERCENT'),
+				'TYPE' => 'CHECKBOX',
+				'DEFAULT' => 'Y'
+			),
+			"GIFTS_SHOW_NAME" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("CVP_SHOW_NAME"),
+				"TYPE" => "CHECKBOX",
+				"DEFAULT" => "Y",
+			),
+			"GIFTS_SHOW_IMAGE" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("CVP_SHOW_IMAGE"),
+				"TYPE" => "CHECKBOX",
+				"DEFAULT" => "Y",
+			),
+			'GIFTS_MESS_BTN_BUY' => array(
+				'PARENT' => 'GIFTS',
+				'NAME' => GetMessage('CVP_MESS_BTN_BUY_GIFT'),
+				'TYPE' => 'STRING',
+				'DEFAULT' => GetMessage('CVP_MESS_BTN_BUY_GIFT_DEFAULT')
+			),
+			'GIFTS_MESS_BTN_DETAIL' => array(
+				'PARENT' => 'GIFTS',
+				'NAME' => GetMessage('CVP_MESS_BTN_DETAIL'),
+				'TYPE' => 'STRING',
+				'DEFAULT' => GetMessage('CVP_MESS_BTN_DETAIL_DEFAULT')
+			),
+			"GIFTS_PAGE_ELEMENT_COUNT" => array(
+				"PARENT" => "GIFTS",
+				"NAME" => GetMessage("SGB_PAGE_ELEMENT_COUNT"),
+				"TYPE" => "STRING",
+				"DEFAULT" => "4",
+			),
+			'GIFTS_CONVERT_CURRENCY' => array(
+				'PARENT' => 'GIFTS',
+				'NAME' => GetMessage('CVP_CONVERT_CURRENCY'),
+				'TYPE' => 'CHECKBOX',
+				'DEFAULT' => 'N',
+				'REFRESH' => 'Y',
+			),
+			'GIFTS_HIDE_NOT_AVAILABLE' => array(
+				'PARENT' => 'GIFTS',
+				'NAME' => GetMessage('CVP_HIDE_NOT_AVAILABLE'),
+				'TYPE' => 'CHECKBOX',
+				'DEFAULT' => 'N',
+			),
+		)
+	);
+}

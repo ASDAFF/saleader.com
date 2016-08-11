@@ -51,4 +51,11 @@ $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_ID_LABEL"] = "Product in shopping cart";
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_ID_PREFIX"] = "\"Product in shopping cart\" field";
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_NAME_LABEL"] = "Name of product in shopping cart";
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_NAME_PREFIX"] = "\"Name of product in shopping cart\" field";
+$MESS["BT_SALE_ACT_GIFT_LABEL"] = "Suggest a gift";
+$MESS["BT_SALE_ACT_GIFT_DEF_TEXT"] = "Gift";
+$MESS["BT_SALE_ACT_GIFT_GROUP_PRODUCT_PREFIX"] = "suggest a gift";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_ONE"] = "any of";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_ALL"] = "all";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_DEF"] = "...";
+$MESS["BT_SALE_GIFT_DISCOUNT_DESCR"] = "Gift";
 ?>

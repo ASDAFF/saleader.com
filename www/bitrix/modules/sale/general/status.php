@@ -39,7 +39,7 @@ class CSaleStatus
 		))->fetch();
 	}
 
-	function GetLangByID($statusId, $languageId = LANGUAGE_ID)
+	static function GetLangByID($statusId, $languageId = LANGUAGE_ID)
 	{
 		return StatusLangTable::getList(array(
 			'select' => array('*'),
@@ -56,7 +56,7 @@ class CSaleStatus
 	 * @param array $arSelectFields
 	 * @return CDBResult|int
 	 */
-	function GetList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
+	static function GetList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{
 		if (!is_array($arOrder) && !is_array($arFilter))
 		{
@@ -111,7 +111,7 @@ class CSaleStatus
 	/*
 	 * For modern api see: Bitrix\Sale\OrderStatus and Bitrix\Sale\DeliveryStatus
 	 */
-	function GetPermissionsList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
+	static function GetPermissionsList($arOrder = array(), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{
 		$query = new Compatible\OrderQuery(StatusGroupTaskTable::getEntity());
 

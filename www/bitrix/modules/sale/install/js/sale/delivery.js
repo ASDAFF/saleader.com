@@ -173,6 +173,9 @@
 
 							for (var i in data['SCRIPT'])
 							{
+								if(!data['SCRIPT'].hasOwnProperty(i))
+									continue;
+
 								BX.evalGlobal(data['SCRIPT'][i]['JS']);
 								delete(data['SCRIPT'][i]);
 
@@ -206,14 +209,18 @@
 
 		showRestrictionParamsDialog: function(content, rstrParams)
 		{
-			var width = (rstrParams.class == '\\Bitrix\\Sale\\Delivery\\Restrictions\\ByLocation' ? 1030 : 400),
-				dialog = new BX.CDialog({
+			if(rstrParams.class == '\\Bitrix\\Sale\\Delivery\\Restrictions\\ByLocation')
+				var width = 1030;
+			else
+				width = 400;
+
+			var	dialog = new BX.CDialog({
 					'content': '<form id="sale-delivery-restriction-edit-form">'+
 						content+
 						'</form>',
 					'title': BX.message("SALE_RDL_RESTRICTION")+" "+rstrParams.title,
 					'width': width,
-					'height': 500,
+					'height': 600,
 					'resizable': true
 				});
 
@@ -355,12 +362,77 @@
 			container.innerHTML = data['HTML'];
 
 			for (var i in data['SCRIPT'])
-				BX.evalGlobal(data['SCRIPT'][i]['JS']);
+				if(data['SCRIPT'].hasOwnProperty(i))
+					BX.evalGlobal(data['SCRIPT'][i]['JS']);
 		},
 
 		resetRusPostSettings: function()
 		{
 			window.location.href.search('RESET_HANDLER_SETTINGS') != -1 ? window.location.reload(true) : window.location.href += '&RESET_HANDLER_SETTINGS=Y';
+		},
+
+		resetRusPostTarifSettings: function()
+		{
+			window.location.href.search('RESET_TARIF_SETTINGS') != -1 ? window.location.reload(true) : window.location.href += '&RESET_TARIF_SETTINGS=Y';
+		},
+
+		addRestrictionProductSection: function(id, name)
+		{
+			var alreadyExist = BX('sale-admin-delivery-restriction-cat-'+id);
+
+			if(alreadyExist)
+				return;
+
+			var category = BX.create('tr',{
+				props:{
+					id: 'sale-admin-delivery-restriction-cat-'+id,
+					className: 'adm-s-delivery-restriction-delcat'
+				},
+				children:[
+					BX.create('td',{
+						children:[
+							BX.create('span',{
+								html: " - "+name
+							}),
+							BX.create('input',{
+								props:{
+									type: 'hidden',
+									name: 'RESTRICTION[CATEGORIES][]',
+									value: id
+								}
+							})
+						]
+					}),
+					BX.create('td',{
+						props:{
+							align: 'right'
+						},
+						children: [
+							BX.create('text', {html: '&nbsp;'}),
+							BX.create('a',{
+								props:{
+									href: 'javascript:void(0);',
+									className: 'adm-s-bus-morelinkqhsw'
+								},
+								html: BX.message("SALE_DELIVERY_INP_DELETE"),
+								events:{
+									click: function(){BX.Sale.Delivery.deleteRestrictionProductSection(id);}
+								}
+							})
+						]
+					})
+				]
+			});
+
+			BX('sale-admin-delivery-restriction-cat-content').appendChild(category);
+		},
+
+		deleteRestrictionProductSection: function(id)
+		{
+			var node = BX('sale-admin-delivery-restriction-cat-'+id);
+
+			if(node)
+				node.parentNode.removeChild(node);
 		}
 	};
 

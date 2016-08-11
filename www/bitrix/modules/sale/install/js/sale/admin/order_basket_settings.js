@@ -137,6 +137,12 @@ BX.Sale.Admin.OrderBasket.SettingsDialog.prototype.create = function()
 
 BX.Sale.Admin.OrderBasket.SettingsDialog.prototype.show = function()
 {
+	var sel = BX('adm-sale-basket-sett-all-cols'),
+		pos;
+
+	//workaround to prevent scroll up in chrome
+	BX.bind(sel, 'mousedown', function(){pos = BX.GetWindowScrollPos();});
+	BX.bind(sel, 'focus', function(){window.scrollTo(pos.scrollLeft, pos.scrollTop);});
 	this.dialog.Show();
 };
 

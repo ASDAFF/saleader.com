@@ -10,4 +10,5 @@ $MESS["SALE_ORDER_BUYER_CHANGE"] = "Edit";
 $MESS["SALE_ORDER_BUYER_CLEAR"] = "Remove";
 $MESS["SALE_ORDER_BUYER_NO"] = "No";
 $MESS["SALE_ORDER_BUYER_CREATE_NEW"] = "Create new";
+$MESS["SALE_ORDER_BUYER_UNKNOWN_GROUP"] = "Unknown property group";
 ?>

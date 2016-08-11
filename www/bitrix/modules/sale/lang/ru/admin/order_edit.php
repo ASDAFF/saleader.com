@@ -27,4 +27,5 @@ $MESS["SALE_BLOCK_TITLE_PAYMENT"] = "Оплата";
 $MESS["SALE_BLOCK_TITLE_BASKET"] = "Заказ";
 $MESS["SALE_BLOCK_TITLE_ADDITIONAL"] = "Дополнительная информация";
 $MESS["SOE_ORDER_LOCKED2"] = "Заказ временно заблокирован пользователем #ID# (#DATE#)";
+$MESS["SOE_TO_UNLOCK"] = "Разблокировать заказ";
 ?>

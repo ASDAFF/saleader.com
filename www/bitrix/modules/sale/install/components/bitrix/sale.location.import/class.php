@@ -233,23 +233,30 @@ class CBitrixSaleLocationImportComponent extends CBitrixComponent
 				if($request['POST']['step'] == 0)
 					$import->reset();
 
-				@set_time_limit(0);
-
-				$data['PERCENT'] = $import->performStage();
-				$data['NEXT_STAGE'] = $import->getStageCode();
-
-				if($data['PERCENT'] == 100)
+				try
 				{
-					$import->logFinalResult();
-					$data['STAT'] = array_values($import->getStatisticsAll()); // to force to [] in json
+					@set_time_limit(0);
 
-					Finder::setIndexInvalid(); // drop search index
-					LocationHelper::deleteInformer('SALE_LOCATIONPRO_DATABASE_FAILURE'); // delete database failure messages, if any
+					$data['PERCENT'] = $import->performStage();
+					$data['NEXT_STAGE'] = $import->getStageCode();
 
-					$GLOBALS['CACHE_MANAGER']->ClearByTag('sale-location-data');
+					if($data['PERCENT'] == 100)
+					{
+						$import->logFinalResult();
+						$data['STAT'] = array_values($import->getStatisticsAll()); // to force to [] in json
 
-					if($request['POST']['OPTIONS']['DROP_ALL'] == 1 || $request['POST']['ONLY_DELETE_ALL'] == 1)
-						Main\Config\Option::set('sale', self::LOC2_IMPORT_PERFORMED_OPTION, 'Y');
+						Finder::setIndexInvalid(); // drop search index
+						LocationHelper::deleteInformer('SALE_LOCATIONPRO_DATABASE_FAILURE'); // delete database failure messages, if any
+
+						$GLOBALS['CACHE_MANAGER']->ClearByTag('sale-location-data');
+
+						if($request['POST']['OPTIONS']['DROP_ALL'] == 1 || $request['POST']['ONLY_DELETE_ALL'] == 1)
+							Main\Config\Option::set('sale', self::LOC2_IMPORT_PERFORMED_OPTION, 'Y');
+					}
+				}
+				catch(Main\SystemException $e)
+				{
+					$errors[] = $e->getMessage();
 				}
 			}
 		}

@@ -88,13 +88,15 @@ BX.merge(BX.ui.chainedSelectors.prototype, {
 
 			if(so.initialBundlesIncomplete){
 				for(var k in so.knownBundles)
-					sv.cache.incomplete[k] = true;
+					if(so.knownBundles.hasOwnProperty(k))
+						sv.cache.incomplete[k] = true;
 			}else if(typeof so.bundlesIncomplete != 'undefined'){
 
 				for(var k in so.knownBundles)
 				{
-					if(typeof so.bundlesIncomplete[k] != 'undefined')
-						sv.cache.incomplete[k] = true;
+					if(so.knownBundles.hasOwnProperty(k))
+						if(typeof so.bundlesIncomplete[k] != 'undefined')
+							sv.cache.incomplete[k] = true;
 				}
 			}
 		}
@@ -411,9 +413,11 @@ BX.merge(BX.ui.chainedSelectors.prototype, {
 						onLoad: function(data){
 
 							// mark absent as incomplete, kz we do not know if there are really more items of that level or not
-							for(var k in data){
-								if(typeof sv.cache.links[k] == 'undefined')
-									sv.cache.incomplete[k] = true;
+							for(var k in data)
+							{
+								if(data.hasOwnProperty(k))
+									if(typeof sv.cache.links[k] == 'undefined')
+										sv.cache.incomplete[k] = true;
 							}
 
 							ctx.fillCache(data, true);
@@ -528,7 +532,8 @@ BX.merge(BX.ui.chainedSelectors.prototype, {
 
 			params.knownItems = [];
 			for(var k in this.vars.cache.links[parentNode])
-				params.knownItems.push(this.vars.cache.nodes[this.vars.cache.links[parentNode][k]]);
+				if(this.vars.cache.links[parentNode].hasOwnProperty(k))
+					params.knownItems.push(this.vars.cache.nodes[this.vars.cache.links[parentNode][k]]);
 		}
 
 		var control = new BX.ui.chainedSelectors.adapters[this.opts.adapterName](params);
@@ -607,7 +612,10 @@ BX.merge(BX.ui.chainedSelectors.prototype, {
 		var sv = this.vars,
 			so = this.opts;
 
-		for(var parent in levels){
+		for(var parent in levels)
+		{
+			if(!levels.hasOwnProperty(parent))
+				continue;
 
 			// overwrite if not set
 			if(typeof sv.cache.links[parent] == 'undefined' || sv.cache.incomplete[parent] === true){
@@ -616,7 +624,11 @@ BX.merge(BX.ui.chainedSelectors.prototype, {
 				if(typeof sv.cache.links[parent] == 'undefined' || !isIncompleteData)
 					sv.cache.links[parent] = [];
 
-				for(var k in levels[parent]){
+				for(var k in levels[parent])
+				{
+					if(!levels[parent].hasOwnProperty(k))
+						continue;
+
 					sv.cache.links[parent].push(levels[parent][k].VALUE);
 					levels[parent][k].PARENT_VALUE = parent;
 
@@ -705,7 +717,8 @@ BX.ui.chainedSelectors.adapters.combobox = function(options){
 				// could be slow here
 				var knownItems = [];
 				for(var k in bundle)
-					knownItems.push(this.opts.parent.vars.cache.nodes[bundle[k]]);
+					if(bundle.hasOwnProperty(k))
+						knownItems.push(this.opts.parent.vars.cache.nodes[bundle[k]]);
 
 				this.opts.parent.fireEvent('before-control-item-discover-done', [knownItems, this]);
 

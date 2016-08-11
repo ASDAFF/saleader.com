@@ -893,7 +893,7 @@ text-align:center;line-height:normal'>&nbsp;</p>
 border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
 padding:0cm 2.0pt 0cm 2.0pt;height:9.0pt'>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
-text-align:center;line-height:normal'><a name=ТекстовоеПоле46></a><?echo $arQuantities[$mi]; $total_n += $arQuantities[$mi]; ?></p>
+text-align:center;line-height:normal'><a name=ТекстовоеПоле46></a><?echo Bitrix\Sale\BasketItem::formatQuantity($arQuantities[$mi]); $total_n += $arQuantities[$mi]; ?></p>
 <p class=Normal align=center style='margin:0cm;margin-bottom:.0001pt;
 text-align:center;line-height:normal'>&nbsp;</p>
 </td>
@@ -1209,7 +1209,7 @@ line-height:133%'>&nbsp;</p>
 border-left:none;padding:0cm 2.0pt 0cm 2.0pt;height:11.0pt'>
 <p class=Normal align=center style='margin-top:1.0pt;margin-right:0cm;
 margin-bottom:0cm;margin-left:0cm;margin-bottom:.0001pt;text-align:center;
-line-height:133%'><?echo $total_n?></p>
+line-height:133%'><?echo Bitrix\Sale\BasketItem::formatQuantity($total_n)?></p>
 </td>
 <td valign=top style='width:60.0pt;border:solid windowtext 1.0pt;
 border-left:none;padding:0cm 2.0pt 0cm 2.0pt;height:11.0pt'>

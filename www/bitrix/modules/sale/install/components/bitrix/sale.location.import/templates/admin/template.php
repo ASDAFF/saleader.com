@@ -245,7 +245,7 @@ Loc::loadMessages(__FILE__);
 						<label for="loc-i-option-exclude-country-district"><?=Loc::getMessage('SALE_SLI_EXCLUDE_AREAS')?></label>
 					</td>
 					<td>
-						<input type="checkbox" value="1" name="EXCLUDE_COUNTRY_DISTRICT" class="bx-ui-loc-i-option" id="loc-i-option-exclude-country-district" />
+						<input type="checkbox" value="1" name="EXCLUDE_COUNTRY_DISTRICT" class="bx-ui-loc-i-option" id="loc-i-option-exclude-country-district" checked="checked" />
 					</td>
 				</tr>
 			<?endif?>

@@ -10,4 +10,5 @@ $MESS["SALE_EBAY_SEC_JS_CREATE_NEW_CATEGORY_PROP"] = "Create new category proper
 $MESS["SALE_EBAY_SEC_JS_CONTINUE"] = "Continue";
 $MESS["SALE_EBAY_SEC_JS_CANCEL"] = "Cancel";
 $MESS["SALE_EBAY_SEC_JS_PROP_KIND"] = "What property do you want to create?";
+$MESS["SALE_EBAY_SEC_NO_CATEGORIES"] = "Not uploaded. (Use #A1#Settings#A2# form to upload categories and properties)";
 ?>

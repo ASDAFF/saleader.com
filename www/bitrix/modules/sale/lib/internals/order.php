@@ -33,7 +33,7 @@ class OrderTable extends Main\Entity\DataManager
 	{
 		global $DB, $USER;
 
-		$maxLock = Main\Config\Option::get('sale','MAX_LOCK_TIME', 60);
+		$maxLock = intval(Main\Config\Option::get('sale','MAX_LOCK_TIME', 60));
 
 		$userID = (is_object($USER) ? (int)$USER->getID() : 0);
 
@@ -79,9 +79,17 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\DatetimeField('DATE_INSERT'),
 
 			new Main\Entity\ExpressionField(
+				'DATE_INSERT_SHORT',
+				$DB->datetimeToDateFunction('%s'),
+				array('DATE_INSERT'),
+				array('data_type' => 'datetime')
+			),
+
+			new Main\Entity\ExpressionField(
 				'DATE_INSERT_FORMAT',
 				static::replaceDateTime(),
-				array('DATE_INSERT')
+				array('DATE_INSERT'),
+				array('data_type' => 'datetime')
 			),
 
 			new Main\Entity\DatetimeField('DATE_UPDATE'),
@@ -89,7 +97,8 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\ExpressionField(
 				'DATE_UPDATE_SHORT',
 				$DB->datetimeToDateFunction('%s'),
-				array('DATE_UPDATE')
+				array('DATE_UPDATE'),
+				array('data_type' => 'datetime')
 			),
 
 			new Main\Entity\ExpressionField(
@@ -157,7 +166,8 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\ExpressionField(
 				'DATE_STATUS_SHORT',
 				$DB->datetimeToDateFunction('%s'),
-				array('DATE_STATUS')
+				array('DATE_STATUS'),
+				array('data_type' => 'datetime')
 			),
 
 			new Main\Entity\IntegerField('EMP_STATUS_ID'),
@@ -218,7 +228,7 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\FloatField(
 				'PRICE',
 				array(
-					'required' => true
+					'default_value' => '0.0000'
 				)
 			),
 
@@ -406,7 +416,8 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\BooleanField(
 				'UPDATED_1C',
 				array(
-					'values' => array('N', 'Y')
+					'values' => array('N', 'Y'),
+					'default' => 'N'
 				)
 			),
 
@@ -451,7 +462,8 @@ class OrderTable extends Main\Entity\DataManager
 			new Main\Entity\ExpressionField(
 				'DATE_CANCELED_SHORT',
 				$DB->datetimeToDateFunction('%s'),
-				array('DATE_CANCELED')
+				array('DATE_CANCELED'),
+				array('DATA_TYPE' => 'datetime')
 			),
 
 			new Main\Entity\StringField('REASON_CANCELED'),

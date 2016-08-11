@@ -61,7 +61,7 @@ if($REQUEST_METHOD=="POST" && strlen($Update)>0 && $salePermissions>="W" && chec
 			$i = 0;
 			foreach($_POST as $k => $v)
 			{
-				if(strpos($k, "REKV_".$arPersonType["ID"]) !== false && strlen($v) > 0)
+				if(strpos($k, "REKV_".$arPersonType["ID"]."_") !== false && strlen($v) > 0)
 				{
 					$ind = substr($k, strrpos($k, "_")+1);
 

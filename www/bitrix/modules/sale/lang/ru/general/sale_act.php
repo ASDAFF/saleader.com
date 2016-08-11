@@ -51,4 +51,11 @@ $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_ID_LABEL"] = "Товар в корзине
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_ID_PREFIX"] = "поле Товар корзины";
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_NAME_LABEL"] = "Название товара в корзине";
 $MESS["BT_MOD_SALE_ACT_BASKET_PRODUCT_NAME_PREFIX"] = "поле Название товара в корзине";
+$MESS["BT_SALE_ACT_GIFT_LABEL"] = "Предоставить подарок";
+$MESS["BT_SALE_ACT_GIFT_DEF_TEXT"] = "Подарок";
+$MESS["BT_SALE_ACT_GIFT_GROUP_PRODUCT_PREFIX"] = "предоставить подарок";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_ONE"] = "любой из";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_ALL"] = "все";
+$MESS["BT_SALE_ACT_GIFT_SELECT_TYPE_SELECT_DEF"] = "...";
+$MESS["BT_SALE_GIFT_DISCOUNT_DESCR"] = "Подарок";
 ?>

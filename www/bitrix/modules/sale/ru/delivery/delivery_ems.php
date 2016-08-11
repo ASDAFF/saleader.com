@@ -286,42 +286,83 @@ class CDeliveryEMS
 	function __GetLocation($location)
 	{
 		$arLocation = CSaleHelper::getLocationByIdHitCached($location);
-
 		$arLocation["IS_RUSSIAN"] = CDeliveryEMS::__IsRussian($arLocation) ? "Y" : "N";
 
 		if ($arLocation["IS_RUSSIAN"] == 'Y')
 		{
-			static $arEMSCityList;
-
-			if (!is_array($arEMSCityList))
+			// Cities
+			if(!empty($arLocation['CITY_NAME_ORIG']) || !empty($arLocation['CITY_SHORT_NAME']) || !empty($arLocation['CITY_NAME_LANG']) || !empty($arLocation['CITY_NAME']))
 			{
-				if (file_exists(dirname(__FILE__).'/ems/city.php'))
-					require_once(dirname(__FILE__).'/ems/city.php');
-			}
+				static $arEMSCityList;
 
-			$arLocation['CITY_NAME_ORIG'] = ToUpper($arLocation['CITY_NAME_ORIG']);
-			$arLocation['CITY_SHORT_NAME'] = ToUpper($arLocation['CITY_SHORT_NAME']);
-			$arLocation['CITY_NAME_LANG'] = ToUpper($arLocation['CITY_NAME_LANG']);
-			$arLocation['CITY_NAME'] = ToUpper($arLocation['CITY_NAME']);
+				if (!is_array($arEMSCityList))
+				{
+					if (file_exists(dirname(__FILE__).'/ems/city.php'))
+						require_once(dirname(__FILE__).'/ems/city.php');
+				}
 
-			if (is_array($arEMSCityList))
-			{
-				$arLocation['EMS_ID'] =
-					$arEMSCityList[$arLocation['CITY_NAME_ORIG']] ? $arEMSCityList[$arLocation['CITY_NAME_ORIG']] :	(
-						$arEMSCityList[$arLocation['CITY_SHORT_NAME']] ? $arEMSCityList[$arLocation['CITY_SHORT_NAME']] : (
-							$arEMSCityList[$arLocation['CITY_NAME_LANG']] ? $arEMSCityList[$arLocation['CITY_NAME_LANG']] : (
-								$arEMSCityList[$arLocation['CITY_NAME']] ? $arEMSCityList[$arLocation['CITY_NAME']] : (
-									$arEMSCityList[ToUpper($arLocation['CITY_NAME'])] ? $arEMSCityList[ToUpper($arLocation['CITY_NAME'])] : ''
+				$arLocation['CITY_NAME_ORIG'] = ToUpper($arLocation['CITY_NAME_ORIG']);
+				$arLocation['CITY_SHORT_NAME'] = ToUpper($arLocation['CITY_SHORT_NAME']);
+				$arLocation['CITY_NAME_LANG'] = ToUpper($arLocation['CITY_NAME_LANG']);
+				$arLocation['CITY_NAME'] = ToUpper($arLocation['CITY_NAME']);
+
+				if (is_array($arEMSCityList))
+				{
+					$arLocation['EMS_ID'] =
+						$arEMSCityList[$arLocation['CITY_NAME_ORIG']] ? $arEMSCityList[$arLocation['CITY_NAME_ORIG']] :	(
+							$arEMSCityList[$arLocation['CITY_SHORT_NAME']] ? $arEMSCityList[$arLocation['CITY_SHORT_NAME']] : (
+								$arEMSCityList[$arLocation['CITY_NAME_LANG']] ? $arEMSCityList[$arLocation['CITY_NAME_LANG']] : (
+									$arEMSCityList[$arLocation['CITY_NAME']] ? $arEMSCityList[$arLocation['CITY_NAME']] : (
+										$arEMSCityList[ToUpper($arLocation['CITY_NAME'])] ? $arEMSCityList[ToUpper($arLocation['CITY_NAME'])] : ''
+									)
 								)
 							)
-						)
-					);
+						);
 
-				$arLocation['EMS_TYPE'] = 'city';
+					$arLocation['EMS_TYPE'] = 'city';
+				}
+				else
+				{
+					$arLocation['EMS_CITIES_NOT_LOADED'] = true;
+				}
 			}
-			else
+
+
+			if(empty($arLocation['EMS_ID']) && (!empty($arLocation['REGION_NAME_ORIG']) || !empty($arLocation['REGION_SHORT_NAME']) || !empty($arLocation['REGION_NAME_LANG']) || !empty($arLocation['REGION_NAME'])))
 			{
-				$arLocation['EMS_CITIES_NOT_LOADED'] = true;
+				// Regions
+				static $arEMSRegionList;
+
+				if (!is_array($arEMSRegionList))
+				{
+					if (file_exists(dirname(__FILE__).'/ems/region.php'))
+						require_once(dirname(__FILE__).'/ems/region.php');
+				}
+
+				$arLocation['REGION_NAME_ORIG'] = ToUpper($arLocation['REGION_NAME_ORIG']);
+				$arLocation['REGION_SHORT_NAME'] = ToUpper($arLocation['REGION_SHORT_NAME']);
+				$arLocation['REGION_NAME_LANG'] = ToUpper($arLocation['REGION_NAME_LANG']);
+				$arLocation['REGION_NAME'] = ToUpper($arLocation['REGION_NAME']);
+
+				if (is_array($arEMSRegionList))
+				{
+					$arLocation['EMS_ID'] =
+						$arEMSRegionList[$arLocation['REGION_NAME_ORIG']] ? $arEMSRegionList[$arLocation['REGION_NAME_ORIG']] :	(
+						$arEMSRegionList[$arLocation['REGION_SHORT_NAME']] ? $arEMSRegionList[$arLocation['REGION_SHORT_NAME']] : (
+						$arEMSRegionList[$arLocation['REGION_NAME_LANG']] ? $arEMSRegionList[$arLocation['REGION_NAME_LANG']] : (
+						$arEMSRegionList[$arLocation['REGION_NAME']] ? $arEMSRegionList[$arLocation['REGION_NAME']] : (
+						$arEMSRegionList[ToUpper($arLocation['REGION_NAME'])] ? $arEMSRegionList[ToUpper($arLocation['REGION_NAME'])] : ''
+						)
+						)
+						)
+						);
+
+					$arLocation['EMS_TYPE'] = 'region';
+				}
+				else
+				{
+					$arLocation['EMS_REGIONS_NOT_LOADED'] = true;
+				}
 			}
 		}
 		else
@@ -412,6 +453,46 @@ class CDeliveryEMS
 			);
 		}
 
+		if (isset($arLocationTo['EMS_REGIONS_NOT_LOADED']))
+		{
+			// get cities and proceed to next step
+
+			$data = CDeliveryEMS::__EMSQuery('ems.get.locations', array('type' => 'regions', 'plain' => 'true'));
+
+			if (!is_array($data) || $data['rsp']['stat'] != 'ok' || !is_array($data['rsp']['locations']))
+			{
+				return array(
+					"RESULT" => "ERROR",
+					"TEXT" => GetMessage('SALE_DH_EMS_ERROR_CONNECT'),
+				);
+			}
+
+			$arEMSRegionList = array();
+			foreach ($data['rsp']['locations'] as $arLocation)
+			{
+				$arEMSRegionList[$arLocation['name']] = $arLocation['value'];
+			}
+
+			$path = dirname(__FILE__);
+			CheckDirPath($path."/ems/");
+			if ($fp = fopen($path."/ems/region.php", "w"))
+			{
+				fwrite($fp, '<'."?\r\n");
+				fwrite($fp, '$'."arEMSRegionList = array();\r\n");
+				foreach ($arEMSRegionList as $key => $value)
+				{
+					fwrite($fp, '$'."arEMSRegionList['".addslashes($key)."'] = '".htmlspecialcharsbx(trim($value))."';\r\n");
+				}
+				fwrite($fp, '?'.'>');
+				fclose($fp);
+			}
+
+			return array(
+				"RESULT" => "NEXT_STEP",
+				"TEXT" => GetMessage('SALE_DH_EMS_CORRECT_REGIONS'),
+			);
+		}
+
 		if (isset($arLocationTo['EMS_COUNTRIES_NOT_LOADED']))
 		{
 			// get cities and proceed to next step
@@ -459,7 +540,7 @@ class CDeliveryEMS
 		if (!$arLocationTo['EMS_ID'])
 		{
 			if ($arLocationTo['IS_RUSSIAN'] == 'Y')
-				$text = str_replace('#CITY#', $arLocationTo['CITY_NAME_ORIG'], GetMessage('SALE_DH_EMS_ERROR_NO_CITY_TO'));
+				$text = GetMessage('SALE_DH_EMS_ERROR_NO_LOCATION_TO');
 			else
 				$text = str_replace('#COUNTRY#', $arLocationTo['COUNTRY_NAME_ORIG'], GetMessage('SALE_DH_EMS_ERROR_NO_COUNTRY_TO'));
 
@@ -551,7 +632,7 @@ class CDeliveryEMS
 
 			return array(
 				"RESULT" => "OK",
-				"VALUE" => $data['rsp']['price'],
+				"VALUE" => $result,
 				'TRANSIT' => $data['rsp']['term']['min'].'-'.$data['rsp']['term']['max']." ".GetMessage("SALE_DH_EMS_DAYS")
 			);
 		}

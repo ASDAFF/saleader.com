@@ -2,7 +2,13 @@
 
 ob_start();
 
-CSaleExport::ExportOrders2Xml($arFilter);
+$options = array();
+
+if (!empty($runtimeFields) && is_array($runtimeFields))
+{
+	$options['RUNTIME'] = $runtimeFields;
+}
+CSaleExport::ExportOrders2Xml($arFilter, 0, "", false, 0, false, $options);
 
 $contents = ob_get_contents();
 ob_end_clean();

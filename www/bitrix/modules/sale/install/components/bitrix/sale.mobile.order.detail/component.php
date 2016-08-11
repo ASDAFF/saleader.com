@@ -36,6 +36,7 @@ else
 
 $bUserCanViewOrder = CSaleOrder::CanUserViewOrder($orderId, $GLOBALS["USER"]->GetUserGroupArray(), $GLOBALS["USER"]->GetID());
 
+
 if(!$bUserCanViewOrder)
 {
 	echo ShowError(GetMessage("SMOD_NO_PERMS2VIEW"));
@@ -92,7 +93,7 @@ if ($saleModulePermissions < "W")
 {
 	$arStatFilter["GROUP_ID"] = $GLOBALS["USER"]->GetUserGroupArray();
 	$arStatFilter["PERM_STATUS_FROM"] = "Y";
-	$arStatFilter["ID"] = $orderId;
+	$arStatFilter["ID"] = $arResult['ORDER']['STATUS_ID'];
 	$arGroupByTmp = array("ID", "NAME", "MAX" => "PERM_STATUS_FROM");
 }
 $dbStatusList = CSaleStatus::GetList(

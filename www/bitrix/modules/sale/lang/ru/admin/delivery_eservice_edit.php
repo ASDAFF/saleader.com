@@ -18,4 +18,5 @@ $MESS ['SALE_ESDE_FIELD_SORT'] = "Сортировка";
 $MESS ['SALE_ESDE_FIELD_CODE'] = "Мнемонический код";
 $MESS ['SALE_ESDE_ERROR_SAVE'] = "Ошибка сохранения дополнительной услуги";
 $MESS ['SALE_ESDE_CONFIRM_DEL_MESSAGE'] = "Вы уверены, что хотите удалить эту дополнительную услугу?";
+$MESS['SALE_ESDE_ERROR_CODE_EXIST'] = "Дополнительная услуга с данным кодом уже существует для данной службы доставки";
 ?>

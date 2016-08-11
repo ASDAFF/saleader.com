@@ -22,4 +22,5 @@ $MESS["SALE_OVIEW_TAB_ANALYSIS"] = "Order analysis";
 $MESS["SALE_OVIEW_ORDER_COPY"] = "Copy order";
 $MESS["SALE_OVIEW_ORDER_COPY_TITLE"] = "Copy order";
 $MESS["SALE_OVIEW_BLOCK_TITLE_FINANCEINFO"] = "Payment overview";
+$MESS["SALE_OVIEW_UNLOCK"] = "Unlock order";
 ?>

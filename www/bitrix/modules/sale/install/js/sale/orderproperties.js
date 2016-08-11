@@ -26,15 +26,20 @@ BX.Sale.PropertyCollection = (function () {
 
 	var Editor = BX.Sale.Input.Manager.Editor;
 
-	var newProperty = function (property)
+	var newProperty = function (property, publicMode)
 	{
-		var me = new Editor('PROPERTIES['+property.ID+']', property);
+		var name = !!publicMode ? 'ORDER_PROP_' + property.ID : 'PROPERTIES[' + property.ID + ']';
+		var me = (property.TYPE == 'LOCATION' && !!publicMode) ? {} : new Editor(name, property);
 		me.getId           = function () {return property.ID;};
 		me.getName         = function () {return property.NAME;};
+		me.getType         = function () {return property.TYPE;};
+		me.isRequired      = function () {return property.REQUIRED === 'Y';};
+		me.isMultiple      = function () {return property.MULTIPLE === 'Y';};
 		me.getGroupId      = function () {return property.PROPS_GROUP_ID;};
 		me.getDescription  = function () {return property.DESCRIPTION;};
 		me.getPersonTypeId = function () {return property.PERSON_TYPE_ID;};
 		me.getAltLocation  = function () {return property.INPUT_FIELD_LOCATION;};
+		me.getSettings	   = function () {return property};
 		return me;
 	};
 
@@ -56,15 +61,18 @@ BX.Sale.PropertyCollection = (function () {
 		var	list, length, i, item,
 			groupId, props, groupedProperties = {}, altLocations = [],
 			propertyId, property,
-			bizI, bizName;
+			bizI, bizName,
+			publicMode = !!data.publicMode;
 
 		// create groups
 
 		list = data.groups;
-		length = list.length;
 
-		for (i = 0; i < length; i++)
+		for (i in list)
 		{
+			if(!list.hasOwnProperty(i))
+				continue;
+
 			item = list[i];
 			groupId = item.ID;
 
@@ -76,25 +84,31 @@ BX.Sale.PropertyCollection = (function () {
 		// create properties
 
 		list = data.properties;
-		length = list.length;
 
-		for (i = 0; i < length; i++)
+		for (i in list)
 		{
+			if(!list.hasOwnProperty(i))
+				continue;
+
 			item = list[i];
 			propertyId = item.ID;
 
 			groupId = item.PROPS_GROUP_ID;
-			property = newProperty(item);
+			property = newProperty(item, publicMode);
 
 			propertyIndex[propertyId] = property;
 			properties.push(property);
 
 			if (groupedProperties.hasOwnProperty(groupId))
+			{
 				groupedProperties[groupId].push(property);
+			}
 			else
+			{
 				throw 'undefined group';
+			}
 
-			if (item.TYPE == 'LOCATION' && item.INPUT_FIELD_LOCATION)
+			if (item.TYPE == 'LOCATION' && item.INPUT_FIELD_LOCATION && !publicMode)
 				altLocations.push(property);
 
 			for (bizI = 0; bizI < bizLength; bizI++)

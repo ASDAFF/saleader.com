@@ -184,6 +184,7 @@ $MESS["SALE_ORDER_LIST_HEADER_NAME_COUPONS"] = "Купон, использова
 $MESS["SALE_ORDER_LIST_HEADER_NAME_COUPONS_MULTI"] = "Купоны заказа";
 $MESS["SALE_ORDER_LIST_HEADER_NAME_DISCOUNTS"] = "Скидки и правила заказа";
 $MESS["SALE_F_PAY_SYSTEM"] = "Платежные системы";
+$MESS["SALE_F_DELIVERY_SERVICE"] = "Службы доставки";
 $MESS["SO_XML_ID"] = "Внешний код заказа";
 $MESS["SALE_F_SOURCE"] = "Источник заказа";
 $MESS["SALE_F_NONE"] = "без источника";

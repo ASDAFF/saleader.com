@@ -1,4 +1,8 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();?><?
+
+include \Bitrix\Main\Application::getDocumentRoot().'/bitrix/modules/sale/handlers/paysystem/webmoney/.description.php';
+
+return;
 include(GetLangFileName(dirname(__FILE__)."/", "/webmoney_web.php"));
 
 $psTitle = GetMessage("SWMWP_DTITLE");

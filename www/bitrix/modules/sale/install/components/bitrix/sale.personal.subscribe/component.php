@@ -10,6 +10,7 @@ $arDefaultVariableAliases = array();
 $arComponentVariables = array("ID");
 $componentPage = "";
 $arVariables = array();
+$this->setFramemode(false);
 
 if ($arParams["SEF_MODE"] == "Y")
 {

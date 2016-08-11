@@ -30,13 +30,7 @@ class CSaleOrderUserPropsValue extends CAllSaleOrderUserPropsValue
 
 		// TODO proper compatibility CAllSaleOrderUserPropsValue::getList15
 		$sale15converted = \Bitrix\Main\Config\Option::get('main', '~sale_converted_15', 'N') == 'Y';
-		if ($sale15converted && is_array($arSelectFields) && $arSelectFields)
-		{
-			if (($i = array_search('PROP_SIZE1', $arSelectFields)) !== false)
-				unset($arSelectFields[$i]);
-			if (($i = array_search('PROP_SIZE2', $arSelectFields)) !== false)
-				unset($arSelectFields[$i]);
-		}
+
 
 		// FIELDS -->
 		$arFields = array(
@@ -80,6 +74,20 @@ class CSaleOrderUserPropsValue extends CAllSaleOrderUserPropsValue
 				"CODE" => array("FIELD" => "P.CODE", "TYPE" => "string", "FROM" => "INNER JOIN b_sale_order_props P ON (UP.ORDER_PROPS_ID = P.ID)")
 			);
 		// <-- FIELDS
+
+
+		if ($sale15converted && is_array($arSelectFields) && $arSelectFields)
+		{
+			if (($i = array_search('PROP_SIZE1', $arSelectFields)) !== false)
+				unset($arSelectFields[$i]);
+			if (($i = array_search('PROP_SIZE2', $arSelectFields)) !== false)
+				unset($arSelectFields[$i]);
+
+			if (($i = array_search('*', $arSelectFields)) !== false)
+			{
+				unset($arFields['PROP_SIZE1'], $arFields['PROP_SIZE2']);
+			}
+		}
 
 		self::addPropertyValueField('UP', $arFields, $arSelectFields);
 

@@ -36,4 +36,7 @@ $MESS["SALE_SDL_ALL"] = "All";
 $MESS["SALE_DSE_CHOOSE_GROUP_TITLE"] = "Select group";
 $MESS["SALE_DSE_CHOOSE_GROUP_HEAD"] = "Copy delivery service to this group";
 $MESS["SALE_DSE_CHOOSE_GROUP_SAVE"] = "Copy";
+$MESS["SALE_SDL_ALLOW_EDIT_SHIPMENT"] = "Allow editable partial shipments";
+$MESS["SALE_SDL_SITES"] = "Sites";
+$MESS["SALE_SDL_FILTER_SITE"] = "Site";
 ?>

@@ -38,11 +38,17 @@ if(IsModuleInstalled("sale"))
 		"TITLE" => GetMessage("MAIN_1C_SALE_TAB_TITLE"),
 		"FILE" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/admin/1c_admin_inc.php",
 	);
-	$aSTabs[] = array(
+	/*$aSTabs[] = array(
 		"DIV" => "edit_sale_profile",
 		"TAB" => GetMessage("MAIN_1C_SALE_PROFILE_TAB"),
 		"TITLE" => GetMessage("MAIN_1C_SALE_PROFILE_TITLE"),
 		"FILE" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/admin/1c_admin_profile.php",
+	);*/
+	$aSTabs[] = array(
+		"DIV" => "edit_sale_bizval",
+		"TAB" => GetMessage("MAIN_1C_SALE_PROFILE_TAB"),
+		"TITLE" => GetMessage("MAIN_1C_SALE_PROFILE_TITLE"),
+		"FILE" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/admin/1c_admin_bizval.php",
 	);
 }
 

@@ -19,7 +19,8 @@ $APPLICATION->IncludeComponent(
 		"CURRENCY" => $_REQUEST["CURRENCY"],
 		"TEMP" => $_REQUEST["TEMP"],
 		"ITEMS" => $_REQUEST["ITEMS"],
-		"EXTRA_PARAMS" => isset($_REQUEST["EXTRA_PARAMS"]) ? $_REQUEST["EXTRA_PARAMS"] : array()
+		"EXTRA_PARAMS" => isset($_REQUEST["EXTRA_PARAMS"]) ? $_REQUEST["EXTRA_PARAMS"] : array(),
+		"ORDER_DATA" => isset($_REQUEST["ORDER_DATA"]) ? $_REQUEST["ORDER_DATA"] : array()
 	),
 	null,
 	array('HIDE_ICONS' => 'Y')

@@ -832,6 +832,8 @@ else
 					}
 				}
 
+				\Bitrix\Sale\Notify::setNotifyDisable(true);
+
 				$arResult["ORDER_ID"] = CSaleOrder::Add($arFields);
 				$arResult["ORDER_ID"] = IntVal($arResult["ORDER_ID"]);
 
@@ -1022,6 +1024,8 @@ else
 
 				CSaleMobileOrderPush::send("ORDER_CREATED", array("ORDER_ID" => $arFields["ORDER_ID"]));
 			}
+
+			\Bitrix\Sale\Notify::setNotifyDisable(false);
 			if (strlen($arResult["ERROR_MESSAGE"]) <= 0)
 			{
 				LocalRedirect($arParams["PATH_TO_ORDER"]."?CurrentStep=7&ORDER_ID=".urlencode(urlencode($arOrder["ACCOUNT_NUMBER"])));

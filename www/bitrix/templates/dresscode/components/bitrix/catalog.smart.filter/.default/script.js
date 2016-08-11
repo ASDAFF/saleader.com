@@ -958,8 +958,10 @@ $(window).on("load", function() {
 			});
 		});
 
-		$filter.append('<input type="hidden" name="set_filter" value="Y">').submit();
-		
+		$filter.append('<input type="hidden" name="set_filter" value="Y">');
+		window.location=$('#modef .close').attr('href');
+
+
 	});
 
 	$("#del_filter").on("click", function(e) {

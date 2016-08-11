@@ -1,4 +1,5 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+/** @var array $arParams */
 use Bitrix\Sale\DiscountCouponsManager;
 
 if (!empty($arResult["ERROR_MESSAGE"]))
@@ -94,6 +95,9 @@ if ($normalCount > 0):
 							if (in_array($arHeader["id"], array("PROPS", "DELAY", "DELETE", "TYPE"))) // some values are not shown in the columns in this template
 								continue;
 
+							if ($arHeader["name"] == '')
+								$arHeader["name"] = GetMessage("SALE_".$arHeader["id"]);
+
 							if ($arHeader["id"] == "NAME"):
 							?>
 								<td class="itemphoto">
@@ -186,7 +190,7 @@ if ($normalCount > 0):
 
 														<div class="bx_scu">
 															<ul id="prop_<?=$arProp["CODE"]?>_<?=$arItem["ID"]?>"
-																style="width: 200%; margin-left:0%;"
+																style="width: 200%; margin-left:0;"
 																class="sku_prop_list"
 																>
 																<?
@@ -207,7 +211,7 @@ if ($normalCount > 0):
 																		data-element="<?=$arItem["ID"]?>"
 																		data-property="<?=$arProp["CODE"]?>"
 																		>
-																		<a href="javascript:void(0)" class="cnt"><span class="cnt_item" style="background-image:url(<?=$arSkuValue["PICT"]["SRC"]?>"></span></a>
+																		<a href="javascript:void(0)" class="cnt"><span class="cnt_item" style="background-image:url(<?=$arSkuValue["PICT"]["SRC"];?>)"></span></a>
 																	</li>
 																<?
 																endforeach;
@@ -232,7 +236,7 @@ if ($normalCount > 0):
 													<div class="bx_size_scroller_container">
 														<div class="bx_size">
 															<ul id="prop_<?=$arProp["CODE"]?>_<?=$arItem["ID"]?>"
-																style="width: 200%; margin-left:0%;"
+																style="width: 200%; margin-left:0;"
 																class="sku_prop_list"
 																>
 																<?
@@ -424,10 +428,15 @@ if ($normalCount > 0):
 	<input type="hidden" id="price_vat_show_value" value="<?=($arParams["PRICE_VAT_SHOW_VALUE"] == "Y") ? "Y" : "N"?>" />
 	<input type="hidden" id="hide_coupon" value="<?=($arParams["HIDE_COUPON"] == "Y") ? "Y" : "N"?>" />
 	<input type="hidden" id="use_prepayment" value="<?=($arParams["USE_PREPAYMENT"] == "Y") ? "Y" : "N"?>" />
+	<input type="hidden" id="auto_calculation" value="<?=($arParams["AUTO_CALCULATION"] == "N") ? "N" : "Y"?>" />
 
 	<div class="bx_ordercart_order_pay">
 
 		<div class="bx_ordercart_order_pay_left" id="coupons_block">
+		<?
+		if ($arParams["HIDE_COUPON"] != "Y")
+		{
+		?>
 			<div class="bx_ordercart_coupon">
 				<span><?=GetMessage("STB_COUPON_PROMT")?></span><input type="text" id="coupon" name="COUPON" value="" onchange="enterCoupon();">&nbsp;<a class="bx_bt_button bx_big" href="javascript:void(0)" onclick="enterCoupon();" title="<?=GetMessage('SALE_COUPON_APPLY_TITLE'); ?>"><?=GetMessage('SALE_COUPON_APPLY'); ?></a>
 			</div><?
@@ -455,6 +464,11 @@ if ($normalCount > 0):
 					}
 					unset($couponClass, $oneCoupon);
 				}
+		}
+		else
+		{
+			?>&nbsp;<?
+		}
 ?>
 		</div>
 		<div class="bx_ordercart_order_pay_right">
@@ -506,7 +520,14 @@ if ($normalCount > 0):
 				<?=$arResult["PREPAY_BUTTON"]?>
 				<span><?=GetMessage("SALE_OR")?></span>
 			<?endif;?>
-
+			<?
+			if ($arParams["AUTO_CALCULATION"] != "Y")
+			{
+				?>
+				<a href="javascript:void(0)" onclick="updateBasket();" class="checkout refresh"><?=GetMessage("SALE_REFRESH")?></a>
+				<?
+			}
+			?>
 			<a href="javascript:void(0)" onclick="checkOut();" class="checkout"><?=GetMessage("SALE_ORDER")?></a>
 		</div>
 	</div>
@@ -518,7 +539,7 @@ else:
 	<table>
 		<tbody>
 			<tr>
-				<td colspan="<?=$numCells?>" style="text-align:center">
+				<td style="text-align:center">
 					<div class=""><?=GetMessage("SALE_NO_ITEMS");?></div>
 				</td>
 			</tr>

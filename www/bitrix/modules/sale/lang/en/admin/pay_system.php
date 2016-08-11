@@ -34,4 +34,6 @@ $MESS["SALE_F_PERSON_TYPE"] = "Payer type";
 $MESS["SALE_H_DESCRIPTION"] = "Description";
 $MESS["SALE_H_PERSON_TYPES"] = "Payer types";
 $MESS["SALE_H_ACTION_FILES"] = "Handlers";
+$MESS["SALE_ALLOW_EDIT_PAYMENT"] = "Enable auto recalculation of payment";
+$MESS["SALE_LOGOTIP"] = "Logo";
 ?>

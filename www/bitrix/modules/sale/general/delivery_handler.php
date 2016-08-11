@@ -2,7 +2,8 @@
 IncludeModuleLangFile(__FILE__);
 
 Bitrix\Main\Loader::registerAutoLoadClasses('sale', array(
-	"\\Bitrix\\Sale\\Delivery\\Services\\Automatic" => "lib/delivery/services/automatic.php"
+	"\\Bitrix\\Sale\\Delivery\\Services\\Automatic" => "lib/delivery/services/automatic.php",
+	"\\Bitrix\\Sale\\Delivery\\Services\\NewToAutomatic" => "lib/delivery/services/new_to_automatic.php",
 ));
 
 /** @deprecated */
@@ -59,6 +60,22 @@ class CAllSaleDeliveryHandler
 		return false;
 	}
 
+	public static function isSidNew($sid)
+	{
+		return preg_match('/^new(\d+)(:profile)?/', $sid) == 1;
+	}
+
+	public static function getIdFromNewSid($sid)
+	{
+		if(!self::isSidNew($sid))
+			return $sid;
+
+		$matches = array();
+		preg_match('/^new(\d+)(:profile)?/', $sid, $matches);
+
+		return $matches[1];
+	}
+
 	protected static function convertFilterOldToNew(array $oldFilter)
 	{
 		$result = array_intersect_key($oldFilter, Bitrix\Sale\Delivery\Services\Table::getMap());
@@ -68,24 +85,44 @@ class CAllSaleDeliveryHandler
 			'=CLASS_NAME' => array(
 				'\\Bitrix\\Sale\\Delivery\\Services\\Automatic',
 				'\\Bitrix\\Sale\\Delivery\\Services\\AutomaticProfile'
-			)
-		);
+			),
+			array(
+				'LOGIC' => 'AND',
+				'=CODE' => false,
+				'!=CLASS_NAME' => array(
+					'\\Bitrix\\Sale\\Delivery\\Services\\Group',
+					'\\Bitrix\\Sale\\Delivery\\Services\\Configurable',
+					'\\Bitrix\\Sale\\Delivery\\Services\\EmptyDeliveryService'
+				)
+		));
 
 		//$result['=PARENT_ID'] = '0';
 
 		if(empty($oldFilter))
 			return $result;
 
+		$sid = "";
+
 		if(self::isFieldInFilter("SID", $oldFilter))
 		{
-			$result["=CODE"] = self::getFilterValue("SID", $oldFilter);
-			unset($oldFilter["SID"]);
+			$sid = self::getFilterValue("SID", $oldFilter);
+		}
+		elseif(self::isFieldInFilter("ID", $oldFilter))
+		{
+			$sid = self::getFilterValue("ID", $oldFilter);
+			unset($result["ID"]);
 		}
 
-		if(self::isFieldInFilter("ID", $oldFilter))
+		if(strlen($sid) > 0)
 		{
-			$result["=CODE"] = self::getFilterValue("ID", $oldFilter);
-			unset($oldFilter["ID"]);
+			if(self::isSidNew($sid))
+			{
+				$result = array("=ID" => self::getIdFromNewSid($sid));
+			}
+			else
+			{
+				$result["=CODE"] = $sid;
+			}
 		}
 
 		if(self::isFieldInFilter("ACTIVE", $oldFilter))
@@ -95,19 +132,19 @@ class CAllSaleDeliveryHandler
 			if($result["=ACTIVE"] == "ALL")
 				unset($result["=ACTIVE"]);
 
-			unset($oldFilter["ACTIVE"]);
+			unset($result["ACTIVE"]);
 		}
 
 		if(self::isFieldInFilter("HANDLER", $oldFilter))
 		{
 			$result["=HANDLER"] = self::getFilterValue("HANDLER", $oldFilter);
-			unset($oldFilter["HANDLER"]);
+			unset($result["HANDLER"]);
 		}
 
 		if(self::isFieldInFilter("PATH", $oldFilter))
 		{
 			$result["=HANDLER"] = self::getFilterValue("PATH", $oldFilter);
-			unset($oldFilter["PATH"]);
+			unset($result["PATH"]);
 		}
 
 		return $result;
@@ -131,7 +168,8 @@ class CAllSaleDeliveryHandler
 		switch($restriction["CLASS_NAME"])
 		{
 			case '\Bitrix\Sale\Delivery\Restrictions\BySite':
-				$result = !(self::isFieldInFilter2("SITE_ID", $filter) && strlen(self::getFilterValue("SITE_ID", $filter)) > 0 && self::getFilterValue("SITE_ID", $filter)!= $restriction["PARAMS"]["SITE_ID"]);
+				$intersect = array_intersect(self::getFilterValue("SITE_ID", $filter), $restriction["PARAMS"]["SITE_ID"]);
+				$result = !(self::isFieldInFilter2("SITE_ID", $filter) && empty($intersect));
 				break;
 
 			case '\Bitrix\Sale\Delivery\Restrictions\ByWeight':
@@ -147,9 +185,9 @@ class CAllSaleDeliveryHandler
 			case '\Bitrix\Sale\Delivery\Restrictions\ByPrice':
 				$result = !(isset($filter["COMPABILITY"]["PRICE"])
 					&& (
-						floatval($filter["COMPABILITY"]["PRICE"]) < floatval($restriction["PARAMS"]["MIN_WEIGHT"])
+						floatval($filter["COMPABILITY"]["PRICE"]) < floatval($restriction["PARAMS"]["MIN_PRICE"])
 						||
-						floatval($filter["COMPABILITY"]["PRICE"]) > floatval($restriction["PARAMS"]["MAX_WEIGHT"])
+						floatval($filter["COMPABILITY"]["PRICE"]) > floatval($restriction["PARAMS"]["MAX_PRICE"])
 					)
 				);
 				break;
@@ -175,10 +213,22 @@ class CAllSaleDeliveryHandler
 			unset($arFilter["SITE"]);
 		}
 
-		if(!isset($arFilter["SITE_ID"]))
-			$arFilter["SITE_ID"] = SITE_ID;
-		elseif($arFilter["SITE_ID"] == "ALL")
-			unset($arFilter["SITE_ID"]);
+		if(isset($arFilter["SITE_ID"]))
+		{
+			if(is_string($arFilter["SITE_ID"]) && strlen($arFilter["SITE_ID"]) > 0)
+			{
+				if($arFilter["SITE_ID"] == "ALL")
+					unset($arFilter["SITE_ID"]);
+				elseif(strpos($arFilter["SITE_ID"], ",") !== false)
+					$arFilter["SITE_ID"] = explode(",", $arFilter["SITE_ID"]);
+				else
+					$arFilter["SITE_ID"] = array($arFilter["SITE_ID"]);
+			}
+		}
+		else
+		{
+			$arFilter["SITE_ID"] = array(CSite::GetDefSite());
+		}
 
 		if(!isset($arFilter["ACTIVE"]))
 			$arFilter["ACTIVE"] = "Y";
@@ -195,9 +245,10 @@ class CAllSaleDeliveryHandler
 
 		while($service = $dbRes->fetch())
 		{
-			$dbRstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$dbRstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' => array(
-					"=DELIVERY_ID" => $service["ID"],
+					"=SERVICE_ID" => $service["ID"],
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 				)
 			));
 
@@ -206,11 +257,41 @@ class CAllSaleDeliveryHandler
 				if(!self::checkRestrictionFilter($restr, $arFilter))
 					continue 2;
 
-				if($restr["CLASS_NAME"] == '\Bitrix\Sale\Delivery\Restrictions\BySite')
-					$service["LID"] = $restr["PARAMS"]["SITE_ID"];
+				if($restr["CLASS_NAME"] == '\Bitrix\Sale\Delivery\Restrictions\BySite' && !empty($restr["PARAMS"]["SITE_ID"]))
+				{
+					if(is_array($restr["PARAMS"]["SITE_ID"]))
+					{
+						reset($restr["PARAMS"]["SITE_ID"]);
+						$service["LID"] = current($restr["PARAMS"]["SITE_ID"]);
+					}
+					elseif(is_string($restr["PARAMS"]["SITE_ID"]))
+					{
+						$service["LID"] = $restr["PARAMS"]["SITE_ID"];
+					}
+					else
+					{
+						$service["LID"] = "";
+					}
+				}
 			}
 
-			$srv = \Bitrix\Sale\Delivery\Services\Automatic::convertNewServiceToOld($service);
+			if(strlen($service['CODE']) > 0)
+			{
+				$srv = \Bitrix\Sale\Delivery\Services\Automatic::convertNewServiceToOld($service);
+			}
+			else
+			{
+				\Bitrix\Sale\Delivery\Services\Manager::getHandlersList();
+
+				if(get_parent_class($service['CLASS_NAME']) == 'Bitrix\Sale\Delivery\Services\Base')
+					if($service['CLASS_NAME']::canHasProfiles())
+						continue;
+
+				$srv = \Bitrix\Sale\Delivery\Services\NewToAutomatic::convertNewServiceToOld($service);
+			}
+
+			if(empty($srv))
+				continue;
 
 			if (is_array($arFilter["COMPABILITY"]))
 			{
@@ -219,7 +300,7 @@ class CAllSaleDeliveryHandler
 				if (!is_array($arProfiles) || count($arProfiles) <= 0)
 					continue;
 				else
-					$srv = $arProfiles;
+					$srv["PROFILES"] = $arProfiles;
 			}
 
 			if($srv)
@@ -519,10 +600,11 @@ class CAllSaleDeliveryHandler
 
 		while($handler = $res->fetch())
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"=DELIVERY_ID" => $handler["ID"],
-					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\BySite'
+					"=SERVICE_ID" => $handler["ID"],
+					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\BySite',
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 				)
 			));
 
@@ -531,7 +613,7 @@ class CAllSaleDeliveryHandler
 			if(!is_array($restrict) && !$siteId)
 				return $handler;
 
-			if($restrict["PARAMS"]["SITE_ID"] == $siteId)
+			if(in_array($siteId, $restrict["PARAMS"]["SITE_ID"]))
 				return $handler;
 		}
 
@@ -549,30 +631,32 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionBySiteId($deliveryId, $siteId, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\BySite',
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"PARAMS" => array(
-				"SITE_ID" => $siteId
+				"SITE_ID" => array($siteId)
 			)
 		);
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
-					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\BySite'
+					"=SERVICE_ID" => $deliveryId,
+					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\BySite',
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -589,8 +673,9 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionByWeight($deliveryId, array $weightParams, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByWeight',
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"PARAMS" => array(
 				"MIN_WEIGHT" => $weightParams[0],
 				"MAX_WEIGHT" => $weightParams[1]
@@ -599,21 +684,22 @@ class CAllSaleDeliveryHandler
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
+					"=SERVICE_ID" => $deliveryId,
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByWeight'
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -622,8 +708,9 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionByPublicShow($deliveryId, $publicShow, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByPublicMode',
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"PARAMS" => array(
 				"PUBLIC_SHOW" => ($publicShow) ? 'Y' : 'N'
 			)
@@ -631,21 +718,22 @@ class CAllSaleDeliveryHandler
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
+					"=SERVICE_ID" => $deliveryId,
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByPublicMode'
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -663,7 +751,8 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionByPrice($deliveryId, array $priceParams, $currency, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByPrice',
 			"PARAMS" => array(
 				"MIN_PRICE" => $priceParams[0],
@@ -674,21 +763,22 @@ class CAllSaleDeliveryHandler
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
+					"=SERVICE_ID" => $deliveryId,
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByPrice'
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -705,7 +795,8 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionByDimensions($deliveryId, array $params, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByDimensions',
 			"PARAMS" => array(
 				"LENGTH" => $params["LENGTH"],
@@ -716,21 +807,22 @@ class CAllSaleDeliveryHandler
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
+					"=SERVICE_ID" => $deliveryId,
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByDimensions'
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -747,7 +839,8 @@ class CAllSaleDeliveryHandler
 	protected static function saveRestrictionByMaxSize($deliveryId, $maxSize, $update)
 	{
 		$rfields = array(
-			"DELIVERY_ID" => $deliveryId,
+			"SERVICE_ID" => $deliveryId,
+			"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 			"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByMaxSize',
 			"PARAMS" => array(
 				"MAX_SIZE" => $maxSize,
@@ -756,21 +849,22 @@ class CAllSaleDeliveryHandler
 
 		if($update)
 		{
-			$rstrRes = \Bitrix\Sale\Delivery\Restrictions\Table::getList(array(
+			$rstrRes = \Bitrix\Sale\Internals\ServiceRestrictionTable::getList(array(
 				'filter' =>array(
-					"DELIVERY_ID" => $deliveryId,
+					"=SERVICE_ID" => $deliveryId,
+					"=SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"=CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByMaxSize'
 				)
 			));
 
 			if($restrict = $rstrRes->fetch())
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::update($restrict["ID"], $rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::update($restrict["ID"], $rfields);
 			else
-				$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+				$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 		else
 		{
-			$rres = \Bitrix\Sale\Delivery\Restrictions\Table::add($rfields);
+			$rres = \Bitrix\Sale\Internals\ServiceRestrictionTable::add($rfields);
 		}
 
 		return $rres->isSuccess();
@@ -840,10 +934,10 @@ class CAllSaleDeliveryHandler
 		else
 			$fields["CURRENCY"] = COption::GetOptionString('sale', 'default_currency', 'RUB');
 
-		if (isset($arData["SID"]))
+		if (!empty($arData["SID"]))
+		{
 			$fields["CONFIG"]["MAIN"]["SID"] = $arData["SID"];
-		else
-			$fields["CONFIG"]["MAIN"]["SID"] = "";
+		}
 
 		if(isset($arData["TAX_RATE"]) && floatval($arData["TAX_RATE"]) > 0)
 		{
@@ -854,10 +948,8 @@ class CAllSaleDeliveryHandler
 		elseif(!$update)
 			$fields["CONFIG"]["MAIN"]["MARGIN"] = 0;
 
-		if (isset($arData["PROFILE_ID"]))
+		if (!empty($arData["PROFILE_ID"]))
 			$fields["CONFIG"]["MAIN"]["PROFILE_ID"] = $arData["PROFILE_ID"];
-		else
-			$fields["CONFIG"]["MAIN"]["PROFILE_ID"] = "";
 
 		if (isset($arData["LOGOTIP"]) && is_array($arData["LOGOTIP"]))
 		{
@@ -867,9 +959,9 @@ class CAllSaleDeliveryHandler
 		}
 
 		if($update)
-			$res = \Bitrix\Sale\Delivery\Services\Table::update($id, $fields);
+			$res = \Bitrix\Sale\Delivery\Services\Manager::update($id, $fields);
 		else
-			$res = \Bitrix\Sale\Delivery\Services\Table::add($fields);
+			$res = \Bitrix\Sale\Delivery\Services\Manager::add($fields);
 
 		if(!$res->isSuccess())
 		{
@@ -883,9 +975,16 @@ class CAllSaleDeliveryHandler
 		{
 			foreach($arData["PROFILES"] as $profileCode => $profileData)
 			{
+				if(strlen($profileData["TITLE"]) > 0)
+					$name = $profileData["TITLE"];
+				elseif(strlen($handlers[$code]['PROFILES'][$profileCode]['TITLE']) > 0)
+					$name = $handlers[$code]['PROFILES'][$profileCode]['TITLE'];
+				else
+					$name = "-";
+
 				self::Set($code.":".$profileCode,
 					array(
-						"NAME" => strlen($profileData["TITLE"]) > 0 ? $profileData["TITLE"] : $handlers[$code]['PROFILES'][$profileCode]['TITLE'],
+						"NAME" => $name,
 						"DESCRIPTION" => isset($profileData["DESCRIPTION"]) ? $profileData["DESCRIPTION"] : '',
 						"ACTIVE" => isset($profileData["ACTIVE"]) ?  $profileData["ACTIVE"] : "N",
 						"TAX_RATE" => isset($profileData["TAX_RATE"]) ?  $profileData["TAX_RATE"] : 0,
@@ -914,7 +1013,7 @@ class CAllSaleDeliveryHandler
 		}
 		elseif($update)
 		{
-			\Bitrix\Sale\Delivery\Restrictions\Table::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\BySite');
+			\Bitrix\Sale\Delivery\Restrictions\Manager::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\BySite');
 		}
 
 		if(is_array($arData["RESTRICTIONS_WEIGHT"]) && (floatval($arData["RESTRICTIONS_WEIGHT"][0]) > 0 || floatval($arData["RESTRICTIONS_WEIGHT"][1]) > 0))
@@ -927,7 +1026,7 @@ class CAllSaleDeliveryHandler
 		}
 		elseif($update)
 		{
-			\Bitrix\Sale\Delivery\Restrictions\Table::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByWeight');
+			\Bitrix\Sale\Delivery\Restrictions\Manager::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByWeight');
 		}
 
 		if(is_array($arData["RESTRICTIONS_SUM"]) && (floatval($arData["RESTRICTIONS_SUM"][0]) > 0 || floatval($arData["RESTRICTIONS_SUM"][1]) > 0))
@@ -940,7 +1039,7 @@ class CAllSaleDeliveryHandler
 		}
 		elseif($update)
 		{
-			\Bitrix\Sale\Delivery\Restrictions\Table::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByPrice');
+			\Bitrix\Sale\Delivery\Restrictions\Manager::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByPrice');
 		}
 
 		if(
@@ -969,7 +1068,7 @@ class CAllSaleDeliveryHandler
 		}
 		elseif($update)
 		{
-			\Bitrix\Sale\Delivery\Restrictions\Table::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByDimensions');
+			\Bitrix\Sale\Delivery\Restrictions\Manager::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByDimensions');
 		}
 
 		if(floatval($arData["RESTRICTIONS_MAX_SIZE"]) > 0)
@@ -982,7 +1081,7 @@ class CAllSaleDeliveryHandler
 		}
 		elseif($update)
 		{
-			\Bitrix\Sale\Delivery\Restrictions\Table::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByMaxSize');
+			\Bitrix\Sale\Delivery\Restrictions\Manager::deleteByDeliveryIdClassName($id, '\Bitrix\Sale\Delivery\Restrictions\ByMaxSize');
 		}
 
 		return $id;
@@ -1005,7 +1104,7 @@ class CAllSaleDeliveryHandler
 		try
 		{
 			while($service = $dbRes->fetch())
-				\Bitrix\Sale\Delivery\Services\Table::delete($service["ID"]);
+				\Bitrix\Sale\Delivery\Services\Manager::delete($service["ID"]);
 		}
 		catch(\Bitrix\Main\SystemException $e)
 		{
@@ -1059,8 +1158,16 @@ class CAllSaleDeliveryHandler
 		if(!$shipment = $params->getParameter("SHIPMENT"))
 			return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::ERROR, null, 'sale');
 
+		$deliveryId = $shipment->getDeliveryId();
+
+		if(intval($deliveryId) <= 0 && intval($params->getParameter("DELIVERY_ID")) > 0)
+			$deliveryId = intval($params->getParameter("DELIVERY_ID"));
+
+		if(intval($deliveryId) <= 0)
+			return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::ERROR, null, 'sale');
+
 		/** @var \Bitrix\Sale\Delivery\Services\Base $deliverySrv */
-		if(!$deliverySrv = $shipment->getDelivery())
+		if(!$deliverySrv = \Bitrix\Sale\Delivery\Services\Manager::getObjectById($deliveryId))
 			return new \Bitrix\Main\EventResult(\Bitrix\Main\EventResult::ERROR, null, 'sale');
 
 		if(get_class($deliverySrv) != 'Bitrix\Sale\Delivery\Services\AutomaticProfile')
@@ -1384,7 +1491,7 @@ class CAllSaleDeliveryHandler
 	}
 
 	/**
-	 * @return \Bitrix\Sale\Result|bool
+	 * @return \Bitrix\Sale\Result
 	 * @throws Exception
 	 * @throws \Bitrix\Main\SystemException
 	 */
@@ -1394,7 +1501,7 @@ class CAllSaleDeliveryHandler
 		$con = \Bitrix\Main\Application::getConnection();
 
 		if(!$con->isTableExists("b_sale_delivery_handler"))
-			return true;
+			return $result;
 
 		$sqlHelper = $con->getSqlHelper();
 		$deliveryRes = $con->query('SELECT * FROM b_sale_delivery_handler WHERE CONVERTED != \'Y\'');
@@ -1410,13 +1517,21 @@ class CAllSaleDeliveryHandler
 		{
 			if(strlen($delivery["HID"]) <= 0)
 			{
-				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't delivery HID. ID: \"".$delivery["ID"]."\""));
+				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't find delivery HID. ID: \"".$delivery["ID"]."\""));
 				continue;
 			}
 
 			if(!isset($handlers[$delivery["HID"]]))
 			{
-				$result->addError( new \Bitrix\Main\Entity\EntityError("Can't find delivery handler in registered HID: \"".$delivery["HID"]."\""));
+				\CEventLog::Add(array(
+					"SEVERITY" => "ERROR",
+					"AUDIT_TYPE_ID" => "SALE_CONVERTER_ERROR",
+					"MODULE_ID" => "sale",
+					"ITEM_ID" => "CAllSaleDeliveryHandler::convertToNew()",
+					"DESCRIPTION" => "Can't find delivery handler for registered HID: \"".$delivery["HID"]."\"",
+				));
+
+				//$result->addError( new \Bitrix\Main\Entity\EntityError("Can't find delivery handler for registered HID: \"".$delivery["HID"]."\""));
 				continue;
 			}
 
@@ -1463,6 +1578,14 @@ class CAllSaleDeliveryHandler
 				}
 			}
 
+			if(empty($delivery["NAME"]))
+			{
+				if(!empty($handlers[$delivery["HID"]]["NAME"]))
+					$delivery["NAME"] = $handlers[$delivery["HID"]]["NAME"];
+				else
+					$delivery["NAME"] = "-";
+			}
+			
 			$delivery["SID"] = $handlers[$delivery["HID"]]["SID"];
 
 			$id = \CSaleDeliveryHandler::Set(
@@ -1490,15 +1613,15 @@ class CAllSaleDeliveryHandler
 			foreach($delivery["PROFILES"] as $profileName => $profileData)
 			{
 				$fullSid = $delivery["HID"].":".$profileName;
-				$profileId = \Bitrix\Sale\Delivery\Services\Table::getIdByCode($fullSid);
+				$profileId = \CSaleDelivery::getIdByCode($fullSid);
 				$ids[] = $profileId;
 
 				if(intval($profileId) > 0)
 				{
 					foreach($tablesToUpdate as $table)
-						$con->queryExecute("UPDATE ".$table." SET DELIVERY_ID=".$sqlHelper->forSql($profileId)." WHERE DELIVERY_ID = '".$sqlHelper->forSql($fullSid)."'");
+						$con->queryExecute("UPDATE ".$table." SET DELIVERY_ID='".$sqlHelper->forSql($profileId)."' WHERE DELIVERY_ID = '".$sqlHelper->forSql($fullSid)."'");
 
-					$con->queryExecute("UPDATE b_sale_delivery2paysystem SET DELIVERY_ID=".$sqlHelper->forSql($profileId).", DELIVERY_PROFILE_ID='' WHERE DELIVERY_ID = '".$sqlHelper->forSql($delivery["HID"])."' AND DELIVERY_PROFILE_ID='".$profileName."'");
+					$con->queryExecute("UPDATE b_sale_delivery2paysystem SET DELIVERY_ID='".$sqlHelper->forSql($profileId)."', DELIVERY_PROFILE_ID='##CONVERTED##' WHERE DELIVERY_ID = '".$sqlHelper->forSql($delivery["HID"])."' AND DELIVERY_PROFILE_ID='".$profileName."'");
 				}
 				else
 				{
@@ -1506,7 +1629,7 @@ class CAllSaleDeliveryHandler
 				}
 			}
 
-			$con->queryExecute("UPDATE b_sale_delivery2paysystem SET DELIVERY_ID=".$sqlHelper->forSql($id).", DELIVERY_PROFILE_ID='' WHERE DELIVERY_ID = '".$sqlHelper->forSql($delivery["HID"])."' AND (DELIVERY_PROFILE_ID='' OR DELIVERY_PROFILE_ID IS NULL)");
+			$con->queryExecute("UPDATE b_sale_delivery2paysystem SET DELIVERY_ID='".$sqlHelper->forSql($id)."', DELIVERY_PROFILE_ID='##CONVERTED##' WHERE DELIVERY_ID = '".$sqlHelper->forSql($delivery["HID"])."' AND (DELIVERY_PROFILE_ID='' OR DELIVERY_PROFILE_ID IS NULL)");
 
 			$d2pRes = \Bitrix\Sale\Internals\DeliveryPaySystemTable::getList(array(
 				'filter' => array(
@@ -1518,8 +1641,9 @@ class CAllSaleDeliveryHandler
 
 			while($d2p = $d2pRes->fetch())
 			{
-				$res = \Bitrix\Sale\Delivery\Restrictions\Table::add(array(
-					"DELIVERY_ID" => $d2p["DELIVERY_ID"],
+				$res = \Bitrix\Sale\Internals\ServiceRestrictionTable::add(array(
+					"SERVICE_ID" => $d2p["DELIVERY_ID"],
+					"SERVICE_TYPE" => \Bitrix\Sale\Services\Base\RestrictionManager::SERVICE_TYPE_SHIPMENT,
 					"CLASS_NAME" => '\Bitrix\Sale\Delivery\Restrictions\ByPaySystem',
 					"SORT" => 100
 				));
@@ -1543,7 +1667,7 @@ class CAllSaleDeliveryHandler
 
 	public static function convertConfigHandlerToSidAgent()
 	{
-		\Bitrix\Sale\Delivery\Services\Manager::getHandlersClassNames();
+		\Bitrix\Sale\Delivery\Services\Manager::getHandlersList();
 		$initedHandlersH = \Bitrix\Sale\Delivery\Services\Automatic::getRegisteredHandlers("HANDLER");
 		$initedHandlersS = \Bitrix\Sale\Delivery\Services\Automatic::getRegisteredHandlers("SID");
 		$filter = array('=CLASS_NAME' => '\Bitrix\Sale\Delivery\Services\Automatic');
@@ -1568,7 +1692,7 @@ class CAllSaleDeliveryHandler
 				$config["MAIN"]["SID"] = "";
 
 			unset($config["MAIN"]["HANDLER"]);
-			Bitrix\Sale\Delivery\Services\Table::update($params["ID"], array("CONFIG" => $config));
+			\Bitrix\Sale\Delivery\Services\Manager::update($params["ID"], array("CONFIG" => $config));
 		}
 
 		return "";

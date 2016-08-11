@@ -10,4 +10,5 @@ $MESS["SALE_EBAY_SEC_JS_CREATE_NEW_CATEGORY_PROP"] = "Создание ново�
 $MESS["SALE_EBAY_SEC_JS_CONTINUE"] = "Продолжить";
 $MESS["SALE_EBAY_SEC_JS_CANCEL"] = "Отменить";
 $MESS["SALE_EBAY_SEC_JS_PROP_KIND"] = "Какое свойство создать?";
+$MESS["SALE_EBAY_SEC_NO_CATEGORIES"] = "Не загружены. (Загрузить категории и свойства можно в #A1#Настройках#A2#)";
 ?>

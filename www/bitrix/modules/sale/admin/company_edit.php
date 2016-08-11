@@ -36,8 +36,6 @@ if ($request->isPost() && strlen($request->getPost("update")) > 0 && check_bitri
 
 	if (empty($name))
 		$errorMessage .= GetMessage('ERROR_NO_NAME')."\n";
-	if (empty($locationId))
-		$errorMessage .= GetMessage('ERROR_NO_LOCATION_ID')."\n";
 
 	if (empty($errorMessage))
 	{
@@ -159,7 +157,7 @@ $tabControl->BeginCustomField('LOCATIONS', GetMessage("COMPANY_LOCATION_ID"));
 if ($saleModulePermissions >= 'W')
 {?>
 	<tr>
-		<td><strong><?=GetMessage("COMPANY_LOCATION_ID");?></strong></td>
+		<td><?=GetMessage("COMPANY_LOCATION_ID");?></td>
 		<td>
 			<?$APPLICATION->IncludeComponent("bitrix:sale.location.selector.".\Bitrix\Sale\Location\Admin\LocationHelper::getWidgetAppearance(), "", array(
 					"ID" => "",
@@ -181,18 +179,26 @@ if ($saleModulePermissions >= 'W')
 }
 else
 {
-	$res = \Bitrix\Sale\Location\LocationTable::getPathToNodeByCode(
-		$fields['LOCATION_ID'],
-		array(
-			'select' => array('CHAIN' => 'NAME.NAME'),
-			'filter' => array('NAME.LANGUAGE_ID' => $lang)
-		)
-	);
-	$path = array();
-	while($item = $res->fetch())
-	    $path[] = $item['CHAIN'];
+	try
+	{
+		$res = \Bitrix\Sale\Location\LocationTable::getPathToNodeByCode(
+				$fields['LOCATION_ID'],
+				array(
+						'select' => array('CHAIN' => 'NAME.NAME'),
+						'filter' => array('NAME.LANGUAGE_ID' => $lang)
+				)
+		);
 
-	$path = implode(', ', array_reverse($path));
+		$chain = array();
+		while ($item = $res->fetch())
+			$chain[] = $item['CHAIN'];
+
+		$path = implode(', ', array_reverse($chain));
+	}
+	catch (Main\SystemException $e)
+	{
+		$path = '';
+	}
 ?>
 	<tr>
 		<td><?=GetMessage("COMPANY_LOCATION");?></td>

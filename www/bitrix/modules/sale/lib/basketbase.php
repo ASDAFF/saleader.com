@@ -1,10 +1,4 @@
 <?php
-/**
- * Bitrix Framework
- * @package bitrix
- * @subpackage sale
- * @copyright 2001-2012 Bitrix
- */
 namespace Bitrix\Sale;
 
 use Bitrix\Main;
@@ -52,7 +46,11 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @param OrderBase $order
+	 * @internal
+	 *
+	 * Load the contents of the basket to order
+	 *
+	 * @param OrderBase $order - object of the order
 	 * @return static
 	 */
 	public static function loadItemsForOrder(OrderBase $order)
@@ -72,6 +70,8 @@ abstract class BasketBase
 	abstract protected function loadFromDb(array $filter);
 
 	/**
+	 * Getting the contents of the basket
+	 *
 	 * @return Internals\EntityCollection
 	 */
 	public function getBasketItems()
@@ -80,7 +80,9 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @param OrderBase $order
+	 * Attach to the essence of the object of the order basket
+	 *
+	 * @param OrderBase $order - object of the order
 	 */
 	public function setOrder(OrderBase $order)
 	{
@@ -90,6 +92,8 @@ abstract class BasketBase
 	}
 
 	/**
+	 * Getting the object of the order
+	 *
 	 * @return Order
 	 */
 	public function getOrder()
@@ -98,7 +102,9 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @return int
+	 * Getting basket price with discounts and taxes
+	 *
+	 * @return float
 	 */
 	public function getPrice()
 	{
@@ -111,13 +117,34 @@ abstract class BasketBase
 				$orderPrice += $basketItem->getFinalPrice();
 		}
 
-		$orderPrice = roundEx($orderPrice, SALE_VALUE_PRECISION);
+		return $orderPrice;
+	}
+
+	/**
+	 * Getting basket price without discounts
+	 *
+	 * @return float
+	 */
+	public function getBasePrice()
+	{
+		$orderPrice = 0;
+
+		/** @var BasketItem $basketItem */
+		foreach ($this->collection as $basketItem)
+		{
+			if (!$basketItem->isBundleChild())
+				$orderPrice += PriceMaths::roundPrecision($basketItem->getBasePrice() * $basketItem->getQuantity());
+		}
+
+		$orderPrice = PriceMaths::roundPrecision($orderPrice);
 
 		return $orderPrice;
 	}
 
 	/**
-	 * @return float|int
+	 * Getting the value of the tax basket
+	 *
+	 * @return float
 	 */
 	public function getVatSum()
 	{
@@ -140,7 +167,9 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @return float|int
+	 * Getting the value of the tax rate basket
+	 *
+	 * @return float
 	 */
 	public function getVatRate()
 	{
@@ -165,6 +194,8 @@ abstract class BasketBase
 	}
 
 	/**
+	 * Getting the weight basket
+	 *
 	 * @return int
 	 */
 	public function getWeight()
@@ -181,7 +212,9 @@ abstract class BasketBase
 
 
 	/**
-	 * @param $itemCode
+	 * Get the code element basket
+	 *
+	 * @param $itemCode - code element basket
 	 * @return BasketItem
 	 */
 	public function getItemByBasketCode($itemCode)
@@ -212,11 +245,15 @@ abstract class BasketBase
 
 
 	/**
+	 * Save basket
+	 *
 	 * @return bool
 	 */
 	abstract public function save();
 
 	/**
+	 * Getting order ID
+	 *
 	 * @return int
 	 */
 	public function getOrderId()
@@ -225,15 +262,19 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @param $fuserId
+	 * Setting Customer ID to basket
+	 *
+	 * @param $fUserId - customer ID
 	 */
-	protected function setFUserId($fuserId)
+	public function setFUserId($fUserId)
 	{
-		$this->fUserId = intval($fuserId) > 0?intval($fuserId) : null;
+		$this->fUserId = intval($fUserId) > 0?intval($fUserId) : null;
 	}
 
 	/**
-	 * @param $siteId
+	 * Setting site ID to basket
+	 *
+	 * @param $siteId - site ID
 	 */
 	protected function setSiteId($siteId)
 	{
@@ -241,7 +282,9 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @param bool $skipCreate
+	 * Getting Customer ID
+	 *
+	 * @param bool $skipCreate - Creating a buyer if it is not found
 	 * @return int|void
 	 */
 	public function getFUserId($skipCreate = false)
@@ -255,6 +298,8 @@ abstract class BasketBase
 
 
 	/**
+	 * Getting Site ID
+	 *
 	 * @return string
 	 */
 	public function getSiteId()
@@ -263,6 +308,8 @@ abstract class BasketBase
 	}
 
 	/**
+	 * Getting a list of a count of elements in the basket
+	 *
 	 * @return array
 	 */
 	public function getQuantityList()
@@ -282,13 +329,69 @@ abstract class BasketBase
 	}
 
 	/**
-	 * @param int $days
+	 * Removing the old records in the basket
+	 *
+	 * @param int $days - number of days, how many is considered obsolete basket
 	 *
 	 * @return bool
 	 */
 	public static function deleteOld($days)
 	{
 		return true;
+	}
+
+	/**
+	 * @internal
+	 * @param \SplObjectStorage $cloneEntity
+	 *
+	 * @return Basket
+	 */
+	public function createClone(\SplObjectStorage $cloneEntity = null)
+	{
+		if ($cloneEntity === null)
+		{
+			$cloneEntity = new \SplObjectStorage();
+		}
+		else
+		{
+			if ($this->isClone() && $cloneEntity->contains($this))
+			{
+				return $cloneEntity[$this];
+			}
+		}
+		
+		$basketClone = clone $this;
+		$basketClone->isClone = true;
+
+		if ($this->order)
+		{
+			if ($cloneEntity->contains($this->order))
+			{
+				$basketClone->order = $cloneEntity[$this->order];
+			}
+		}
+
+		if (!$cloneEntity->contains($this))
+		{
+			$cloneEntity[$this] = $basketClone;
+		}
+
+		/**
+		 * @var int key
+		 * @var BasketItem $basketItem
+		 */
+		foreach ($basketClone->collection as $key => $basketItem)
+		{
+			if (!$cloneEntity->contains($basketItem))
+			{
+				$cloneEntity[$basketItem] = $basketItem->createClone($cloneEntity);
+			}
+
+			$basketClone->collection[$key] = $cloneEntity[$basketItem];
+		}
+
+
+		return $basketClone;
 	}
 
 }

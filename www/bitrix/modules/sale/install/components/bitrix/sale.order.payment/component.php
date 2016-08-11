@@ -1,6 +1,8 @@
 <?
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+$this->setFramemode(false);
+
 if (!CModule::IncludeModule("sale"))
 {
 	ShowError(GetMessage("SALE_MODULE_NOT_INSTALL"));
@@ -14,7 +16,7 @@ $APPLICATION->RestartBuffer();
 $bUseAccountNumber = (COption::GetOptionString("sale", "account_number_template", "") !== "") ? true : false;
 
 $ORDER_ID = urldecode(urldecode($_REQUEST["ORDER_ID"]));
-$paymentId = isset($_REQUEST["PAYMENT_ID"]) ? $_REQUEST["PAYMENT_ID"] : 0;
+$paymentId = isset($_REQUEST["PAYMENT_ID"]) ? $_REQUEST["PAYMENT_ID"] : '';
 
 $arOrder = false;
 if ($bUseAccountNumber)
@@ -47,78 +49,75 @@ if (!$arOrder)
 
 if ($arOrder)
 {
-	if ($paymentId > 0)
-		$filter = array('ID' => $paymentId);
-	else
-		$filter = array('ORDER_ID' => $arOrder['ID'], '!PAY_SYSTEM_ID' => \Bitrix\Sale\Internals\PaySystemInner::getId());
+	$paymentItem = null;
 
-	$resPayment = \Bitrix\Sale\Internals\PaymentTable::getList(array(
-		'select' => array('PAY_SYSTEM_ID', 'SUM', 'DATE_BILL', 'ID'),
-		'filter' => $filter,
-		'limit' => array(1)
-	));
+	/** @var \Bitrix\Sale\Order $order */
+	$order = \Bitrix\Sale\Order::load($arOrder['ID']);
 
-	$payment = $resPayment->fetch();
-
-	$dbPaySysAction = CSalePaySystemAction::GetList(
-			array(),
-			array(
-					"PAY_SYSTEM_ID" => $payment['PAY_SYSTEM_ID'],
-					"PERSON_TYPE_ID" => $arOrder["PERSON_TYPE_ID"]
-				),
-			false,
-			false,
-			array("ACTION_FILE", "PARAMS", "ENCODING")
-		);
-
-	if ($arPaySysAction = $dbPaySysAction->Fetch())
+	if ($order)
 	{
-		if (strlen($arPaySysAction["ACTION_FILE"]) > 0)
+		/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+		$paymentCollection = $order->getPaymentCollection();
+
+		if ($paymentCollection)
 		{
-			CSalePaySystemAction::InitParamArrays($arOrder, $ID, $arPaySysAction["PARAMS"], array(), $payment);
-
-			$pathToAction = $_SERVER["DOCUMENT_ROOT"].$arPaySysAction["ACTION_FILE"];
-			$pathToAction = rtrim(str_replace("\\", "/", $pathToAction), "/");
-
-			try
+			if ($paymentId)
 			{
-				if (file_exists($pathToAction))
+				$params = array(
+					'select' => array('ID'),
+					'filter' => array(
+						'LOGIC' => 'OR',
+						'ID' => $paymentId,
+						'ACCOUNT_NUMBER' => $paymentId,
+					)
+				);
+
+				$data = \Bitrix\Sale\Internals\PaymentTable::getRow($params);
+
+				if ($data !== null && $data['ID'] > 0)
 				{
-					if (is_dir($pathToAction))
-					{
-						if (file_exists($pathToAction."/payment.php"))
-							include($pathToAction."/payment.php");
-					}
-					else
-					{
-						include($pathToAction);
-					}
-				}
-			}
-			catch(\Bitrix\Main\SystemException $e)
-			{
-				if($e->getCode() == CSalePaySystemAction::GET_PARAM_VALUE)
-					$message = GetMessage("SOA_TEMPL_ORDER_PS_ERROR");
-				else
-					$message = $e->getMessage();
-
-				ShowError($message);
-			}
-
-			if(strlen($arPaySysAction["ENCODING"]) > 0)
-			{
-				define("BX_SALE_ENCODING", $arPaySysAction["ENCODING"]);
-				AddEventHandler("main", "OnEndBufferContent", "ChangeEncoding");
-				function ChangeEncoding($content)
-				{
-					global $APPLICATION;
-					header("Content-Type: text/html; charset=".BX_SALE_ENCODING);
-					$content = $APPLICATION->ConvertCharset($content, SITE_CHARSET, BX_SALE_ENCODING);
-					$content = str_replace("charset=".SITE_CHARSET, "charset=".BX_SALE_ENCODING, $content);
+					/** @var \Bitrix\Sale\Payment $paymentItem */
+					$paymentItem = $paymentCollection->getItemById($data['ID']);
 				}
 			}
 
+			if ($paymentItem === null)
+			{
+				/** @var \Bitrix\Sale\Payment $item */
+				foreach ($paymentCollection as $item)
+				{
+					if (!$item->isInner())
+					{
+						$paymentItem = $item;
+						break;
+					}
+				}
+			}
+
+			if ($paymentItem !== null)
+			{
+				$service = \Bitrix\Sale\PaySystem\Manager::getObjectById($paymentItem->getPaymentSystemId());
+				if ($service)
+				{
+					$context = \Bitrix\Main\Application::getInstance()->getContext();
+
+					$service->initiatePay($paymentItem, $context->getRequest());
+
+					if($service->getField('ENCODING') != '')
+					{
+						define("BX_SALE_ENCODING", $service->getField('ENCODING'));
+
+						AddEventHandler("main", "OnEndBufferContent", "ChangeEncoding");
+						function ChangeEncoding($content)
+						{
+							global $APPLICATION;
+							header("Content-Type: text/html; charset=".BX_SALE_ENCODING);
+							$content = $APPLICATION->ConvertCharset($content, SITE_CHARSET, BX_SALE_ENCODING);
+							$content = str_replace("charset=".SITE_CHARSET, "charset=".BX_SALE_ENCODING, $content);
+						}
+					}
+				}
+			}
 		}
 	}
 }
-?>

@@ -36,17 +36,18 @@ if (strlen($_REQUEST["BasketRefresh"]) > 0 || strlen($_REQUEST["BasketOrder"]) >
 		$id = intval($_REQUEST["id"]);
 		if ($id > 0)
 		{
+			$fuserId = CSaleBasket::GetBasketUserID(); 
 			$dbBasketItems = CSaleBasket::GetList(
 				array(),
 				array(
-					"FUSER_ID" => CSaleBasket::GetBasketUserID(),
+					"FUSER_ID" => $fuserId,
 					"LID" => SITE_ID,
 					"ORDER_ID" => "NULL",
 					"ID" => $id,
 				),
 				false,
 				false,
-				array('ID', 'DELAY', 'CAN_BUY', 'SET_PARENT_ID', 'TYPE')
+				array('ID', 'DELAY', 'CAN_BUY', 'SET_PARENT_ID', 'TYPE', 'NAME')
 			);
 			$arItem = $dbBasketItems->Fetch();
 			if ($arItem && !CSaleBasketHelper::isSetItem($arItem))
@@ -54,18 +55,28 @@ if (strlen($_REQUEST["BasketRefresh"]) > 0 || strlen($_REQUEST["BasketOrder"]) >
 				if ($_REQUEST[$arParams["ACTION_VARIABLE"]] == "delete" && in_array("DELETE", $arParams["COLUMNS_LIST"]))
 				{
 					CSaleBasket::Delete($arItem["ID"]);
+					$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]--;
 				}
 				elseif ($_REQUEST[$arParams["ACTION_VARIABLE"]] == "delay" && in_array("DELAY", $arParams["COLUMNS_LIST"]))
 				{
 					if ($arItem["DELAY"] == "N" && $arItem["CAN_BUY"] == "Y")
+					{
 						CSaleBasket::Update($arItem["ID"], array("DELAY" => "Y"));
+						$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]--;
+					}
 				}
 				elseif ($_REQUEST[$arParams["ACTION_VARIABLE"]] == "add" && in_array("DELAY", $arParams["COLUMNS_LIST"]))
 				{
 					if ($arItem["DELAY"] == "Y" && $arItem["CAN_BUY"] == "Y")
+					{
 						CSaleBasket::Update($arItem["ID"], array("DELAY" => "N"));
+						$_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]++;
+					}
+					else
+					{
+						$_SESSION["SALE_BASKET_MESSAGE"][] = \Bitrix\Main\Localization\Loc::getMessage("SBB_PRODUCT_NOT_AVAILABLE", array("#PRODUCT#" => $arItem["NAME"]));
+					}
 				}
-				unset($_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]);
 			}
 		}
 
@@ -80,12 +91,10 @@ if (strlen($_REQUEST["BasketRefresh"]) > 0 || strlen($_REQUEST["BasketOrder"]) >
 
 		foreach ($arRes as $key => $value)
 			$arResult[$key] = $value;
-
-		unset($_SESSION["SALE_BASKET_NUM_PRODUCTS"][SITE_ID]);
-
+		
 		if (!empty($_REQUEST["BasketOrder"]) && empty($arResult["WARNING_MESSAGE"]))
 		{
-			if (!(strlen($_POST['paypalbutton']) > 0))
+			if (!array_key_exists('paypalbutton_x', $_POST) && !array_key_exists('paypalbutton_y', $_POST))
 				LocalRedirect($arParams["PATH_TO_ORDER"]);
 		}
 		else

@@ -18,8 +18,8 @@ $userId = intval($USER->GetID());
 if ($saleModulePermissions < "W")
 {
 	$arFilter["GROUP_ID"] = $arUserGroups;
-	$arFilter["PERM_UPDATE"] = "Y";
-	$arGroupByTmpSt = array("ID", "NAME", "MAX" => "PERM_UPDATE");
+	$arFilter["PERM_VIEW"] = "Y";
+	$arGroupByTmpSt = array("ID", "NAME", "MAX" => "PERM_VIEW");
 }
 $dbStatusList = CSaleStatus::GetList(
 	array(),
@@ -30,7 +30,7 @@ $dbStatusList = CSaleStatus::GetList(
 );
 $arStatusList = $dbStatusList->Fetch();
 
-if ($saleModulePermissions == "D" OR ($saleModulePermissions < "W" AND $arStatusList["PERM_UPDATE"] != "Y"))
+if ($saleModulePermissions == "D" OR ($saleModulePermissions < "W" AND $arStatusList["PERM_VIEW"] != "Y"))
 {
 	ShowError(GetMessage("SMOP_ACCESS_DENIED"));
 	return;

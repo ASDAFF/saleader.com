@@ -48,4 +48,10 @@ $MESS["SALE_DH_PECOM_AS_PAYMENT_KASSA"] = "Касса";
 $MESS["SALE_DH_PECOM_AS_PAYMENT_BANK"] = "Банк";
 $MESS["SALE_DH_PECOM_FEATURE_ENABLED"] = "включено";
 $MESS["SALE_DH_PECOM_PERIOD_DAYS"] = "суток";
+$MESS["SALE_DH_PECOM_LOC_INSTALL"] = "Для корректной работы обработчика службы доставки ПЭК необходимо установить соответствие между местоположениями магазина и местоположениями ПЭК. В зависимости от производительности это может занять до 60 минут";
+$MESS["SALE_DH_PECOM_LOC_INSTALL_START"] = "Начать";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST"] = "Заявка на предварительное оформление";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST_SENT"] = "отправлена";
+$MESS["SALE_DH_PECOM_PRELIMINARY_SEND_REQUEST"] = "Отправить заявку на предварительное оформление";
+$MESS["SALE_DH_PECOM_PRELIMINARY_REQUEST_NOT_SENT"] = "не отправлена";
 ?>

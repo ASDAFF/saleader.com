@@ -11,7 +11,7 @@ class CSalePaySystemTarifPFC extends CSalePaySystemTarif
 		if(!isset($arPaySystem["PSA_TARIF"]) || strlen($arPaySystem["PSA_TARIF"]) <= 0)
 			return 0;
 
-		$arTarif = array();
+		$result = 0;
 		$arLoc = CSaleLocation::GetByID($buyerLocationId);
 		$regId = $arLoc["REGION_ID"];
 		$arTarifs = self::extractFromField($arPaySystem["PSA_TARIF"]);
@@ -27,12 +27,13 @@ class CSalePaySystemTarifPFC extends CSalePaySystemTarif
 		elseif($fullPrice <= 500000)
 			$tarifNum = "3";
 
-		if(floatval($arTarif["TARIFS"][$tarifNum]["UPPER_SUMM"]) > 0)
-			$percent = floatval($arTarif["TARIFS"][$tarifNum]["UPPER_SUMM"])*floatval($arTarif["TARIFS"][$tarifNum]["PERCENT"]);
-		else
-			$percent = $fullPrice*floatval($arTarif["TARIFS"][$tarifNum]["PERCENT"]);
-
-		$result = floatval($arTarif["TARIFS"][$tarifNum]["FIX"]) + $percent/100;
+		if (isset($tarifNum))
+		{
+			$percent = 0;
+			if ($arTarif["TARIFS"][$tarifNum]["UPPER_SUMM"] < $orderPrice)
+				$percent = floatval($arTarif["TARIFS"][$tarifNum]["PERCENT"]) * floatval($orderPrice) / 100;
+			$result = floatval($arTarif["TARIFS"][$tarifNum]["FIX"]) + $percent;
+		}
 
 		return round($result, 0);
 	}
@@ -42,7 +43,7 @@ class CSalePaySystemTarifPFC extends CSalePaySystemTarif
 		$arResult = array();
 
 		//get saved
-		if(intval($psId) > 0 && intval($persId) > 0)
+		if(intval($psId) > 0)
 		{
 			$dbPSAction = CSalePaySystemAction::GetList(
 					array(),
@@ -71,8 +72,9 @@ class CSalePaySystemTarifPFC extends CSalePaySystemTarif
 	{
 		$arResult=array();
 		$arTarifs = parent::extractFromField($strFieldContent);
+		$arTarifs = ($arTarifs) ?: array();
 		$arRegIds = array_keys($arTarifs);
-		$regNames = CSaleLocation::GetRegionsNamesByIds($arRegIds);
+		$regNames = @CSaleLocation::GetRegionsNamesByIds($arRegIds);
 
 		$arResult[0]["TARIFS"] = self::getTarifArrayCSV($arTarifs[0]);
 		$arResult[0]["REG_NAME"] = GetMessage('SPFPCT_TARIF_DEFAULT');
@@ -80,8 +82,11 @@ class CSalePaySystemTarifPFC extends CSalePaySystemTarif
 		foreach ($regNames as $regId => $regName)
 		{
 			$assocTarif = self::getTarifArrayCSV($arTarifs[$regId]);
-			$arResult[$regId]["TARIFS"] = $assocTarif;
-			$arResult[$regId]["REG_NAME"] = $regName;
+			if ($assocTarif)
+			{
+				$arResult[$regId]["TARIFS"] = $assocTarif;
+				$arResult[$regId]["REG_NAME"] = $regName;
+			}
 		}
 
 		return $arResult;

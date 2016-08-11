@@ -481,7 +481,8 @@ class CSaleOrder extends CAllSaleOrder
 		if ($isOrderConverted == "Y")
 		{
 			$result = \Bitrix\Sale\Compatible\OrderCompatibility::getList($arOrder, $arFilter, $arGroupBy, $arNavStartParams, $arSelectFields, $callback);
-			$result->addFetchAdapter(new \Bitrix\Sale\Compatible\OrderFetchAdapter());
+			if ($result instanceof \Bitrix\Sale\Compatible\CDBResult)
+				$result->addFetchAdapter(new \Bitrix\Sale\Compatible\OrderFetchAdapter());
 			return $result;
 		}
 

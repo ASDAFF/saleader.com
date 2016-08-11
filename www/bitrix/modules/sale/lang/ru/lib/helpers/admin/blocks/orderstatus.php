@@ -16,4 +16,5 @@ $MESS["SALE_ORDER_STATUS_USER_CAN_VIEW"] = "доступен для просмо
 $MESS["SALE_ORDER_STATUS_TOGGLE"] = "свернуть";
 $MESS["SALE_ORDER_STATUS_SITE"] = "Сайт";
 $MESS["SALE_ORDER_STATUS_SOURCE"] = "Источник заказа";
+$MESS["SALE_ORDER_STATUS_AFFILIATE"] = "Аффилиат";
 ?>

@@ -498,9 +498,18 @@ if ($APPLICATION->GetGroupRight("sale") == "W" ||
 		{
 			$arMenu["items"][] = array(
 				"text" => GetMessage("SALE_BUSINESS_VALUE"),
-				"title" => 'SALE_BUSINESS_VALUE title',//GetMessage("SALE_STATUS_DESCR"),
+				"title" => GetMessage("SALE_BUSINESS_VALUE_DESCR"),
 				"url" => "sale_business_value.php?lang=".LANGUAGE_ID,
 				"more_url" => array("sale_business_value.php"),
+				"items_id" => "menu_sale_bizval",
+				"items"=>array(
+					array(
+						"text" => GetMessage("SALE_PERSON_TYPE"),
+						"title" => GetMessage("SALE_PERSON_TYPE_DESCR"),
+						"url" => "sale_business_value_ptypes.php?lang=".LANGUAGE_ID,
+						"more_url" => array("sale_business_value_ptypes.php"),
+					),
+				),
 			);
 		}
 		
@@ -654,10 +663,11 @@ if ($APPLICATION->GetGroupRight("sale") == "W" ||
 						"more_url" => array("sale_ymarket.php"),
 					),
 					array(
-						"text" => "Ebay",
-						"title" => "Ebay",
+						"text" => "eBay",
+						"title" => "eBay",
 						"items_id" => "menu_sale_trading_platforms_ebay",
-						"more_url" => array("sale_ebay_actions.php"),
+						"url" => "sale_ebay.php?lang=".LANGUAGE_ID,
+						"more_url" => array("sale_ebay_actions.php", "sale_ebay.php"),
 						"items"  => array(
 							array(
 								"text" => GetMessage("SALE_MENU_EBAY_WIZARD"),
@@ -668,8 +678,8 @@ if ($APPLICATION->GetGroupRight("sale") == "W" ||
 							array(
 								"text" => GetMessage("SALE_MENU_EBAY_SETT"),
 								"title" => GetMessage("SALE_MENU_EBAY_SETT_DESCR"),
-								"url" => "sale_ebay.php?lang=".LANGUAGE_ID,
-								"more_url" => array("sale_ebay.php"),
+								"url" => "sale_ebay_general.php?lang=".LANGUAGE_ID,
+								"more_url" => array("sale_ebay_general.php"),
 							),
 							array(
 								"text" => GetMessage("SALE_MENU_EBAY_POLICY"),

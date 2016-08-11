@@ -37,11 +37,48 @@ if(!$saleOrder || !in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesV
 	LocalRedirect("/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
 
 $ID = intval($_REQUEST["ID"]);
+$boolLocked = \Bitrix\Sale\Order::isLocked($ID);
+
+//Unlocking if we leave this page
+if(isset($_REQUEST['unlock']) && 'Y' == $_REQUEST['unlock'])
+{
+	$lockStatusRes = \Bitrix\Sale\Order::getLockedStatus($ID);
+
+	if($lockStatusRes->isSuccess())
+		$lockStatusData = $lockStatusRes->getData();
+
+	if(isset($lockStatusData['LOCK_STATUS'])
+		&&
+		(	$lockStatusData['LOCK_STATUS'] != \Bitrix\Sale\Order::SALE_ORDER_LOCK_STATUS_RED
+			|| !isset($_REQUEST['target'])
+		)
+	)
+	{
+		$res = \Bitrix\Sale\Order::unlock($ID);
+
+		if($res->isSuccess())
+			\Bitrix\Sale\DiscountCouponsManager::clearByOrder($ID);
+	}
+
+	if(isset($_REQUEST['target']) && 'list' == $_REQUEST['target'])
+		LocalRedirect("sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+	else
+		LocalRedirect("sale_order_view.php?ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
+}
+
+if ($boolLocked)
+	$errorMsgs[] = Admin\OrderEdit::getLockingMessage($ID);
+else
+	\Bitrix\Sale\Order::lock($ID);
+
+$customTabber = new CAdminTabEngine("OnAdminSaleOrderView", array("ID" => $ID));
+$customDraggableBlocks = new CAdminDraggableBlockEngine('OnAdminSaleOrderViewDraggable', array('ORDER' => $saleOrder));
 
 /** @var Bitrix\Sale\Order $saleOrder */
 Admin\OrderEdit::initCouponsData(
 	$saleOrder->getUserId(),
-	$ID
+	$ID,
+	null
 );
 
 CUtil::InitJSCore();
@@ -72,16 +109,27 @@ $aMenu[] = array(
 	"ICON" => "btn_list",
 	"TEXT" => Loc::getMessage("SALE_OVIEW_TO_LIST"),
 	"TITLE"=> Loc::getMessage("SALE_OVIEW_TO_LIST_TITLE"),
-	"LINK" => "/bitrix/admin/sale_order.php?lang=".LANGUAGE_ID.GetFilterParams("filter_")
-
+	"LINK" => "/bitrix/admin/sale_order_view.php?unlock=Y&target=list&ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_")
 );
 
-$aMenu[] = array(
-	"TEXT" => Loc::getMessage("SALE_OVIEW_TO_EDIT"),
-	"TITLE"=> Loc::getMessage("SALE_OVIEW_TO_EDIT_TITLE"),
-	"LINK" => "/bitrix/admin/sale_order_edit.php?ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_")
+if ($boolLocked && $saleModulePermissions >= 'W')
+{
+	$aMenu[] = array(
+			"TEXT" => GetMessage("SALE_OVIEW_UNLOCK"),
+			"LINK" => "/bitrix/admin/sale_order_view.php?ID=".$ID."&unlock=Y&lang=".LANGUAGE_ID.GetFilterParams("filter_"),
+	);
+}
 
-);
+$allowedStatusesUpdate = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+
+if(!$boolLocked && in_array($saleOrder->getField("STATUS_ID"), $allowedStatusesUpdate))
+{
+	$aMenu[] = array(
+		"TEXT" => Loc::getMessage("SALE_OVIEW_TO_EDIT"),
+		"TITLE"=> Loc::getMessage("SALE_OVIEW_TO_EDIT_TITLE"),
+		"LINK" => "/bitrix/admin/sale_order_edit.php?ID=".$ID."&lang=".LANGUAGE_ID.GetFilterParams("filter_")
+	);
+}
 
 $arSysLangs = array();
 $db_lang = CLangAdmin::GetList(($b="sort"), ($o="asc"), array("ACTIVE" => "Y"));
@@ -166,15 +214,32 @@ $aMenu[] = array(
 	"LINK" => '/bitrix/admin/sale_order_create.php?lang='.LANGUAGE_ID."&SITE_ID=".$saleOrder->getSiteId()."&ID=".$ID."&".bitrix_sessid_get().GetFilterParams("filter_")
 );
 
-$aMenu[] = array(
-	"TEXT" => Loc::getMessage("SALE_OVIEW_DELETE"),
-	"TITLE"=> Loc::getMessage("SALE_OVIEW_DELETE_TITLE"),
-	"LINK" => "javascript:if(confirm('".GetMessageJS("SALE_OVIEW_DEL_MESSAGE")."')) window.location='sale_order.php?ID=".$ID."&action=delete&lang=".LANGUAGE_ID."&".bitrix_sessid_get().urlencode(GetFilterParams("filter_"))."'",
-	"WARNING" => "Y"
-);
+if(CSaleOrder::CanUserDeleteOrder($ID, $arUserGroups, $USER->GetID()))
+{
+	if(!$boolLocked)
+	{
+		$aMenu[] = array(
+			"TEXT" => Loc::getMessage("SALE_OVIEW_DELETE"),
+			"TITLE"=> Loc::getMessage("SALE_OVIEW_DELETE_TITLE"),
+			"LINK" => "javascript:if(confirm('".GetMessageJS("SALE_OVIEW_DEL_MESSAGE")."')) window.location='sale_order.php?ID=".$ID."&action=delete&lang=".LANGUAGE_ID."&".bitrix_sessid_get().urlencode(GetFilterParams("filter_"))."'",
+			"WARNING" => "Y"
+		);
+	}
+}
 
 $context = new CAdminContextMenu($aMenu);
 $context->Show();
+
+if(!empty($errorMsgs))
+{
+	$m = new CAdminMessage(array(
+			"TYPE" => "ERROR",
+			"MESSAGE" => implode("<br>\n", $errorMsgs),
+			"HTML" => true
+	));
+
+	echo $m->Show();
+}
 
 //prepare blocks order
 $defaultBlocksOrder = array(
@@ -187,12 +252,24 @@ $defaultBlocksOrder = array(
 	"basket"
 );
 
+$fastNavItems = array();
+
+foreach($defaultBlocksOrder as $item)
+	$fastNavItems[$item] = Loc::getMessage("SALE_OVIEW_BLOCK_TITLE_".toUpper($item));
+
+foreach($customDraggableBlocks->getBlocksBrief() as $blockId => $blockParams)
+{
+	$defaultBlocksOrder[] = $blockId;
+	$fastNavItems[$blockId] = $blockParams['TITLE'];
+}
+
+$basketPrefix = "sale_order_basket";
 $formId = "sale_order_view";
 
 $orderBasket = new Admin\Blocks\OrderBasket(
 	$saleOrder,
 	"BX.Sale.Admin.OrderBasketObj",
-	"sale_order_basket",
+	$basketPrefix,
 	true,
 	Admin\Blocks\OrderBasket::VIEW_MODE
 );
@@ -206,12 +283,8 @@ echo Admin\Blocks\OrderAdditional::getScripts();
 echo Admin\Blocks\OrderFinanceInfo::getScripts();
 echo Admin\Blocks\OrderShipment::getScripts();
 echo Admin\Blocks\OrderAnalysis::getScripts();
-echo $orderBasket->getScripts();
-
-$fastNavItems = array();
-
-foreach($defaultBlocksOrder as $item)
-	$fastNavItems[$item] = Loc::getMessage("SALE_OVIEW_BLOCK_TITLE_".toUpper($item));
+echo $orderBasket->getScripts(true);
+echo $customDraggableBlocks->getScripts();
 
 // navigation
 echo Admin\OrderEdit::getFastNavigationHtml($fastNavItems);
@@ -221,7 +294,7 @@ echo Admin\Blocks\OrderInfo::getView($saleOrder, $orderBasket);
 
 // Problem block
 if($saleOrder->getField("MARKED") == "Y" )
-	echo Admin\OrderEdit::getProblemBlockHtml($saleOrder->getField("REASON_MARKED"));
+	echo Admin\OrderEdit::getProblemBlockHtml($saleOrder->getField("REASON_MARKED"), $saleOrder->getId());
 
 $aTabs = array(
 	array("DIV" => "tab_order", "TAB" => Loc::getMessage("SALE_OVIEW_TAB_ORDER"), "TITLE" => Loc::getMessage("SALE_OVIEW_TAB_ORDER"), "SHOW_WRAP" => "N", "IS_DRAGGABLE" => "Y"),
@@ -230,6 +303,8 @@ $aTabs = array(
 );
 
 $tabControl = new CAdminTabControlDrag($formId, $aTabs, $moduleId, false, true);
+$tabControl->AddTabs($customTabber);
+
 $tabControl->Begin();
 
 //TAB order --
@@ -256,7 +331,7 @@ if (empty($statusOnPaid) && (empty($statusOnAllowDelivery) || empty($statusOnPai
 		foreach ($blocksOrder as $blockCode)
 		{
 			echo '<a id="'.$blockCode.'"></a>';
-			$tabControl->DraggableBlockBegin(Loc::getMessage("SALE_OVIEW_BLOCK_TITLE_".toUpper($blockCode)), $blockCode);
+			$tabControl->DraggableBlockBegin($fastNavItems[$blockCode], $blockCode);
 
 			switch ($blockCode)
 			{
@@ -267,13 +342,8 @@ if (empty($statusOnPaid) && (empty($statusOnAllowDelivery) || empty($statusOnPai
 					echo Admin\Blocks\OrderBuyer::getView($saleOrder);
 					break;
 				case "delivery":
-					$shipments = $saleOrder->getShipmentCollection();
-					$index = 0;
-
-					/** @var \Bitrix\Sale\Shipment  $shipment*/
-					foreach ($shipments as $shipment)
-						if(!$shipment->isSystem())
-							echo Admin\Blocks\OrderShipment::getView($shipment, $index++);
+					\Bitrix\Main\Page\Asset::getInstance()->addJs("/bitrix/js/sale/admin/order_shipment_basket.js");
+					echo '<div id="sale-adm-order-shipments-content"><img src="/bitrix/images/sale/admin-loader.gif"/></div>';
 					echo Admin\Blocks\OrderShipment::createNewShipmentButton();
 
 					break;
@@ -295,6 +365,9 @@ if (empty($statusOnPaid) && (empty($statusOnAllowDelivery) || empty($statusOnPai
 				case "basket":
 					echo $orderBasket->getView();
 					echo '<div style="display: none;">'.$orderBasket->settingsDialog->getHtml().'</div>';
+					break;
+				default:
+					echo $customDraggableBlocks->getBlockContent($blockCode, $tabControl->selectedTab);
 					break;
 			}
 			$tabControl->DraggableBlockEnd();
@@ -319,10 +392,8 @@ $tabControl->BeginNextTab();
 ?>
 <tr>
 	<td>
-		<div style="position:relative; vertical-align:top">
-			<?
-			echo Admin\Blocks\OrderAnalysis::getView($saleOrder, $orderBasket);
-			?>
+		<div style="position:relative; vertical-align:top" id="sale-adm-order-analysis-content">
+			<img src="/bitrix/images/sale/admin-loader.gif"/>
 		</div>
 	</td>
 </tr>
@@ -336,5 +407,14 @@ $tabControl->End();
 <div style="display: none;">
 	<?=$orderBasket->getSettingsDialogContent();?>
 </div>
+
+<script type="text/javascript">
+	BX.ready( function(){
+		BX.Sale.Admin.OrderAjaxer.sendRequest(
+			BX.Sale.Admin.OrderEditPage.ajaxRequests.getOrderTails("<?=$saleOrder->getId()?>", "view", "<?=$basketPrefix?>"),
+			true
+		);
+	});
+</script>
 
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_admin.php");

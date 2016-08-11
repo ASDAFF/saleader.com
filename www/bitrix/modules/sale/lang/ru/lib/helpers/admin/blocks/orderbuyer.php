@@ -10,4 +10,5 @@ $MESS["SALE_ORDER_BUYER_CHANGE"] = "Изменить";
 $MESS["SALE_ORDER_BUYER_CLEAR"] = "Убрать";
 $MESS["SALE_ORDER_BUYER_NO"] = "Нет";
 $MESS["SALE_ORDER_BUYER_CREATE_NEW"] = "Создать новый";
+$MESS["SALE_ORDER_BUYER_UNKNOWN_GROUP"] = "Неизвестная группа свойств";
 ?>

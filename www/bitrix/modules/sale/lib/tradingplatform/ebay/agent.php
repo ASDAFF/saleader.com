@@ -34,7 +34,7 @@ class Agent
 
 		$siteId = \EscapePHPString($siteId);
 
-		if(!in_array($feedType, array("ORDER", "PRODUCT", "INVENTORY", "IMAGE")))
+		if(!in_array($feedType, array("ORDER", "PRODUCT", "INVENTORY", "IMAGE", "PROCESS_RESULT", "RESULTS", "ORDER_ACK")))
 			throw new ArgumentOutOfRangeException('feedType');
 
 		$result = "";
@@ -91,9 +91,9 @@ class Agent
 
 		if($feedType == "ORDER")
 			$sort = 50;
-		elseif($feedType == "PRODUCT")
+		elseif($feedType == "PRODUCT" || $feedType == "PROCESS_RESULT" || $feedType ==  "RESULTS")
 			$sort = 100;
-		elseif($feedType == "INVENTORY" || $feedType == "IMAGE")
+		elseif($feedType == "INVENTORY" || $feedType == "IMAGE" || $feedType == "ORDER_ACK" )
 			$sort = 150;
 		else
 			throw new ArgumentOutOfRangeException('feedType');

@@ -71,6 +71,7 @@ class CSaleOrderPropsValue
 			'IS_EMAIL'             => 'PROPERTY.IS_EMAIL',
 			'IS_PROFILE_NAME'      => 'PROPERTY.IS_PROFILE_NAME',
 			'IS_PAYER'             => 'PROPERTY.IS_PAYER',
+			'IS_ZIP'               => 'PROPERTY.IS_ZIP',
 			'ACTIVE'               => 'PROPERTY.ACTIVE',
 			'UTIL'                 => 'PROPERTY.UTIL',
 			'GROUP_SORT'           => 'PROPERTY.GROUP.SORT',
@@ -150,7 +151,7 @@ class CSaleOrderPropsValue
 			false, false,
 			array(
 				'ID', 'ORDER_ID', 'ORDER_PROPS_ID', 'NAME', 'VALUE', 'CODE',
-				'PROPERTY_NAME', 'TYPE', 'PROPS_GROUP_ID', 'INPUT_FIELD_LOCATION', 'IS_LOCATION', 'IS_EMAIL', 'IS_PROFILE_NAME', 'IS_PAYER', 'ACTIVE', 'UTIL',
+				'PROPERTY_NAME', 'TYPE', 'PROPS_GROUP_ID', 'INPUT_FIELD_LOCATION', 'IS_LOCATION', 'IS_EMAIL', 'IS_PROFILE_NAME', 'IS_PAYER', 'IS_ZIP', 'ACTIVE', 'UTIL',
 				'GROUP_NAME', 'GROUP_SORT',
 			)
 		);

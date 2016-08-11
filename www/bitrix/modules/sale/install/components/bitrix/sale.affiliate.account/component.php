@@ -3,6 +3,8 @@
 if(!CBXFeatures::IsFeatureEnabled('SaleAffiliate'))
 	return;
 
+$this->setFramemode(false);
+
 $arParams["REGISTER_PAGE"] = Trim($arParams["REGISTER_PAGE"]);
 if (StrLen($arParams["REGISTER_PAGE"]) <= 0)
 	$arParams["REGISTER_PAGE"] = "register.php";

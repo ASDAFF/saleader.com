@@ -66,7 +66,7 @@ abstract class Platform
 	 * @return \Bitrix\Sale\TradingPlatform\Platform
 	 * @throws ArgumentNullException
 	 */
-	public static function getInstance($code)
+	public static function getInstanceByCode($code)
 	{
 		if(strlen($code) <=0)
 			throw new ArgumentNullException("code");

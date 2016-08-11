@@ -53,6 +53,8 @@ $bExportFromCrm = isset($arParams["EXPORT_FROM_CRM"]) && ($arParams["EXPORT_FROM
 $gzCompressionSupported = (($_GET["mode"] == "query" || $_POST["mode"] == "query") && $bCrmMode
 	&& isset($arParams["GZ_COMPRESSION_SUPPORTED"]) && $arParams["GZ_COMPRESSION_SUPPORTED"] && function_exists("gzcompress"));
 
+$lid = ($bCrmMode && !empty($arParams["LID"]) ? $arParams["LID"] : null);
+
 ob_start();
 
 $curPage = substr($APPLICATION -> GetCurPage(), 0, 22);
@@ -246,15 +248,29 @@ else
 			$arParams["REPLACE_CURRENCY"] = '';
 			if(strlen($_SESSION["BX_CML2_EXPORT"]["version"]) > 0 && IntVal($arParams["INTERVAL"]) <= 0)
 				$arParams["INTERVAL"] = 30;
+
+			CSaleExport::setLanguage('en');
 		}
 
 		if(strlen($_SESSION["BX_CML2_EXPORT"]["version"]) <= 0)
 			$arParams["INTERVAL"] = 0;
 
+		$options = array();
+
+		if ($bExportFromCrm)
+		{
+			$options['EXPORT_FROM_CRM'] = "Y";
+		}
+
+		if ($lid)
+		{
+			$options['LID'] = $lid;
+		}
+
 		CTimeZone::Disable();
 		$arResultStat = CSaleExport::ExportOrders2Xml(
 			$arFilter, $nTopCount, $arParams["REPLACE_CURRENCY"], $bCrmMode, $arParams["INTERVAL"],
-			$_SESSION["BX_CML2_EXPORT"]["version"], $bExportFromCrm ? array("EXPORT_FROM_CRM" => "Y") : Array()
+			$_SESSION["BX_CML2_EXPORT"]["version"], $options
 		);
 		CTimeZone::Enable();
 

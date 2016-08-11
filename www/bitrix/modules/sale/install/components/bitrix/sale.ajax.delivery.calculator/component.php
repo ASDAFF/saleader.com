@@ -11,7 +11,7 @@ $arParams["AJAX_CALL"] = $arParams["AJAX_CALL"] == "Y" ? "Y" : "N";
 $arParams["STEP"] = intval($arParams["STEP"]);
 
 if(isset($arParams["DELIVERY"]) && isset($arParams["PROFILE"]) && !isset($arParams["DELIVERY_ID"]))
-	$arParams["DELIVERY_ID"] = \Bitrix\Sale\Delivery\Services\Table::getIdByCode($arParams["DELIVERY"].":".$arParams["PROFILE"]);
+	$arParams["DELIVERY_ID"] = \CSaleDelivery::getIdByCode($arParams["DELIVERY"].":".$arParams["PROFILE"]);
 
 $arParams['NO_AJAX'] = $arParams['NO_AJAX'] == 'Y' ? 'Y' : 'N';
 if ($arParams['NO_AJAX'] == 'Y')
@@ -19,6 +19,9 @@ if ($arParams['NO_AJAX'] == 'Y')
 	$arParams['AJAX_CALL'] = 'Y';
 	$arParams['STEP'] = 1;
 }
+
+if(!isset($arParams["ORDER_DATA"]))
+	$arParams["ORDER_DATA"] = array();
 
 if(!isset($arParams["EXTRA_PARAMS"]))
 	$arParams["EXTRA_PARAMS"] = array();
@@ -47,7 +50,7 @@ if ($arParams["AJAX_CALL"] == "Y")
 	));
 
 	/** @var \Bitrix\Sale\Delivery\Services\Base  $deliveryObj */
-	$deliveryObj = \Bitrix\Sale\Delivery\Services\Manager::getService($arParams["DELIVERY_ID"]);
+	$deliveryObj = \Bitrix\Sale\Delivery\Services\Manager::getObjectById($arParams["DELIVERY_ID"]);
 
 	if(!$deliveryObj)
 	{
@@ -62,6 +65,26 @@ if ($arParams["AJAX_CALL"] == "Y")
 		"TRANSIT" => $calcResult->getPeriodDescription(),
 		"RESULT" => $calcResult->isSuccess() ? "OK" : "ERROR",
 	);
+
+	if (!empty($arParams["ORDER_DATA"]) && is_array($arParams["ORDER_DATA"]))
+	{
+		$orderDeliveryPriceData = $arParams["ORDER_DATA"];
+		$orderDeliveryPriceData['BASKET_ITEMS'] = (!empty($arParams['ITEMS']) && is_array($arParams['ITEMS'])? $arParams['ITEMS'] : array());
+		$orderDeliveryPriceData['PRICE_DELIVERY'] = $orderDeliveryPriceData['DELIVERY_PRICE'] = $calcResult->getPrice();
+		$orderDeliveryPriceData['DELIVERY_ID'] = $arParams["DELIVERY_ID"];
+
+		CSaleDiscount::DoProcessOrder($orderDeliveryPriceData, array(), $arErrors);
+
+		if (floatval($orderDeliveryPriceData['DELIVERY_PRICE']) >= 0 && $orderDeliveryPriceData['PRICE_DELIVERY'] != $calcResult->getPrice())
+		{
+			$result['DELIVERY_DISCOUNT_PRICE'] = $orderDeliveryPriceData['DELIVERY_PRICE'];
+			$result["DELIVERY_DISCOUNT_PRICE_FORMATED"] = SaleFormatCurrency($orderDeliveryPriceData['DELIVERY_PRICE'], $arParams["CURRENCY"]);
+		}
+
+	}
+
+
+
 
 	$result["TEXT"] = $calcResult->isSuccess() ? $calcResult->getDescription() : implode("<br>\n", $calcResult->getErrorMessages());
 
@@ -130,7 +153,8 @@ $arTmpParams = array(
 	"INPUT_NAME" => $arParams["INPUT_NAME"],
 	"TEMP" => $arParams["~TEMP"],
 	"ITEMS" => $arParams["ITEMS"],
-	"EXTRA_PARAMS_CALLBACK" => $arParams["EXTRA_PARAMS_CALLBACK"]
+	"EXTRA_PARAMS_CALLBACK" => $arParams["EXTRA_PARAMS_CALLBACK"],
+	"ORDER_DATA" => $arParams["ORDER_DATA"]
 );
 
 $arResult["JS_PARAMS"] = CUtil::PhpToJsObject($arTmpParams);

@@ -93,7 +93,7 @@ if (CModule::IncludeModule("sale"))
 		}
 		else
 		{
-			LocalRedirect($arParams["REGISTER_PAGE"]."?REDIRECT_PAGE=".UrlEncode($APPLICATION->GetCurPage()));
+			LocalRedirect($arParams["AFF_REG_PAGE"]."?REDIRECT_PAGE=".UrlEncode($APPLICATION->GetCurPage()));
 			die();
 		}
 	}

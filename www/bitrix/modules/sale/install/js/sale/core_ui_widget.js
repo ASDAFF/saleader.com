@@ -94,9 +94,11 @@
 
 			// events
 			if(typeof so.bindEvents == 'object'){
-				for(var k in so.bindEvents){
-					if(BX.type.isFunction(so.bindEvents[k]))
-						this.bindEvent(k, so.bindEvents[k]);
+				for(var k in so.bindEvents)
+				{
+					if(so.bindEvents.hasOwnProperty(k))
+						if(BX.type.isFunction(so.bindEvents[k]))
+							this.bindEvent(k, so.bindEvents[k]);
 				}
 			}
 			so.bindEvents = null;
@@ -231,7 +233,11 @@
 				return '';
 			}
 
-			for(var k in replacements){
+			for(var k in replacements)
+			{
+				if(!replacements.hasOwnProperty(k))
+					continue;
+
 				if(typeof replacements[k] != 'undefined' && replacements.hasOwnProperty(k)){
 
 					var replaceWith = '';
@@ -334,14 +340,16 @@
 
 					this.resolveFuncStack('init'); // resove init stacks
 
-					for(var i in this.sys.stack){
-						if(i != 'init')
-							this.resolveFuncStack(i, true); // resolve all other stacks
+					for(var i in this.sys.stack)
+					{
+						if(this.sys.stack.hasOwnProperty(i))
+							if(i != 'init')
+								this.resolveFuncStack(i, true); // resolve all other stacks
 					}
 
 					this.sys.initialized = true;
 					this.fireEvent('init', [this]);
-				}
+				};
 
 				if(BX.type.isString(this.opts.initializeByGlobalEvent) && this.opts.initializeByGlobalEvent.length > 0){
 					var scope = this.opts.globalEventScope == 'window' ? window : document;

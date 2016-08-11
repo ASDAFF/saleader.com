@@ -67,7 +67,6 @@ class ShipmentItemStoreTable extends Main\Entity\DataManager
 			),
 			'STORE_ID' => array(
 				'data_type' => 'integer',
-				'required' => true,
 				'title' => Loc::getMessage('STORE_BARCODE_ENTITY_STORE_ID_FIELD'),
 			),
 			'QUANTITY' => array(

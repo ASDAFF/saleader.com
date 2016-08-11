@@ -73,18 +73,26 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 			if(typeof so.connected == 'object'){
 
 				// fill selected
-				for(var k in so.connected.id.l){
-					sv.selected.nodes.push({
-						id: so.connected.id.l[k],
-						view: null
-					});
+				for(var k in so.connected.id.l)
+				{
+					if(so.connected.id.l.hasOwnProperty(k))
+					{
+						sv.selected.nodes.push({
+							id: so.connected.id.l[k],
+							view: null
+						});
+					}
 				}
 
-				for(var k in so.connected.id.g){
-					sv.selected.grp.push({
-						id: so.connected.id.g[k],
-						view: null
-					});
+				for(var k in so.connected.id.g)
+				{
+					if(so.connected.id.g.hasOwnProperty(k))
+					{
+						sv.selected.grp.push({
+							id: so.connected.id.g[k],
+							view: null
+						});
+					}
 				}
 
 				// fill cache
@@ -366,9 +374,11 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 
 			if(typeof responce.ETC.PATH_ITEMS != 'undefined')
 			{
-				for(var k in responce.ETC.PATH_ITEMS){
-					if(BX.type.isNotEmptyString(responce.ETC.PATH_ITEMS[k].DISPLAY))
-						this.vars.cache.path[k] = responce.ETC.PATH_ITEMS[k].DISPLAY;
+				for(var k in responce.ETC.PATH_ITEMS)
+				{
+					if(responce.ETC.PATH_ITEMS.hasOwnProperty(k))
+						if(BX.type.isNotEmptyString(responce.ETC.PATH_ITEMS[k].DISPLAY))
+							this.vars.cache.path[k] = responce.ETC.PATH_ITEMS[k].DISPLAY;
 				}
 			}
 
@@ -503,12 +513,20 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 
 			var sv = this.vars;
 
-			for(var k in selected.grp){
+			for(var k in selected.grp)
+			{
+				if(!selected.grp.hasOwnProperty(k))
+					continue;
+
 				if(this.hasItem(selected.grp[k], sv.selected.grp) === false)
 					this.selectLinkItem(selected.grp[k], 'grp');
 			}
 
-			for(var k in selected.nodes){
+			for(var k in selected.nodes)
+			{
+				if(!selected.nodes.hasOwnProperty(k))
+					continue;
+
 				if(this.hasItem(selected.nodes[k], sv.selected.nodes) === false){
 					// just add array item here
 					sv.selected.nodes.unshift({
@@ -533,13 +551,16 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 		deSelectItems: function(selected, dropAll){
 
 			for(var k in selected.nodes)
-				this.deselectLinkItem(selected.nodes[k], 'nodes', dropAll);
+				if(selected.nodes.hasOwnProperty(k))
+					this.deselectLinkItem(selected.nodes[k], 'nodes', dropAll);
+
 
 			if(dropAll) // empty the entire container, instead of removing node-by-node
 				BX.cleanNode(this.ctrls.selectedNodes);
 
 			for(var k in selected.grp)
-				this.deselectLinkItem(selected.grp[k], 'grp');
+				if(selected.grp.hasOwnProperty(k))
+					this.deselectLinkItem(selected.grp[k], 'grp');
 
 			this.toggleSelectionAuxCtrls();
 			this.displaySelectedForm();
@@ -700,9 +721,9 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 			// check if all items has PATH info
 			var absentPath = [];
 			for(var k in items){
-
-				if(typeof sv.cache.nodes[items[k]].PATH == 'undefined')
-					absentPath.push(items[k]);
+				if(items.hasOwnProperty(k))
+					if(typeof sv.cache.nodes[items[k]].PATH == 'undefined')
+						absentPath.push(items[k]);
 			}
 
 			this.downloadPath(absentPath, BX.proxy(function(){
@@ -719,7 +740,11 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 					sc.displayedItems = {};
 				}
 
-				for(var k in items){
+				for(var k in items)
+				{
+
+					if(!items.hasOwnProperty(k))
+						continue;
 
 					var domItem = this.whenRenderVariant(items[k])[0];
 
@@ -731,8 +756,8 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 					sv.displayedIndex.push(items[k]);
 					sc.displayedItems[items[k]] = domItem;
 				}
-				this.showDropdown();
 
+				this.showDropdown();
 				this.fireEvent('after-page-display', [sv.cache.nodes, pageNum]);
 
 			}, this), function(){
@@ -793,6 +818,9 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 						{
 							for(var itemId in result.data.PATH_ITEMS)
 							{
+								if(!result.data.PATH_ITEMS.hasOwnProperty(itemId))
+									continue;
+
 								var item = result.data.PATH_ITEMS[itemId];
 								sv.cache.path[item.VALUE] = item.DISPLAY;
 							}
@@ -806,7 +834,8 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 						{
 							for(var itemId in result.data.ITEM_NAMES)
 							{
-								sv.cache.nodes[itemId].DISPLAY = result.data.ITEM_NAMES[itemId];
+								if(result.data.ITEM_NAMES.hasOwnProperty(itemId))
+									sv.cache.nodes[itemId].DISPLAY = result.data.ITEM_NAMES[itemId];
 							}
 						}
 						catch(e)
@@ -887,6 +916,10 @@ if(typeof BX.Sale.component.location.selector.system == 'undefined' && typeof BX
 
 			var inputsHTML = '';
 			var serialized = '';
+
+			console.log('displaySelectedForm');
+			console.log(sv.selected.nodes);
+			console.log(sv.cache.nodes);
 
 			if(sv.selected.nodes.length > 0){
 
@@ -1011,7 +1044,10 @@ if(typeof BX.Sale.component.location.selector.system.tree == 'undefined' && type
 		refineResponce: function(responce){
 
 			var result = {items: []};
-			for(var k in responce.ITEMS){
+			for(var k in responce.ITEMS)
+			{
+				if(!responce.ITEMS.hasOwnProperty(k))
+					continue;
 
 				var isParent = typeof responce.ITEMS[k].IS_PARENT != 'undefined' && parseInt(responce.ITEMS[k].IS_PARENT) > 0;
 

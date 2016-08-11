@@ -21,7 +21,7 @@ if (!\Bitrix\Main\Loader::includeModule('sale'))
 $ebay = \Bitrix\Sale\TradingPlatform\Ebay\Ebay::getInstance();
 
 if(!$ebay->isActive())
-	LocalRedirect("/bitrix/admin/sale_ebay.php?lang=".LANG."&back_url=".urlencode($APPLICATION->GetCurPageParam()));
+	LocalRedirect("/bitrix/admin/sale_ebay_general.php?lang=".LANG."&back_url=".urlencode($APPLICATION->GetCurPageParam()));
 
 $errorMsg = "";
 $bSaved = false;
@@ -48,9 +48,26 @@ $settings = $ebay->getSettings();
 
 if(isset($_POST["EBAY_SETTINGS"]) && is_array($_POST["EBAY_SETTINGS"]))
 {
-	$_POST["EBAY_SETTINGS"]["FEEDS"] = \Bitrix\Sale\TradingPlatform\Ebay\Agent::update($SITE_ID, $_POST["EBAY_SETTINGS"]["FEEDS"]);
-	$settings[$SITE_ID] = array_merge($settings[$SITE_ID], $_POST["EBAY_SETTINGS"]);
-	$bSaved = $ebay->saveSettings($settings);
+	$site = !empty($_POST["SITE_ID_INITIAL"]) && $SITE_ID == $_POST["SITE_ID_INITIAL"] ? $SITE_ID : $_POST["SITE_ID_INITIAL"];
+
+	$_POST["EBAY_SETTINGS"]["FEEDS"] = \Bitrix\Sale\TradingPlatform\Ebay\Agent::update($site, $_POST["EBAY_SETTINGS"]["FEEDS"]);
+
+	if(is_array($settings[$site]))
+	{
+		$settings[$site] = array_merge($settings[$site], $_POST["EBAY_SETTINGS"]);
+		$bSaved = $ebay->saveSettings($settings);
+	}
+	else
+	{
+		$errorMsg .= Loc::getMessage(
+			'SALE_EBAY_SETTINGS_SAVING_SITE_ERROR',
+			array(
+				'#A1#' => '<a href="/bitrix/admin/sale_ebay_wizard.php?lang='.LANGUAGE_ID.'&STEP=1&SITE_ID='.$site.'">',
+				'#A2#' => '</a>',
+				'#S#' => $siteList[$site]
+			)
+		);
+	}
 }
 
 $siteSettings = $settings[$SITE_ID];
@@ -144,7 +161,7 @@ $APPLICATION->SetTitle(Loc::getMessage("SALE_EBAY_TITLE"));
 require_once ($DOCUMENT_ROOT.BX_ROOT."/modules/main/include/prolog_admin_after.php");
 
 if(strlen($errorMsg) > 0)
-	CAdminMessage::ShowMessage(array("MESSAGE"=>$errorMsg, "TYPE"=>"ERROR"));
+	CAdminMessage::ShowMessage(array("MESSAGE"=>$errorMsg, "TYPE"=>"ERROR", "HTML" => true));
 
 if($bSaved)
 	CAdminMessage::ShowMessage(array("MESSAGE"=>GetMessage("SALE_EBAY_SETTINGS_SAVED"), "TYPE"=>"OK"));
@@ -152,6 +169,7 @@ if($bSaved)
 ?>
 <form method="post" action="<?=$APPLICATION->GetCurPage()?>?lang=<?=LANGUAGE_ID?>" name="ebay_exhangesettings_form">
 <?=bitrix_sessid_post();?>
+<input type="hidden" name="SITE_ID_INITIAL" value="<?=$SITE_ID?>">
 <table width="100%">
 	<tr>
 		<td align="left">

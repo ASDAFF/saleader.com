@@ -15,4 +15,6 @@ $MESS ['SALE_DH_EMS_CONFIG_CATEGORY'] = "Категория отправлени
 $MESS ['SALE_DH_EMS_CONFIG_CATEGORY_att'] = "товарные вложения";
 $MESS ['SALE_DH_EMS_CONFIG_CATEGORY_doc'] = "документы (до 2 кг)";
 $MESS ['SALE_DH_EMS_DAYS'] = "дней";
+$MESS ['SALE_DH_EMS_CORRECT_REGIONS'] = "Обновление списка регионов.";
+$MESS ['SALE_DH_EMS_ERROR_NO_LOCATION_TO'] = "Служба не осуществляет доставки в данное местоположение";
 ?>

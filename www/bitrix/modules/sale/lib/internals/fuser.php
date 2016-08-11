@@ -57,9 +57,10 @@ class FuserTable extends Main\Entity\DataManager
 					$DB->DatetimeToDateFunction('%s'), 'DATE_UPDATE'
 				)
 			),
-			'USER_ID' => array(
-				'data_type' => 'integer'
+			new Main\Entity\IntegerField(
+				"USER_ID"
 			),
+
 			'USER' => array(
 				'data_type' => 'Bitrix\Main\User',
 				'reference' => array('=this.USER_ID' => 'ref.ID')

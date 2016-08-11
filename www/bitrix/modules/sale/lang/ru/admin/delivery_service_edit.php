@@ -63,4 +63,9 @@ $MESS ['SALE_DSE_TAB_GROUP_GENERAL'] = "Общие настройки групп
 $MESS ['SALE_DSE_DELETE_GROUP'] = "Удалить группу";
 $MESS ['SALE_DSE_NEW_GROUP'] = "Добавить группу";
 $MESS ['SALE_DSE_DELETE_GROUP_CONFIRM'] = "Вы уверены, что хотите удалить эту группу служб доставок?";
+$MESS ['SALE_DSE_TAB_TRACKING'] = "Трэкинг";
+$MESS ['SALE_DSE_TAB_TRACKING_DESCR'] = "Настройки трэкинга";
+$MESS ['SALE_DSE_TAB_TRACKING_PARAMS'] = "Параметры";
+$MESS ['SALE_DSE_TAB_TRACKING_PARAMS_EMPTY'] = "Дополнительная настройка не требуется";
+$MESS ['SALE_DSE_FORM_ALLOW_EDIT_SHIPMENT'] = "Автоматическое изменение отгрузки, находящейся в первоначальном статусе, при изменении заказа";
 ?>

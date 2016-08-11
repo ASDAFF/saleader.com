@@ -57,20 +57,34 @@ if (CModule::IncludeModule("sale"))
 				$arResult["CURRENT_PAGE"] = $APPLICATION->GetCurPage();
 
 				$arFilter = array(
-					"AFFILIATE_ID" => $arAffiliate["ID"],
-					"ALLOW_DELIVERY" => "Y",
-					"CANCELED" => "N",
-					"LID" => SITE_ID
+					"=AFFILIATE_ID" => $arAffiliate["ID"],
+					"=ALLOW_DELIVERY" => "Y",
+					"=CANCELED" => "N",
+					"=LID" => SITE_ID
 				);
 				if (StrLen($filter_date_from) > 0)
 					$arFilter[">=DATE_ALLOW_DELIVERY"] = Trim($filter_date_from);
 				if (StrLen($filter_date_to) > 0)
 					$arFilter["<=DATE_ALLOW_DELIVERY"] = Trim($filter_date_to);
 
-				$dbItemsList = CSaleOrder::GetList(
-					array("BASKET_MODULE" => "ASC", "BASKET_NAME" => "ASC", "BASKET_PRODUCT_ID" => "ASC"),
-					$arFilter,
-					array("BASKET_MODULE", "BASKET_PRODUCT_ID", "BASKET_NAME", "BASKET_PRICE", "BASKET_CURRENCY", "BASKET_DISCOUNT_PRICE", "SUM" => "BASKET_QUANTITY")
+				$dbItemsList = \Bitrix\Sale\Internals\OrderTable::getList(
+					array(
+						'filter' => $arFilter,
+						'select' => array(
+							"BASKET_NAME" => 'BASKET.NAME',
+							"BASKET_PRODUCT_ID" => 'BASKET.PRODUCT_ID',
+							"BASKET_MODULE" => 'BASKET.MODULE',
+							"BASKET_PRICE" => 'BASKET.PRICE',
+							"BASKET_CURRENCY" => 'BASKET.CURRENCY',
+							"BASKET_DISCOUNT_PRICE" => 'BASKET.DISCOUNT_PRICE',
+							'BASKET_QUANTITY' => 'SUM_BASKET_QUANTITY'
+						),
+						'runtime' => array(
+							new \Bitrix\Main\Entity\ExpressionField('SUM_BASKET_QUANTITY', 'SUM(%s)', array('BASKET.QUANTITY'))
+						),
+						'order' => array("BASKET.MODULE" => "ASC", "BASKET.NAME" => "ASC", "BASKET.PRODUCT_ID" => "ASC"),
+						'group' => array("BASKET.MODULE", "BASKET.PRODUCT_ID", "BASKET.NAME", "BASKET.PRICE", "BASKET.CURRENCY", "BASKET.DISCOUNT_PRICE"),
+					)
 				);
 
 				$arResult["ROWS"] = False;

@@ -413,7 +413,7 @@ class CSaleOrderProps
 
 					$relationFilter []= array(
 						'=Bitrix\Sale\Internals\OrderPropsRelationTable:lPROPERTY.ENTITY_TYPE' => 'D',
-						'=Bitrix\Sale\Internals\OrderPropsRelationTable:lPROPERTY.ENTITY_ID' => $arFilter['RELATED']['DELIVERY_ID'],
+						'=Bitrix\Sale\Internals\OrderPropsRelationTable:lPROPERTY.ENTITY_ID' => \CSaleDelivery::getIdByCode($arFilter['RELATED']['DELIVERY_ID']),
 					);
 				}
 
@@ -792,6 +792,9 @@ class CSaleOrderProps
 
 		foreach ($arEntityIDs as $val)
 		{
+			if (strval(trim($val)) == '')
+				continue;
+
 			$arTmp = array("ENTITY_ID" => $val, "ENTITY_TYPE" => $entityType);
 			$arInsert = $DB->PrepareInsert("b_sale_order_props_relation", $arTmp);
 
@@ -1064,6 +1067,11 @@ final class CSaleOrderPropsAdapter implements FetchAdapter
 		{
 			$newProperty = self::convertOldToNew($oldProperty);
 			$newProperty['IS_ADDRESS'] = 'N'; // fix oracle's mb default
+
+			if (array_key_exists('REQUIRED', $newProperty))
+			{
+				$newProperty['REQUIRED'] = ToUpper($newProperty['REQUIRED']);
+			}
 
 			$update = OrderPropsTable::update($newProperty['ID'], array_intersect_key($newProperty, self::$allFields));
 

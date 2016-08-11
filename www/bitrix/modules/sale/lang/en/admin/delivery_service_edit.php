@@ -62,4 +62,9 @@ $MESS["SALE_DSE_2GLIST"] = "View groups";
 $MESS["SALE_DSE_TAB_GROUP_GENERAL"] = "Common settings for delivery service group ";
 $MESS["SALE_DSE_DELETE_GROUP"] = "Delete group";
 $MESS["SALE_DSE_DELETE_GROUP_CONFIRM"] = "Are you sure you want to delete this delivery service group?";
+$MESS["SALE_DSE_TAB_TRACKING"] = "Tracking";
+$MESS["SALE_DSE_TAB_TRACKING_DESCR"] = "Tracking parameters";
+$MESS["SALE_DSE_TAB_TRACKING_PARAMS"] = "Parameters";
+$MESS["SALE_DSE_TAB_TRACKING_PARAMS_EMPTY"] = "No additional configuration required";
+$MESS["SALE_DSE_FORM_ALLOW_EDIT_SHIPMENT"] = "Auto update shipment in initial status when respective order changes";
 ?>

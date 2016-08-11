@@ -1,11 +1,14 @@
 <? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-$APPLICATION->AddViewContent('ProductScopeOpen','<div itemscope itemtype="http://schema.org/Product">');
-$APPLICATION->AddViewContent('ProductScopeClose','</div>');
+$APPLICATION->AddViewContent('ProductScopeOpen', '<div itemscope itemtype="http://schema.org/Product">');
+$APPLICATION->AddViewContent('ProductScopeClose', '</div>');
 $this->setFrameMode(true);
 $propertyCounter = 0;
 $morePhotoCounter = 0;
 $countPropertyElements = 7;
 global $USER;
+global $similarFilter;
+$similarFilter=$arResult['SIMILAR_FILTER'];
+
 ?>
 <?
 $this->AddEditAction($arResult["ID"], $arResult["EDIT_LINK"], CIBlock::GetArrayByID($arResult["IBLOCK_ID"], "ELEMENT_EDIT"));
@@ -36,7 +39,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                             <? foreach ($arResult["TABS"] as $it => $arTab): ?>
                                 <div class="tab<? if ($arTab["ACTIVE"] == "Y"): ?> active<? endif; ?>"
                                      data-id="<?= $arTab["ID"] ?>"><a rel="nofollow"
-                                        href="<? if (!empty($arTab["LINK"])): ?><?= $arTab["LINK"] ?><? else: ?>#<? endif; ?>"><?= $arTab["NAME"] ?>
+                                                                      href="<? if (!empty($arTab["LINK"])): ?><?= $arTab["LINK"] ?><? else: ?>#<? endif; ?>"><?= $arTab["NAME"] ?>
                                         <img src="<?= $arTab["PICTURE"] ?>" alt="<?= $arTab["NAME"] ?>"></a></div>
                             <? endforeach; ?>
                         </div>
@@ -61,7 +64,8 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                     <? foreach ($arResult["IMAGES"] as $ipr => $arNextPicture): ?>
                                         <div class="item">
                                             <a href="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>" class="zoom"
-                                               data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"><img itemprop="image"
+                                               data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"><img
+                                                    itemprop="image"
                                                     src="<?= $arNextPicture["MEDIUM_IMAGE"]["SRC"] ?>" alt=""></a>
                                         </div>
                                     <? endforeach; ?>
@@ -75,7 +79,8 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                 <div class="item">
                                                     <a href="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>"
                                                        data-large-picture="<?= $arNextPicture["LARGE_IMAGE"]["SRC"] ?>">
-                                                        <img src="<?= $arNextPicture["SMALL_IMAGE"]["SRC"] ?>" alt="" itemprop="image">
+                                                        <img src="<?= $arNextPicture["SMALL_IMAGE"]["SRC"] ?>" alt=""
+                                                             itemprop="image">
                                                     </a>
                                                 </div>
                                             <? endforeach; ?>
@@ -156,6 +161,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                         <? if ($arProperty["PROPERTY_TYPE"] == "E" || $arProperty["PROPERTY_TYPE"] == "S"): ?>
                                                             <?= $arProperty["DISPLAY_VALUE"] ?>
                                                         <? else: ?>
+                                                            <? if (is_array($arProperty["DISPLAY_VALUE"])) $arProperty["DISPLAY_VALUE"] = implode('/', $arProperty["DISPLAY_VALUE"]) ?>
                                                             <? if ($arProperty["FILTRABLE"] == "Y" && !empty($arProperty["VALUE_ENUM_ID"])): ?>
                                                                 <a rel="nofollow" href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProperty["ID"] ?>_<?= abs(crc32($arProperty["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y" class="analog">
                                                             <? endif; ?><?= $arProperty["DISPLAY_VALUE"] ?>
@@ -229,8 +235,8 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                         <tr<? if ($set % 2): ?> class="gray"<? endif; ?>>
                                             <td class="name">
                                                 <span><?= preg_replace("/\[.*\]/", "", trim($PROP_NAME)) ?></span><? if (!empty($arProp["HINT"])): ?>
-                                                    <a href="#" class="question" title="<?= $arProp["HINT"] ?>"
-                                                       data-description="<?= $arProp["HINT"] ?>"></a><? endif; ?></td>
+                                                <a href="#" class="question" title="<?= $arProp["HINT"] ?>"
+                                                   data-description="<?= $arProp["HINT"] ?>"></a><? endif; ?></td>
                                             <td>
                                                 <? if ($arProp["PROPERTY_TYPE"] == "E" || $arProp["PROPERTY_TYPE"] == "S"): ?>
                                                     <?= $arProp["DISPLAY_VALUE"] ?>
@@ -240,9 +246,10 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                             </td>
                                             <td class="right">
                                                 <noindex>
-                                                <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"])): ?><a rel="nofollow"
-                                                    href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
-                                                    class="analog"><?= GetMessage("OTHERITEMS") ?></a><? endif; ?>
+                                                    <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"])): ?>
+                                                        <a rel="nofollow"
+                                                           href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
+                                                           class="analog"><?= GetMessage("OTHERITEMS") ?></a><? endif; ?>
                                                 </noindex>
                                             </td>
                                         </tr>
@@ -272,10 +279,11 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                         </td>
                                         <td class="right">
                                             <noindex>
-                                            <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"]) && !empty($arProp["VALUE_ENUM_ID"])): ?>
-                                                <a rel="nofollow" href="<?= $arResult["SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
-                                                   class="analog"><?= GetMessage("OTHERITEMS") ?></a>
-                                            <? endif; ?>
+                                                <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"]) && !empty($arProp["VALUE_ENUM_ID"])): ?>
+                                                    <a rel="nofollow"
+                                                       href="<?= $arResult["SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
+                                                       class="analog"><?= GetMessage("OTHERITEMS") ?></a>
+                                                <? endif; ?>
                                             </noindex>
 
                                         </td>
@@ -581,7 +589,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                 "SHOW_404" => "N",
                                 "MESSAGE_404" => ""
                             ),
-                            false
+                            $component
                         ); ?>
                     </div>
                 <? endif; ?>
@@ -617,7 +625,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                         "SHOW_GENERAL_STORE_INFORMATION" => "N",
                         "MIN_AMOUNT" => "0"
                     ),
-                    false
+                    $component
                 ); ?>
                 <? if (!empty($arResult["FILES"])): ?>
                     <div id="files">

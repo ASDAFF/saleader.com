@@ -29,4 +29,5 @@ $MESS["SKGO_DELETE_ERROR"] = "Error deleting the order. #MESSAGE#";
 $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_WRONG_ID"] = "Invalid order ID";
 $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_IS_NOT_SET"] = "Cannot set order ID";
 $MESS["SALE_ORDER_GENERATE_ACCOUNT_NUMBER_ORDER_NUMBER_IS_NOT_SET_AS_ID"] = "Cannot set ID as order number";
+$MESS["SKGO_DUB_STATUS"] = "Order ##ID# already has required status";
 ?>

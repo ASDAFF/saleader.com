@@ -5,6 +5,8 @@
  *******************************************************************************/
 
 use \Bitrix\Main\Loader;
+use \Bitrix\Sale\Result;
+use \Bitrix\Sale\Shipment;
 
 Loader::includeModule("sale");
 
@@ -13,15 +15,18 @@ Loader::registerAutoLoadClasses(
 	array(
 		'Bitrix\\Sale\\Delivery\\Pecom\\Request' => 'ru/delivery/pecom/request.php',
 		'Bitrix\\Sale\\Delivery\\Pecom\\Adapter' => 'ru/delivery/pecom/adapter.php',
-		'Bitrix\\Sale\\Delivery\\Pecom\\Calculator' => 'ru/delivery/pecom/calculator.php'
+		'Bitrix\\Sale\\Delivery\\Pecom\\Calculator' => 'ru/delivery/pecom/calculator.php',
+		'Bitrix\\Sale\\Delivery\\Pecom\\Location' => 'ru/delivery/pecom/location.php'
 	)
 );
 
 use Bitrix\Sale\Delivery\Pecom\Adapter;
 use Bitrix\Sale\Delivery\Pecom\Request;
 use Bitrix\Sale\Delivery\Pecom\Calculator;
+use Bitrix\Sale\Delivery\Pecom\Location;
 
 IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"].'/bitrix/modules/sale/delivery/delivery_pecom.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/lib/delivery/inputs.php");
 
 class CDeliveryPecom
 {
@@ -52,6 +57,11 @@ class CDeliveryPecom
 			'GETEXTRAINFOPARAMS' => array('CDeliveryPecom', 'getExtraInfoParams'),
 			'GETORDERSACTIONSLIST' => array('CDeliveryPecom', 'getActionsList'),
 			'EXECUTEACTION' => array('CDeliveryPecom', 'executeAction'),
+			'GET_ADMIN_MESSAGE' => array('CDeliveryPecom', 'getAdminMessage'),
+			'EXEC_ADMIN_ACTION' => array('CDeliveryPecom', 'execAdminAction'),
+			'GET_ADD_INFO_SHIPMENT_VIEW' => array('CDeliveryPecom', 'getAdditionalInfoShipmentView'),
+			'GET_ADD_INFO_SHIPMENT_EDIT' => array('CDeliveryPecom', 'getAdditionalInfoShipmentEdit'),
+			'PROCESS_ADD_INFO_SHIPMENT_EDIT' => array('CDeliveryPecom', 'processAdditionalInfoShipmentEdit'),
 
 			/* List of delivery profiles */
 			"PROFILES" => array(
@@ -145,7 +155,7 @@ class CDeliveryPecom
 				"CITY" => array(
 					"TYPE" => "TEXT_RO",
 					"TITLE" => GetMessage('SALE_DH_PECOM_EXCH_CITY'),
-					"VALUE" => $locString,
+					"DEFAULT" => $locString,
 					"GROUP" => "exchange_sett"
 				),
 				"CITY_DELIVERY" => array(
@@ -591,6 +601,197 @@ class CDeliveryPecom
 		);
 	}
 
+	public function getAdminMessage()
+	{
+		$result = array();
+		$message = '';
+
+		if(!Location::isInstalled())
+		{
+			$message =
+				GetMessage('SALE_DH_PECOM_LOC_INSTALL').
+				'. <a href="javascript:void(0)" onclick="startInstallPecomLocations()"> '.
+				GetMessage('SALE_DH_PECOM_LOC_INSTALL_START').
+				'</a>
+				<script>
+					function startInstallPecomLocations()
+					{
+						window.location.href.search(\'PECOM_LOCATIONS_START_MAP\') != -1 ? window.location.reload(true) : window.location.href += \'&PECOM_LOCATIONS_START_MAP=Y\';
+					}
+				</script>';
+		}
+
+		if(isset($_SESSION['PECOM_LOCATIONS_MAP_ERRORS']) && is_array($_SESSION['PECOM_LOCATIONS_MAP_ERRORS']))
+		{
+			/** @var \Bitrix\Main\Error  $error */
+			foreach($_SESSION['PECOM_LOCATIONS_MAP_ERRORS'] as $error)
+		 		$message .= $error->getMessage()."\n<br>";
+
+			unset($_SESSION['PECOM_LOCATIONS_MAP_ERRORS']);
+		}
+
+		if(strlen($message) > 0)
+		{
+			$result = array(
+				'MESSAGE' => $message,
+				"TYPE" => "ERROR",
+				"HTML" => true
+			);
+		}
+
+		return $result;
+	}
+
+	public static function execAdminAction()
+	{
+		$result = new \Bitrix\Sale\Result();
+
+		if(isset($_REQUEST['PECOM_LOCATIONS_START_MAP']) &&  $_REQUEST['PECOM_LOCATIONS_START_MAP'] == 'Y' && !Location::isInstalled())
+			$result = Location::install();
+
+		if(!$result->isSuccess())
+			$_SESSION['PECOM_LOCATIONS_MAP_ERRORS'] = $result->getErrors();
+
+		return $result;
+	}
+
+	public static function getAdditionalInfoShipmentEdit(Shipment $shipment)
+	{
+		$shipmentId = $shipment->getId();
+
+		if(intval($shipmentId) <= 0)
+			return array();
+
+		if(self::isRequestSelfSent($shipmentId))
+		{
+			$date = self::getRequestSelfSentDate($shipmentId);
+
+			$inputs = array(
+				'REQUEST_SELF' => array(
+					'LABEL' => GetMessage('SALE_DH_PECOM_PRELIMINARY_REQUEST'),
+					'TYPE' => 'DELIVERY_READ_ONLY',
+					'VALUE' => GetMessage('SALE_DH_PECOM_PRELIMINARY_REQUEST_SENT').' '.$date.'.'
+				)
+			);
+		}
+		else
+		{
+			$inputs = array(
+				'REQUEST_SELF' => array(
+					'LABEL' => GetMessage('SALE_DH_PECOM_PRELIMINARY_SEND_REQUEST'),
+					'TYPE' => 'Y/N',
+					'VALUE' => 'N'
+				)
+			);
+		}
+
+		return $inputs;
+	}
+
+	public static function getAdditionalInfoShipmentView(Shipment $shipment)
+	{
+		$shipmentId = $shipment->getId();
+
+		if(intval($shipmentId) <= 0)
+			return array();
+
+		if(self::isRequestSelfSent($shipmentId))
+			$value = GetMessage('SALE_DH_PECOM_PRELIMINARY_REQUEST_SENT').' '.self::getRequestSelfSentDate($shipmentId);
+		else
+			$value = GetMessage('SALE_DH_PECOM_PRELIMINARY_REQUEST_NOT_SENT');
+
+		$inputs = array(
+			'REQUEST_SELF' => array(
+				'LABEL' => GetMessage('SALE_DH_PECOM_PRELIMINARY_REQUEST'),
+				'TYPE' => 'DELIVERY_READ_ONLY',
+				'VALUE' => $value
+			)
+		);
+
+		return $inputs;
+	}
+
+	protected static function isRequestSelfSent($shipmentId)
+	{
+		return self::getRequestSelfSentDate($shipmentId) !== null;
+	}
+
+	protected static function getRequestSelfSentDate($shipmentId)
+	{
+		static $result = array();
+
+		if(!isset($result[$shipmentId]))
+		{
+			$result[$shipmentId] = null;
+
+			$dbRes = \Bitrix\Sale\Internals\OrderDeliveryReqTable::getList(array(
+					'filter'=>array('=SHIPMENT_ID' => $shipmentId),
+			));
+
+			while($req = $dbRes->fetch())
+			{
+				if(!is_null($req["DATE_REQUEST"]) && !empty($req["PARAMS"]["TYPE"]) && $req["PARAMS"]["TYPE"] == "REQUEST_SELF")
+				{
+					$result[$shipmentId] = $req["DATE_REQUEST"];
+					break;
+				}
+			}
+		}
+
+		return $result[$shipmentId];
+	}
+
+	public function processAdditionalInfoShipmentEdit(Shipment $shipment, array $requestData)
+	{
+		if(empty($requestData['REQUEST_SELF']) || $requestData['REQUEST_SELF'] != 'Y')
+			return null;
+
+		$shipmentId = $shipment->getId();
+
+		if(intval($shipmentId) <= 0)
+			return null;
+
+		$dt = new \Bitrix\Main\Type\DateTime();
+
+		$arResult = CSaleDeliveryHandler::executeAction(
+			\CSaleDelivery::getCodeById(
+				$shipment->getDeliveryId()
+			),
+			'REQUEST_SELF',
+			\CAllSaleDelivery::convertOrderNewToOld(
+				$shipment
+			)
+		);
+
+		if(!$arResult)
+			return null;
+
+		$res = \Bitrix\Sale\Internals\OrderDeliveryReqTable::add(
+			array(
+				"SHIPMENT_ID" => $shipmentId,
+				"ORDER_ID" => $shipment->getCollection()->getOrder()->getId(),
+				"DATE_REQUEST" => $dt,
+				"PARAMS" => array(
+					"TYPE" => "REQUEST_SELF",
+					"RESULT" => $arResult
+				)
+			)
+		);
+
+		if(!$res->isSuccess())
+			return null;
+
+		if(isset($arResult["TRACKING_NUMBER"]))
+			$shipment->setField("TRACKING_NUMBER", $arResult["TRACKING_NUMBER"]);
+
+		if(isset($arResult["DELIVERY_DOC_NUM"]))
+		{
+			$shipment->setField("DELIVERY_DOC_NUM", $arResult["DELIVERY_DOC_NUM"]);
+			$shipment->setField("DELIVERY_DOC_DATE", $dt);
+		}
+
+		return $shipment;
+	}
 }
 
 AddEventHandler('sale', 'onSaleDeliveryHandlersBuildList', array('CDeliveryPecom', 'Init'));

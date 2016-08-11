@@ -11,4 +11,7 @@ $MESS["PPL_I1"] = "Payment was Unsuccessful.";
 $MESS["PPL_I2"] = "Error during connecting to PayPal.";
 $MESS["PPL_I3"] = "Your transaction has been completed, and a receipt for your purchase has been emailed to you.<br>You may log into your account at <a href=\"https://www.paypal.com\">www.paypal.com</a> to view details of this transaction.";
 $MESS["PPL_I4"] = "You can view order status in personal section on <a href=\"/personal/\">our site</a>.";
+$MESS["PPL_ORDER_PAYED"] = "Your order is paid.";
+$MESS["PPL_BUTTON"] = "Pay via PayPal";
+$MESS["PPL_PREAUTH_TEXT"] = "Important! Total amount for the order may change after shipping costs and discounts are applied.";
 ?>

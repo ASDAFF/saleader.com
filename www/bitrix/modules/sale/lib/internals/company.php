@@ -25,8 +25,7 @@ class CompanyTable extends Main\Entity\DataManager
 				'required'   => true
 			),
 			'LOCATION_ID' => array(
-				'data_type' => 'string',
-				'required'   => true
+				'data_type' => 'string'
 			),
 			'LOCATION' => array(
 				'data_type' => 'Bitrix\Sale\Location\Location',

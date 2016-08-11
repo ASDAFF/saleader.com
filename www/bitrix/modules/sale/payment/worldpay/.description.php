@@ -13,7 +13,7 @@ $psDescription .= "Than you will initially need to log in to the WorldPay Custom
 $psDescription .= "opens you will need to scroll down to the section headed Installations and select the Configuration options button corresponding to the instId you are using.<br>";
 $psDescription .= "You need to complete the following settings:<br>";
 $psDescription .= "- <b>Callback URL</b><br>This should be set to the complete address to your callback URL (this file), hosted on your server.<br>";
-$psDescription .= "You should use the string like <nobr>http://your_site/bitrix/php_interface/include/sale_payment/worldpay_res.php?server_responce=Y&ORDER_ID=&lt;wpdisplay item=cartId&gt;</nobr><br>";
+$psDescription .= "You should use the string like <nobr>http://your_site/bitrix/php_interface/include/sale_payment/worldpay_res.php?server_responce=Y</nobr><br>";
 $psDescription .= "- <b>Callback enabled</b><br>Tick this checkbox";
 
 $arPSCorrespondence = array(

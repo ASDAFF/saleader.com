@@ -69,6 +69,7 @@ class CDeliveryRusPost
 
 			'COMPABILITY' => array('CDeliveryRusPost', 'Compability'),
 			'CALCULATOR' => array('CDeliveryRusPost', 'Calculate'),
+			"TRACKING_CLASS_NAME" => '\Bitrix\Sale\Delivery\Tracking\RusPost',
 
 			/* List of delivery profiles */
 			'PROFILES' => array(
@@ -95,8 +96,6 @@ class CDeliveryRusPost
 
 	function GetConfig($siteId = false)
 	{
-		global $APPLICATION;
-
 		$shopLocationId = CSaleHelper::getShopLocationId($siteId);
 		$arShopLocation = \CSaleHelper::getLocationByIdHitCached($shopLocationId);
 
@@ -169,6 +168,13 @@ class CDeliveryRusPost
 		1. land
 		1.1. Base Price
 		*/
+
+		$arConfig['CONFIG']['RESET_TARIF_SETTINGS'] = array(
+			'TYPE' => 'CUSTOM',
+			'TITLE' => GetMessage('SALE_DH_RP_SET_DEFAULT_TARIF'),
+			'GROUP' => 'tarifs',
+			'DEFAULT' => '<a href="javascript:void(0);" onclick="BX.Sale.Delivery.resetRusPostTarifSettings();">'.GetMessage('SALE_DH_RP_SET_DEFAULT_TARIF_SET').'</a>'
+		);
 
 		$arConfig['CONFIG']['tarif_section_1'] = array(
 					'TYPE' => 'SECTION',
@@ -318,16 +324,26 @@ class CDeliveryRusPost
 	{
 		$result = unserialize($strSettings);
 
-		if(isset($arSettings['RESET_HANDLER_SETTINGS']))
-			unset($arSettings['RESET_HANDLER_SETTINGS']);
+		if(isset($result['RESET_HANDLER_SETTINGS']))
+			unset($result['RESET_HANDLER_SETTINGS']);
 
-		if(isset($arSettings['SET_DEFAULT_TARIF_ZONES']))
-			unset($arSettings['SET_DEFAULT_TARIF_ZONES']);
+		if(isset($result['SET_DEFAULT_TARIF_ZONES']))
+			unset($result['SET_DEFAULT_TARIF_ZONES']);
+
+		if(isset($result['RESET_TARIF_SETTINGS']))
+			unset($result['RESET_TARIF_SETTINGS']);
 
 		if(isset($_REQUEST["RESET_HANDLER_SETTINGS"]) && $_REQUEST["RESET_HANDLER_SETTINGS"] == "Y" && !isset($_REQUEST["apply"]))
 		{
 			foreach($result as $key => $value)
 				if(substr($key, 0, 4) == 'REG_')
+					unset($result[$key]);
+		}
+
+		if(isset($_REQUEST["RESET_TARIF_SETTINGS"]) && $_REQUEST["RESET_TARIF_SETTINGS"] == "Y" && !isset($_REQUEST["apply"]))
+		{
+			foreach($result as $key => $value)
+				if(substr($key, 0, 5) == 'ZONE_' || substr($key, 0, 6) == 'tarif_' || substr($key, 0, 8) == 'service_')
 					unset($result[$key]);
 		}
 
@@ -341,6 +357,10 @@ class CDeliveryRusPost
 
 		if(isset($arSettings['SET_DEFAULT_TARIF_ZONES']))
 			unset($arSettings['SET_DEFAULT_TARIF_ZONES']);
+
+		if(isset($arSettings['RESET_TARIF_SETTINGS']))
+			unset($arSettings['RESET_TARIF_SETTINGS']);
+
 
 		foreach ($arSettings as $key => $value)
 		{
@@ -431,6 +451,11 @@ class CDeliveryRusPost
 			}
 		}
 
+		$locationToCode = CSaleHelper::getLocationByIdHitCached($arOrder['LOCATION_TO']);
+
+		if(strlen(self::getLocationToCode($locationToCode)) <= 0)
+			$profiles = array();
+
 		$arRes = array();
 
 		foreach ($profiles as $profile)
@@ -446,6 +471,7 @@ class CDeliveryRusPost
 				}
 			}
 		}
+
 		return $arRes;
 	}
 
@@ -629,14 +655,8 @@ class CDeliveryRusPost
 			);
 	}
 
-
-	private static function calculatePackPrice($arPackage, $profile, $arConfig, $arLocationTo)
+	private static function getLocationToCode($arLocationTo)
 	{
-		$arDebug = array();
-
-		/*1 Land price
-		1.1 Base Price less 10 kg*/
-
 		$code = self::getRegionCodeByOldName($arLocationTo['REGION_NAME_LANG']); // old location
 
 		if(strlen($code) <= 0 && CSaleLocation::isLocationProMigrated())
@@ -656,11 +676,27 @@ class CDeliveryRusPost
 				$code = $locReg["CODE"];
 		}
 
+		return $code;
+	}
+
+	private static function calculatePackPrice($arPackage, $profile, $arConfig, $arLocationTo)
+	{
+		$arDebug = array();
+
+		/*1 Land price
+		1.1 Base Price less 10 kg*/
+
+		$code = self::getLocationToCode($arLocationTo);
+
 		if(strlen($code) <= 0)
 			throw new \Bitrix\Main\SystemException(GetMessage("SALE_DH_RP_ERROR_LOCATION_NOT_FOUND"));
 
 		$zoneTo = self::getConfValue($arConfig, 'REG_'.$code);
 		$basePrice = floatval(self::getConfValue($arConfig, 'ZONE_RATE_MAIN_'.$zoneTo));
+
+		if($basePrice <=0)
+			throw new \Bitrix\Main\SystemException(GetMessage("SALE_DH_RP_CALCULATE_ERROR"));
+
 		$arDebug[] = 'Base Price less 500 g: '.$basePrice;
 
 		if($arPackage['WEIGHT'] > self::$BASE_WEIGHT)

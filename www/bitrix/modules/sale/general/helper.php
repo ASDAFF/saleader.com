@@ -228,12 +228,12 @@ class CSaleHelper
 				$wrapHtml .= '<tr';
 
 				if(isset($arConfig["BLOCK_HIDEABLE"]))
-					$wrapHtml .= ' onclick="psToggleNextSiblings(this,'.intval($arConfig["BLOCK_LENGTH"]).');" class="ps-admin-hide" ';
+					$wrapHtml .= ' onclick="BX.Sale.PaySystem.toggleNextSiblings(this,'.intval($arConfig["BLOCK_LENGTH"]).');" class="ps-admin-hide" ';
 
 				$wrapHtml .= '><td style="text-align: center; font-weight: bold;'.$tdStyle.'" colspan="2">'.$controlHtml;
 
 				if(isset($arConfig["BLOCK_DELETABLE"]))
-					$wrapHtml .= '&nbsp;&nbsp;<a href="javascript:void(0);" onclick="psDeleteObjAndNextSiblings(this,'.intval($arConfig["BLOCK_LENGTH"]).',2);" style="border-bottom: 1px dashed; text-decoration: none;">'.GetMessage("SALE_HELPER_DELETE").'</a>';
+					$wrapHtml .= '&nbsp;&nbsp;<a href="javascript:void(0);" onclick="BX.Sale.PaySystem.deleteObjectAndNextSiblings(this,'.intval($arConfig["BLOCK_LENGTH"]).',2);" style="border-bottom: 1px dashed; text-decoration: none;">'.GetMessage("SALE_HELPER_DELETE").'</a>';
 
 				$wrapHtml .= '</td></tr>';
 			break;
@@ -250,7 +250,7 @@ class CSaleHelper
 		return $wrapHtml;
 	}
 
-	public function getOptionOrImportValues($optName, $importFuncName = false, $arFuncParams = array(), $siteId = "")
+	public static function getOptionOrImportValues($optName, $importFuncName = false, $arFuncParams = array(), $siteId = "")
 	{
 		$arResult = array();
 
@@ -385,7 +385,7 @@ class CSaleHelper
 	* @param array $arSize - width and height for image thumbnail
 	* @return string
 	*/
-	function getFileInfo($fileId, $arSize = array("WIDTH" => 90, "HEIGHT" => 90))
+	public static function getFileInfo($fileId, $arSize = array("WIDTH" => 90, "HEIGHT" => 90))
 	{
 		$resultHTML = "";
 		$arFile = CFile::GetFileArray($fileId);
@@ -400,7 +400,7 @@ class CSaleHelper
 		return $resultHTML;
 	}
 
-	function getIblockPropInfo($value, $propData, $arSize = array("WIDTH" => 90, "HEIGHT" => 90))
+	public static function getIblockPropInfo($value, $propData, $arSize = array("WIDTH" => 90, "HEIGHT" => 90))
 	{
 		$res = "";
 

@@ -181,6 +181,9 @@
 
 				for(var i in splitted)
 				{
+					if(!splitted.hasOwnProperty(i))
+						continue;
+
 					var keyValue = splitted[i].split("=");
 
 					if(!keyValue)

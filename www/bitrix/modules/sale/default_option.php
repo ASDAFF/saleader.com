@@ -12,6 +12,10 @@ $sale_default_option = array(
 	'allow_deduction_on_delivery' => 'N',
 	'status_on_payed_2_allow_delivery' => 'N',
 	'show_basket_props_in_order_list' => 'Y',
-	'basket_discount_converted' => 'N'
+	'basket_discount_converted' => 'N',
+	'1C_IMPORT_UPDATE_BASKET_QUANTITY' => 'Y',
+	'1C_IMPORT_NEW_PAYMENT' => 'Y',
+	'1C_IMPORT_NEW_SHIPMENT' => 'Y',
+	'1C_IMPORT_NEW_ORDER_NEW_SHIPMENT' => 'Y'
 );
 ?>

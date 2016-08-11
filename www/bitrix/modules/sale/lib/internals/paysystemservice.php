@@ -9,7 +9,6 @@ namespace Bitrix\Sale\Internals;
 
 use Bitrix\Main;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Sale\Internals\PaySystemActionTable;
 
 Loc::loadMessages(__FILE__);
 
@@ -49,6 +48,11 @@ class PaySystemServiceTable extends Main\Entity\DataManager
 				'data_type' => 'boolean',
 				'values' => array('N', 'Y'),
 				'title' => Loc::getMessage('PAY_SYSTEM_ENTITY_ACTIVE_FIELD'),
+			),
+			'ALLOW_EDIT_PAYMENT' => array(
+				'data_type' => 'boolean',
+				'values' => array('N', 'Y'),
+				'title' => Loc::getMessage('PAY_SYSTEM_ENTITY_ALLOW_EDIT_PAYMENT_FIELD'),
 			),
 			'SORT' => array(
 				'data_type' => 'integer',
@@ -119,7 +123,7 @@ class PaySystemServiceTable extends Main\Entity\DataManager
 				'LOGIC' => 'OR',
 				$parameters['filter'],
 				array(
-					'ID' => PaySystemInner::getId()
+					'ID' => \Bitrix\Sale\PaySystem\Manager::getInnerPaySystemId()
 				)
 			);
 		}

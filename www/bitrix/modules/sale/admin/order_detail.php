@@ -1369,6 +1369,7 @@ else
 		$arBasketPropsValues = array();
 		$arElementId = array();
 		$arSku2Parent = array();
+		$orderBasketPrice = 0;
 		$orderTotalPrice = 0;
 		$orderTotalWeight = 0;
 
@@ -1408,7 +1409,10 @@ else
 			$arBasketPropsValues[$arBasketTmp["PRODUCT_ID"]] = array();
 
 			if (!CSaleBasketHelper::isSetItem($arBasketTmp))
+			{
 				$orderTotalPrice += ($arBasketTmp["PRICE"] + $arBasketTmp["DISCOUNT_PRICE"]) * $arBasketTmp["QUANTITY"];
+				$orderBasketPrice += $arBasketTmp["PRICE"] * $arBasketTmp["QUANTITY"];
+			}
 
 				if (!CSaleBasketHelper::isSetParent($arBasketTmp))
 				{
@@ -2080,7 +2084,7 @@ else
 					</tr>
 					<?
 					$arDeliveryExtraParams = CSaleDeliveryHandler::GetHandlerExtraParams($arDeliveryData["SID"], $arDeliveryName[1], $arOrder);
-					$depList = \Bitrix\Sale\Delivery\OrderDeliveryTable::getList(array(
+					$depList = \Bitrix\Sale\Internals\OrderDeliveryReqTable::getList(array(
 						'filter'=>array('=ORDER_ID'=>$ID),
 					));
 					if($dep = $depList->fetch())
@@ -2212,7 +2216,7 @@ else
 									?>
 									<?if(!empty($arActions)):?>
 										<?
-											$depList = \Bitrix\Sale\Delivery\OrderDeliveryTable::getList(array(
+											$depList = \Bitrix\Sale\Internals\OrderDeliveryReqTable::getList(array(
 												'filter'=>array('=ORDER_ID' => $ID),
 											));
 
@@ -2594,7 +2598,7 @@ else
 					);
 
 
-					$depList = \Bitrix\Sale\Delivery\OrderDeliveryTable::getList(array(
+					$depList = \Bitrix\Sale\Internals\OrderDeliveryReqTable::getList(array(
 						'filter'=>array('=ORDER_ID' => $ID),
 					));
 
@@ -4063,7 +4067,7 @@ else
 										</tr>
 										<tr class="price">
 											<td class="title"><?echo GetMessage("SOD_TOTAL_PRICE_WITH_DISCOUNT_MARGIN")?></td>
-											<td nowrap style="white-space:nowrap;"><?=SaleFormatCurrency($arOrder["DISCOUNT_VALUE"] + $arOrder["PRICE"]-$arOrder["PRICE_DELIVERY"], $arOrder["CURRENCY"]);?></td>
+											<td nowrap style="white-space:nowrap;"><?=SaleFormatCurrency($orderBasketPrice, $arOrder["CURRENCY"]);?></td>
 										</tr>
 										<tr>
 											<td class="title"><?echo GetMessage("SOD_TOTAL_PRICE_DELIVERY")?></td>

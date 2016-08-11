@@ -142,7 +142,7 @@ echo htmlspecialcharsbx($arPaySys["NAME"]);
 $priceTotal = 0;
 $bUseVat = false;
 $arBasketOrder = array();
-for ($i = 0; $i < count($arBasketIDs); $i++)
+for ($i = 0, $max = count($arBasketIDs); $i < $max; $i++)
 {
 	$arBasketTmp = CSaleBasket::GetByID($arBasketIDs[$i]);
 
@@ -236,7 +236,7 @@ ClearVars("b_");
 			{
 				$basket_tax = CSaleOrderTax::CountTaxes($b_AMOUNT*$arQuantities[$mi], $arTaxList, $arOrder["CURRENCY"]);
 
-				for ($i = 0; $i < count($arTaxList); $i++)
+				for ($i = 0, $max = count($arTaxList); $i < $max; $i++)
 				{
 					if ($arTaxList[$i]["IS_IN_PRICE"] == "Y")
 					{
@@ -266,7 +266,7 @@ ClearVars("b_");
 					?>
 				</td>
 				<td align="right" bgcolor="#ffffff" style="border: 1pt solid #000000; border-right:none; border-top:none;">
-					<?echo $arQuantities[$mi]; ?>
+					<?echo Bitrix\Sale\BasketItem::formatQuantity($arQuantities[$mi]); ?>
 				</td>
 				<td align="right" bgcolor="#ffffff" style="border: 1pt solid #000000; border-right:none; border-top:none;">
 					<?echo number_format($arBasket["PRICE"], 2, ',', ' ') ?>
@@ -308,16 +308,21 @@ ClearVars("b_");
 				</td>
 				<td bgcolor="#ffffff" style="border: 1pt solid #000000; border-right:none; border-top:none;">
 					Доставка <?
-					$arDelivery_tmp = CSaleDelivery::GetByID($arOrder["DELIVERY_ID"]);
-					if (strlen($arDelivery_tmp["NAME"]) > 0)
-					{
-						echo "(".$arDelivery_tmp["NAME"].")";
-					}
+					$res = \Bitrix\Sale\Delivery\Services\Table::getList(array(
+						'filter' => array(
+							'=CODE' => $arOrder["DELIVERY_ID"]
+						)
+					));
+
+					if ($deliveryService = $res->fetch())
+						if(strlen($deliveryService["NAME"]) > 0)
+							echo "(".htmlspecialcharsEx($deliveryService["NAME"]).")";
 
 					$basket_tax = CSaleOrderTax::CountTaxes(DoubleVal($arOrder["PRICE_DELIVERY"]), $arTaxList, $arOrder["CURRENCY"]);
 					$nds_val = 0;
 					$item_price = DoubleVal($arOrder["PRICE_DELIVERY"]);
-					for ($i = 0; $i < count($arTaxList); $i++)
+
+					for ($i = 0, $max = count($arTaxList); $i < $max; $i++)
 					{
 						if ($arTaxList[$i]["IS_IN_PRICE"] == "Y")
 						{

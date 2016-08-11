@@ -327,7 +327,8 @@ BX.merge(BX.ui.combobox.prototype, {
 			ctx.toggleDropDown();
 		});
 
-		if('value' in sc.inputs.fake){
+		if('value' in sc.inputs.fake)
+		{
 			// when nothing were selected (but there were already an attempt of search), open dropdown if it was closed occasionly by user
 			BX.bind(sc.inputs.fake, 'click', function(){
 				if(!sv.opened && sv.value === false && this.value.length > 0)
@@ -588,6 +589,9 @@ BX.merge(BX.ui.combobox.prototype, {
 		// first fill items themselves
 		for(var k in items)
 		{
+			if(!items.hasOwnProperty(k))
+				continue;
+
 			if(parameters.modifyOrigin)
 			{
 				sv.cache.search.origin[arrayOperation](items[k].VALUE);
@@ -717,7 +721,11 @@ BX.merge(BX.ui.combobox.prototype, {
 			if(sv.applyFilter){
 				var queryLc = query.toLowerCase();
 
-				for(var k in sv.cache.search.origin){
+				for(var k in sv.cache.search.origin)
+				{
+					if(!sv.cache.search.origin.hasOwnProperty(k))
+						continue;
+
 					var value = sv.cache.search.origin[k];
 
 					if(sv.cache.nodes[value].DISPLAY.toLowerCase().indexOf(queryLc) == 0){ // match, but only from the start of line
@@ -764,7 +772,10 @@ BX.merge(BX.ui.combobox.prototype, {
 		var sv = this.vars;
 
 		var pos = 0;
-		for(var k in sv.cache.search.origin){
+		for(var k in sv.cache.search.origin)
+		{
+			if(!sv.cache.search.origin.hasOwnProperty(k))
+				continue;
 
 			if(sv.cache.search.origin[k] == this.vars.value)
 				break;
@@ -822,6 +833,9 @@ BX.merge(BX.ui.combobox.prototype, {
 		var id2dom = {};
 		for(var k in page)
 		{
+			if(!page.hasOwnProperty(k))
+				continue;
+
 			this.createItemForPage(page[k], sv.cache.nodes[page[k]], pagerRows, selectorRows);
 			id2dom[sv.cache.nodes[page[k]].VALUE] = pagerRows[k];
 		}

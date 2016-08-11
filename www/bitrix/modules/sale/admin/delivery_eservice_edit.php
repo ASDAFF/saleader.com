@@ -17,7 +17,9 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/sale/prolog.php");
 
 $ID = isset($_REQUEST["ID"]) ? intval($_REQUEST["ID"]) : 0;
 $strError = "";
-$fields = array();
+$fields = array(
+	"RIGHTS" => "YYY"
+);
 $tabControlName = "tabControl";
 $isItSavingProcess = ($_SERVER['REQUEST_METHOD'] == "POST" && (strlen($_POST["save"]) > 0 || strlen($_POST["apply"]) > 0)) ? true : false;
 $isFormReloading = $_SERVER['REQUEST_METHOD'] == "POST" && !$isItSavingProcess;
@@ -30,6 +32,7 @@ if($saleModulePermissions == "W" && check_bitrix_sessid())
 		if(isset($_POST["CODE"]))			$fields["CODE"] = trim($_POST["CODE"]);
 		if(isset($_POST["NAME"]))			$fields["NAME"] = trim($_POST["NAME"]);
 		if(isset($_POST["SORT"]))			$fields["SORT"] = $_POST["SORT"];
+		if(isset($_POST["RIGHTS"])) 		$fields["RIGHTS"] = $_POST["RIGHTS"];
 		if(isset($_POST["ACTIVE"]))			$fields["ACTIVE"] = trim($_POST["ACTIVE"]);
 		if(isset($_POST["INIT_VALUE"]))		$fields["INIT_VALUE"] = trim($_POST["INIT_VALUE"]);
 		if(isset($_POST["CLASS_NAME"]))		$fields["CLASS_NAME"] = trim($_POST["CLASS_NAME"]);
@@ -37,26 +40,51 @@ if($saleModulePermissions == "W" && check_bitrix_sessid())
 		if(isset($_POST["DELIVERY_ID"]))	$fields["DELIVERY_ID"] = intval($_POST["DELIVERY_ID"]);
 		if(isset($_POST["PARAMS"], $_POST["PARAMS"]["PARAMS"]))	$fields["PARAMS"] = $_POST["PARAMS"]["PARAMS"];
 
-		if(isset($_POST["RIGHTS"]))
-			$fields["RIGHTS"] = $_POST["RIGHTS"];
-		else
-			$fields["RIGHTS"] = array("Y", "N", "N");
-
 		if($isItSavingProcess)
 		{
 			if($fields["DELIVERY_ID"] > 0)
 			{
 				$fields = ExtraServices\Manager::prepareParamsToSave($fields);
+				$codeExist = false;
 
-				if($ID > 0)
-					$res = ExtraServices\Table::update($ID, $fields);
+				if(strlen($fields["CODE"]) > 0)
+				{
+					$glres = ExtraServices\Table::getList(array(
+						'filter' => array(
+							'DELIVERY_ID' => $fields["DELIVERY_ID"],
+							'CODE' => $fields["CODE"]
+						)
+					));
+
+					while($srv = $glres->fetch())
+					{
+						if($ID <=0)
+							$codeExist = true;
+						if($ID > 0 && $srv['ID'] != $ID)
+							$codeExist = true;
+					}
+				}
+
+				if(!$codeExist)
+				{
+					if($ID > 0)
+					{
+						$res = ExtraServices\Table::update($ID, $fields);
+					}
+					else
+					{
+						$res = ExtraServices\Table::add($fields);
+					}
+
+					if(!$res->isSuccess())
+						$strError .= Loc::getMessage("SALE_ESDE_ERROR_SAVE").": ".implode("<br>",$res-> getErrorMessages());
+					elseif($ID <= 0)
+						$ID = $res->getId();
+				}
 				else
-					$res = ExtraServices\Table::add($fields);
-
-				if(!$res->isSuccess())
-					$strError .= Loc::getMessage("SALE_ESDE_ERROR_SAVE").": ".implode("<br>",$res-> getErrorMessages());
-				elseif($ID <= 0)
-					$ID = $res->getId();
+				{
+					$strError .= Loc::getMessage("SALE_ESDE_ERROR_CODE_EXIST").".<br>\n";
+				}
 			}
 			else
 			{
@@ -97,7 +125,7 @@ $deliveryService = null;
 
 if($DELIVERY_ID > 0)
 {
-	$deliveryService = \Bitrix\Sale\Delivery\Services\Manager::getService($DELIVERY_ID);
+	$deliveryService = \Bitrix\Sale\Delivery\Services\Manager::getObjectById($DELIVERY_ID);
 
 	if($deliveryService && \Bitrix\Main\Loader::includeModule('currency'))
 	{
@@ -110,15 +138,28 @@ if($DELIVERY_ID > 0)
 	}
 }
 
-if($deliveryService && $ID <= 0 && isset($_GET["ES_CODE"]) && strlen($_GET["ES_CODE"]) > 0)
+if($deliveryService && $ID <= 0)
 {
-	$embeddedList = $deliveryService->getEmbeddedExtraServicesList();
-
-	if(isset($embeddedList[$_GET["ES_CODE"]]))
+	if(isset($_GET["ES_CODE"]) && strlen($_GET["ES_CODE"]) > 0)
 	{
-		$fields = $embeddedList[$_GET["ES_CODE"]];
-		$fields["CODE"] = $_GET["ES_CODE"];
+		$embeddedList = $deliveryService->getEmbeddedExtraServicesList();
+
+		if(isset($embeddedList[$_GET["ES_CODE"]]))
+		{
+			$fields = $embeddedList[$_GET["ES_CODE"]];
+			$fields["CODE"] = $_GET["ES_CODE"];
+			$fields["ID"] = strval(mktime());
+
+			if(empty($fields["RIGHTS"]))
+				$fields["RIGHTS"] = "NYY";
+		}
+	}
+	elseif(isset($_REQUEST["CLASS_NAME"]) && strlen($_REQUEST["CLASS_NAME"]) > 0)
+	{
+		$fields["CLASS_NAME"] = $_REQUEST["CLASS_NAME"];
 		$fields["ID"] = strval(mktime());
+		$fields["RIGHTS"] = "YYY";
+		$fields["ACTIVE"] = "Y";
 	}
 }
 
@@ -156,7 +197,7 @@ if ($ID > 0 && $saleModulePermissions >= "W")
 		"ICON" => "btn_new"
 	);
 
-	if(!isset($fields["RIGHTS"]["ADMIN"]) || $fields["RIGHTS"]["ADMIN"] == "Y")
+	if($fields["RIGHTS"][ExtraServices\Manager::RIGHTS_ADMIN_IDX] == "Y")
 	{
 		$aMenu[] = array(
 			"TEXT" => Loc::getMessage("SALE_ESDE_DELETE_ITEM"),
@@ -172,7 +213,10 @@ $context = new CAdminContextMenu($aMenu);
 $context->Show();
 
 if(strlen($strError) > 0)
-	CAdminMessage::ShowMessage(Array("DETAILS"=>$strError, "TYPE"=>"ERROR", "MESSAGE"=>Loc::getMessage("SALE_DSE_ERROR"), "HTML"=>true));
+{
+	$adminMessage = new CAdminMessage(Array("DETAILS"=>$strError, "TYPE"=>"ERROR", "MESSAGE"=>Loc::getMessage("SALE_DSE_ERROR"), "HTML"=>true));
+	$adminMessage->Show();
+}
 
 ?>
 <form method="POST" action="<?=$APPLICATION->GetCurPageParam()?>" name="form1" enctype="multipart/form-data">
@@ -190,7 +234,7 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 <tr class="adm-detail-required-field">
 	<td width="40%"><?=Loc::getMessage("SALE_ESDE_FIELD_TYPE")?>:</td>
 	<td width="60%">
-		<?if(!isset($fields["RIGHTS"]["ADMIN"]) || $fields["RIGHTS"]["ADMIN"] == "Y" || $ID <= 0):?>
+		<?if(!isset($_REQUEST["CLASS_NAME"]) && $fields["RIGHTS"][ExtraServices\Manager::RIGHTS_ADMIN_IDX] == "Y" && $ID <= 0):?>
 			<select name="CLASS_NAME" onchange="top.BX.showWait(); this.form.submit(); /* elements.apply.click();*/">
 				<option value=""></option>
 				<?foreach(ExtraServices\Manager::getClassesList() as $class):?>
@@ -221,14 +265,17 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 	<tr>
 		<td><?=Loc::getMessage("SALE_ESDE_FIELD_RIGHTS")?>:</td>
 		<td>
+			<input type="hidden" name="RIGHTS[<?=ExtraServices\Manager::RIGHTS_ADMIN_IDX?>]" value="<?=$fields["RIGHTS"][ExtraServices\Manager::RIGHTS_ADMIN_IDX]?>">
+			<input type="hidden" name="RIGHTS[<?=ExtraServices\Manager::RIGHTS_MANAGER_IDX?>]" value="N">
 			<?=Loc::getMessage("SALE_ESDE_FIELD_MANAGER")?>: <input type="checkbox" name="RIGHTS[<?=ExtraServices\Manager::RIGHTS_MANAGER_IDX?>]" value="Y"<?=(isset($fields["RIGHTS"][ExtraServices\Manager::RIGHTS_MANAGER_IDX]) &&  $fields["RIGHTS"][ExtraServices\Manager::RIGHTS_MANAGER_IDX] == "Y" ? " checked" : "")?>>&nbsp;&nbsp;
+			<input type="hidden" name="RIGHTS[<?=ExtraServices\Manager::RIGHTS_CLIENT_IDX?>]" value="N">
 			<?=Loc::getMessage("SALE_ESDE_FIELD_CLIENT")?>: <input type="checkbox" name="RIGHTS[<?=ExtraServices\Manager::RIGHTS_CLIENT_IDX?>]" value="Y"<?=(isset($fields["RIGHTS"][ExtraServices\Manager::RIGHTS_CLIENT_IDX]) && $fields["RIGHTS"][ExtraServices\Manager::RIGHTS_CLIENT_IDX] == "Y" ? " checked" : "")?>>
 		</td>
 	</tr>
 
 	<?if(isset($fields["CLASS_NAME"]) && strlen($fields["CLASS_NAME"]) > 0):?>
 		<tr>
-			<td><?=(is_callable($fields["CLASS_NAME"].'::getAdminParamsName') ? htmlspecialcharsbx($fields["CLASS_NAME"]::getAdminParamsName()) : Loc::getMessage("SALE_ESDE_FIELD_PARAMS"))?>:</td>
+			<td class="adm-detail-valign-top"><?=(is_callable($fields["CLASS_NAME"].'::getAdminParamsName') ? htmlspecialcharsbx($fields["CLASS_NAME"]::getAdminParamsName()) : Loc::getMessage("SALE_ESDE_FIELD_PARAMS"))?>:</td>
 			<td>
 				<?=$fields["CLASS_NAME"]::getAdminParamsControl("PARAMS", $fields, $currencyLang);?>
 			</td>
@@ -247,6 +294,7 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 	<tr>
 		<td><?=Loc::getMessage("SALE_ESDE_FIELD_ACTIVE")?>:</td>
 		<td>
+			<input type="hidden" name="ACTIVE" value="N">
 			<input type="checkbox" name="ACTIVE" value="Y"<?=(isset($fields["ACTIVE"]) && $fields["ACTIVE"] == "Y" ? " checked" : "")?>>
 		</td>
 	</tr>
@@ -254,14 +302,14 @@ $manager = new ExtraServices\Manager(array($fields), $deliveryService->getCurren
 	<tr>
 		<td><?=Loc::getMessage("SALE_ESDE_FIELD_SORT")?>:</td>
 		<td>
-			<input type="text" name="SORT" value="<?=(isset($fields["SORT"]) ? $fields["SORT"] : "100")?>">
+			<input type="text" name="SORT" value="<?=(isset($fields["SORT"]) ? intval($fields["SORT"]) : "100")?>">
 		</td>
 	</tr>
 
 	<tr>
 		<td><?=Loc::getMessage("SALE_ESDE_FIELD_CODE")?>:</td>
 		<td>
-			<input type="text" name="CODE" value="<?=(isset($fields["CODE"]) ? $fields["CODE"] : "")?>">
+			<input type="text" name="CODE" value="<?=(isset($fields["CODE"]) ? htmlspecialcharsbx($fields["CODE"]) : "")?>"<?=($fields['RIGHTS'][ExtraServices\Manager::RIGHTS_ADMIN_IDX] != 'Y' ? ' readonly' : '')?>>
 		</td>
 	</tr>
 <?

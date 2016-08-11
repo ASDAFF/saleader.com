@@ -117,6 +117,12 @@ class ShipmentTable extends Main\Entity\DataManager
 				'required' => true,
 				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_ORDER_ID_FIELD'),
 			),
+			new Main\Entity\StringField(
+					'ACCOUNT_NUMBER',
+					array(
+							'size' => 100
+					)
+			),
 			'ORDER' => array(
 				'data_type' => 'Order',
 				'reference' => array(
@@ -136,6 +142,11 @@ class ShipmentTable extends Main\Entity\DataManager
 			new Main\Entity\StringField(
 				'STATUS_ID',
 				array('size' => 2)
+			),
+
+			new Main\Entity\StringField(
+				'DELIVERY_LOCATION',
+				array('size' => 50)
 			),
 
 			new Main\Entity\FloatField(
@@ -262,12 +273,29 @@ class ShipmentTable extends Main\Entity\DataManager
 				array('DELIVERY_DOC_DATE')
 			),
 
-
 			'TRACKING_NUMBER' => array(
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validateTrackingNumber'),
 				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_TRACKING_NUMBER_FIELD'),
 			),
+			'TRACKING_STATUS' => array(
+				'data_type' => 'integer',
+				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_TRACKING_STATUS_FIELD'),
+			),
+			'TRACKING_DESCRIPTION' => array(
+				'data_type' => 'string',
+				'validation' => array(__CLASS__, 'validateTrackingDescription'),
+				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_TRACKING_DESCRIPTION_FIELD'),
+			),
+			'TRACKING_LAST_CHECK' => array(
+				'data_type' => 'datetime',
+				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_TRACKING_LAST_CHECK_FIELD'),
+			),
+			'TRACKING_LAST_CHANGE' => array(
+				'data_type' => 'datetime',
+				'title' => Loc::getMessage('ORDER_SHIPMENT_ENTITY_TRACKING_LAST_CHANGE_FIELD'),
+			),
+
 			'XML_ID' => array(
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validateXmlId'),
@@ -388,6 +416,29 @@ class ShipmentTable extends Main\Entity\DataManager
 				'data_type' => 'Bitrix\Sale\Internals\StatusTable',
 				'reference' => array(
 					'=this.STATUS_ID' => 'ref.ID'
+				)
+			),
+			'SHIPMENT_ITEM' => array(
+					'data_type' => 'ShipmentItem',
+					'reference' => array(
+							'this.ID' => 'ref.ORDER_DELIVERY_ID',
+					)
+			),
+			new Main\Entity\BooleanField(
+				'UPDATED_1C',
+				array(
+					'values' => array('N', 'Y')
+				)
+			),
+
+			new Main\Entity\StringField('ID_1C'),
+
+			new Main\Entity\StringField('VERSION_1C'),
+
+			new Main\Entity\BooleanField(
+				'EXTERNAL_DELIVERY',
+				array(
+					'values' => array('N', 'Y')
 				)
 			),
 		);
@@ -535,4 +586,16 @@ class ShipmentTable extends Main\Entity\DataManager
 			new Main\Entity\Validator\Length(null, 1),
 		);
 	}
+	/**
+	 * Returns validators for TRACKING_DESCRIPTION field.
+	 *
+	 * @return array
+	 */
+	public static function validateTrackingDescription()
+	{
+		return array(
+			new Main\Entity\Validator\Length(null, 255),
+		);
+	}
+
 }

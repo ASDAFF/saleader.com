@@ -221,7 +221,7 @@ array(
 						?>
 						<tr class="tablebodyrow">
 							<td class="tablebodycol" valign="top" align="right">
-								<?echo $arBasket["QUANTITY"]; ?>&nbsp;x
+								<?echo Bitrix\Sale\BasketItem::formatQuantity($arBasket["QUANTITY"]); ?>&nbsp;x
 							</td>
 							<td class="tablebodycol" valign="top">
 								<?echo "[".$arBasket["PRODUCT_ID"]."] ".$arBasket["NAME"]; ?>

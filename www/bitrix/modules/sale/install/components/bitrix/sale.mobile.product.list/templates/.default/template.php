@@ -68,6 +68,21 @@ function getSaleProductImage($product)
 	elseif($product["INFO"]["DETAIL_PICTURE"] != "")
 		$productImg = $product["INFO"]["DETAIL_PICTURE"];
 
+	if (empty($productImg) && CModule::IncludeModule("catalog"))
+	{
+		$arParent = CCatalogSku::GetProductInfo($product["PRODUCT_ID"]);
+
+		if(intval($arParent["ID"]) > 0)
+		{
+			$arProductData = getProductProps(array($arParent["ID"]), array("ID", "PREVIEW_PICTURE", "DETAIL_PICTURE", "IBLOCK_TYPE_ID", "IBLOCK_ID", "IBLOCK_SECTION_ID"));
+
+			if(!empty($arProductData[$arParent["ID"]]["PREVIEW_PICTURE"]))
+				$productImg = $arProductData[$arParent["ID"]]["PREVIEW_PICTURE"];
+			elseif(!empty($arProductData[$arParent["ID"]]["DETAIL_PICTURE"]))
+				$productImg = $arProductData[$arParent["ID"]]["DETAIL_PICTURE"];
+		}
+	}
+
 	if ($productImg != "")
 	{
 		$arFile = CFile::GetFileArray($productImg);

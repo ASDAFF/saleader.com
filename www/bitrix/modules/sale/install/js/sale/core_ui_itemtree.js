@@ -190,9 +190,13 @@ BX.merge(BX.ui.itemTree.prototype, {
 						}
 
 						var pool = ctx.getControl('item-pool', false, controls.children);
-						for(var k in data.items){
-							var newNode = ctx.whenRenderVariant(data.items[k])[0];
-							BX.append(newNode, pool);
+						for(var k in data.items)
+						{
+							if(data.items.hasOwnProperty(k))
+							{
+								var newNode = ctx.whenRenderVariant(data.items[k])[0];
+								BX.append(newNode, pool);
+							}
 						}
 
 						// increase page

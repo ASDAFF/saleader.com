@@ -86,8 +86,8 @@ class CDeliverySimple
 
 	function __GetLocationPrice($LOCATION_ID, $arConfig)
 	{
-		$dbLocationGroups = CSaleLocationGroup::GetLocationList(array("LOCATION_ID" => $LOCATION_ID));
-		
+		$dbLocationGroups = CSaleLocationGroup::GetLocationList(array("LOCATION_".(CSaleLocation::checkIsCode($LOCATION_ID) ? 'CODE' : 'ID') => $LOCATION_ID));
+
 		while ($arLocationGroup = $dbLocationGroups->Fetch())
 		{
 			if (

@@ -42,36 +42,50 @@ class BasketPropertyTable
 	public static function getMap()
 	{
 		return array(
-			'ID' => array(
-				'data_type' => 'integer',
-				'primary' => true,
-				'autocomplete' => true,
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_ID_FIELD'),
+			new Main\Entity\IntegerField(
+				'ID',
+				 array(
+					 'autocomplete' => true,
+					 'primary' => true,
+				 )
 			),
-			'BASKET_ID' => array(
-				'data_type' => 'integer',
-				'required' => true,
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_BASKET_ID_FIELD'),
+			new Main\Entity\IntegerField(
+				'BASKET_ID',
+				 array(
+					 'required' => true,
+				 )
 			),
-			'NAME' => array(
-				'data_type' => 'string',
-				'required' => true,
-				'validation' => array(__CLASS__, 'validateName'),
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_NAME_FIELD'),
+			new Main\Entity\StringField(
+				'NAME',
+				array(
+					'size' => 255,
+					'validation' => array(__CLASS__, 'validateName'),
+				)
 			),
-			'VALUE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateValue'),
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_VALUE_FIELD'),
+			new Main\Entity\StringField(
+				'VALUE',
+				array(
+					'size' => 255,
+					'validation' => array(__CLASS__, 'validateValue'),
+				)
 			),
-			'CODE' => array(
-				'data_type' => 'string',
-				'validation' => array(__CLASS__, 'validateCode'),
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_CODE_FIELD'),
+			new Main\Entity\StringField(
+				'CODE',
+				array(
+					'size' => 255,
+					'validation' => array(__CLASS__, 'validateCode'),
+				)
 			),
-			'SORT' => array(
-				'data_type' => 'integer',
-				'title' => Loc::getMessage('BASKET_PROPS_ENTITY_SORT_FIELD'),
+
+			new Main\Entity\IntegerField(
+				'SORT'
+			),
+			new Main\Entity\ReferenceField(
+				'BASKET',
+				'Bitrix\Sale\Internals\Basket',
+				array(
+					'=this.BASKET_ID' => 'ref.ID'
+				)
 			),
 		);
 	}

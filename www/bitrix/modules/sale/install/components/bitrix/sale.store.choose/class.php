@@ -22,19 +22,28 @@ class CSaleStoreChooseComponent extends CBitrixComponent
 	{
 		$params = parent::onPrepareComponentParams($params);
 
-		if(!isset($this->arParams["WIDTH"]))
-			$this->arParams["WIDTH"] = 400;
+		if (!isset($params["MAP"]))
+			$params["MAP"] = array();
 
-		if(!isset($this->arParams["HEIGHT"]))
-			$this->arParams["HEIGHT"] = 400;
+		if (!isset($params["MAP"]['CONTROLS']))
+			$params["MAP"]['CONTROLS'] = array("TYPECONTROL");
 
-		if(!isset($this->arParams["SELECTED_STORE"]))
+		if (!isset($params["MAP"]['OPTIONS']))
+			$params["MAP"]['OPTIONS'] = array("ENABLE_SCROLL_ZOOM", "ENABLE_DRAGGING");
+
+		if(!isset($params["WIDTH"]))
+			$params["WIDTH"] = 400;
+
+		if(!isset($params["HEIGHT"]))
+			$params["HEIGHT"] = 400;
+
+		if(!isset($params["SELECTED_STORE"]))
 		{
-			$this->arParams["SELECTED_STORE"] = 0;
+			$params["SELECTED_STORE"] = 0;
 			if (isset($params["STORES_LIST"]) && is_array($params["STORES_LIST"]))
 			{
 				reset($params["STORES_LIST"]);
-				$this->arParams["SELECTED_STORE"] = key($params["STORES_LIST"]);
+				$params["SELECTED_STORE"] = key($params["STORES_LIST"]);
 			}
 		}
 

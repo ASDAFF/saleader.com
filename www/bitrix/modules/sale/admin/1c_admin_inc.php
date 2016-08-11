@@ -31,9 +31,22 @@ while($arUGroups = $dbUGroups -> Fetch())
 
 $arPaySystems = array("" => GetMessage("SALE_1C_NO"));
 $dbPaySystems = CSalePaySystem::GetList(array("SORT"=>"ASC"), array("ACTIVE" => "Y"), false, false, array("ID", "NAME"));
+$arPaySystemsWithoutInner = Array("" => GetMessage("SALE_1C_NO"));
 while ($arPaySystem = $dbPaySystems->Fetch())
 {
 	$arPaySystems[$arPaySystem["ID"]] = "[".$arPaySystem["ID"]."] ".$arPaySystem["NAME"];
+
+	if($arPaySystem["ID"] != Bitrix\Sale\PaySystem\Manager::getInnerPaySystemId())
+	{
+		$arPaySystemsWithoutInner[$arPaySystem["ID"]] = "[".$arPaySystem["ID"]."] ".$arPaySystem["NAME"];
+	}
+}
+
+$shipmentServices = array("" => GetMessage("SALE_1C_NO"));
+$deliveryList = \Bitrix\Sale\Delivery\Services\Manager::getActiveList();
+foreach($deliveryList as $shipmentService)
+{
+	$shipmentServices[$shipmentService["ID"]] = "[".$shipmentService["ID"]."] ".$shipmentService["NAME"];
 }
 
 $arAllOptions = array(
@@ -47,7 +60,15 @@ $arAllOptions = array(
 	array("1C_EXPORT_FINAL_ORDERS", GetMessage("SALE_1C_EXPORT_FINAL_ORDERS"), "", Array("list", $arStatuses)),
 	array("1C_FINAL_STATUS_ON_DELIVERY", GetMessage("SALE_1C_FINAL_STATUS_ON_DELIVERY"), "F", Array("list", $arStatuses)),
 	array("1C_REPLACE_CURRENCY", GetMessage("SALE_1C_REPLACE_CURRENCY"), GetMessage("SALE_1C_RUB"), Array("text")),
-	array("1C_IMPORT_DEFAULT_PS", GetMessage("SALE_1C_IMPORT_DEFAULT_PS"), "", Array("list", $arPaySystems)),
+	array("1C_IMPORT_DEFAULT_PS", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_C"), "", Array("list", $arPaySystems)),
+	array("1C_IMPORT_DEFAULT_PS_B", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_B"), "", Array("list", $arPaySystems)),
+	array("1C_IMPORT_DEFAULT_PS_A", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_A"), "", Array("list", $arPaySystems)),
+	array("1C_IMPORT_DEFAULT_PS_ORDER_PAID", GetMessage("SALE_1C_IMPORT_DEFAULT_PS_ORDER_PAID"), "", Array("list", $arPaySystemsWithoutInner)),
+	array("1C_IMPORT_DEFAULT_SHIPMENT_SERVICE", GetMessage("SALE_1C_IMPORT_DEFAULT_SHIPMENT_SERVICE"), "", Array("list", $shipmentServices)),
+	array("1C_IMPORT_UPDATE_BASKET_QUANTITY", GetMessage("SALE_1C_IMPORT_UPDATE_BASKET_QUANTITY"), "", Array("checkbox")),
+	array("1C_IMPORT_NEW_PAYMENT", GetMessage("SALE_1C_IMPORT_NEW_PAYMENT"), "", Array("checkbox")),
+	array("1C_IMPORT_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_SHIPMENT"), "", Array("checkbox")),
+	array("1C_IMPORT_NEW_ORDER_NEW_SHIPMENT", GetMessage("SALE_1C_IMPORT_NEW_ORDER_NEW_SHIPMENT"), "", Array("checkbox")),
 	array("1C_SALE_GROUP_PERMISSIONS", GetMessage("SALE_1C_GROUP_PERMISSIONS"), "1", Array("mlist", 5, $arUGroupsEx)),
 	array("1C_SALE_USE_ZIP", GetMessage("SALE_1C_USE_ZIP"), "Y", Array("checkbox")),
 	array("1C_INTERVAL", GetMessage("SALE_1C_INTERVAL"), 30, Array("text", 20)),

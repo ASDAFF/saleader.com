@@ -36,10 +36,13 @@ class Product2ProductTable extends Main\Entity\DataManager
 	}
 
 	/**
+	 *
 	 * Remove old products from b_sale_product2product table.
 	 * Used in agents.
 	 *
 	 * @param int $liveTime in days
+	 *
+	 * @return string
 	 */
 	public static function deleteOldProducts($liveTime = 10)
 	{
@@ -103,6 +106,8 @@ class Product2ProductTable extends Main\Entity\DataManager
 		// Delete
 		$deleteSql = "DELETE FROM b_sale_product2product WHERE CNT <= 0";
 		$connection->query($deleteSql);
+
+		return "\\Bitrix\\Sale\\Product2ProductTable::deleteOldProducts(".intval($liveTime).");";
 	}
 
 	/**

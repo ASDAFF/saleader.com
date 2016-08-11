@@ -80,6 +80,7 @@ class CDeliveryRUSSIANPOST
 
 			"COMPABILITY" => array("CDeliveryRUSSIANPOST", "Compability"),
 			"CALCULATOR" => array("CDeliveryRUSSIANPOST", "Calculate"),
+			"TRACKING_CLASS_NAME" => '\Bitrix\Sale\Delivery\Tracking\RusPost',
 
 			/* List of delivery profiles */
 			"PROFILES" => array(

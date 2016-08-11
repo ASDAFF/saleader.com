@@ -15,8 +15,8 @@
 						"MAP_DATA" => $arResult["LOCATION"],
 						"MAP_WIDTH" => 230,
 						"MAP_HEIGHT" => 230,
-						"CONTROLS" => array(0=>"TYPECONTROL"),
-						"OPTIONS" => array("ENABLE_SCROLL_ZOOM", "ENABLE_DRAGGING"),
+						"CONTROLS" => $arParams['MAP']['CONTROLS'],
+						"OPTIONS" => $arParams['MAP']['OPTIONS'],
 						"MAP_ID" => $rnd,
 						"ONMAPREADY" => 'onMapReady'.$rnd
 					)

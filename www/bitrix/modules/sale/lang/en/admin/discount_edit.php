@@ -47,4 +47,5 @@ $MESS["BX_SALE_DISCOUNT_COUPON_PERIOD_INTERVAL"] = "Time range";
 $MESS["BX_SALE_DISCOUNT_EDIT_FIELDS_COUPON_TYPE"] = "Coupon type:";
 $MESS["BX_SALE_DISCOUNT_EDIT_FIELDS_COUPON_MAX_USE"] = "Maximum uses:";
 $MESS["BX_SALE_DISCOUNT_EDIT_ERR_COUPONS_COUNT"] = "The number of coupons to create is not specified";
+$MESS["BX_SALE_DISCOUNT_EDIT_ERR_MODULE_CATALOG_IS_ABSENT"] = "Failed to load the Commercial Catalog module. Cannot access the shopping cart rule conditions and actions API's.";
 ?>

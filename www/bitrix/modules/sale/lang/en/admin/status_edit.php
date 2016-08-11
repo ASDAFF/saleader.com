@@ -51,4 +51,5 @@ $MESS["SSEN_NOTIFY_LINK"] = "Status e-mail template";
 $MESS["SSEN_TASKS_LINK"] = "Access permissions";
 $MESS["SSEN_GROUPS_LINK"] = "User groups";
 $MESS["SSEN_INVALID_TASK_ID_FOR"] = "Incorrect access permission for";
+$MESS["SALE_STATUS_WRONG_TYPE"] = "Status \"#STATUS_ID#\" cannot be set to \"#STATUS_TYPE#\" type.";
 ?>

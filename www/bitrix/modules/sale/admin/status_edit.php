@@ -71,15 +71,51 @@ if ($saleGroupIds)
 // A D D / U P D A T E /////////////////////////////////////////////////////////////////////////////////////////////////
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$readOnly && check_bitrix_sessid() && ($_POST['save'] || $_POST['apply']))
 {
+	$errors = array();
+	$statusType = $_REQUEST['TYPE'] == 'O' ? 'O' : 'D';
+	$lockedStatusList = array(
+		"O" => array(
+			\Bitrix\Sale\OrderStatus::getInitialStatus(),
+			\Bitrix\Sale\OrderStatus::getFinalStatus(),
+		),
+		"D" => array(
+			\Bitrix\Sale\DeliveryStatus::getInitialStatus(),
+			\Bitrix\Sale\DeliveryStatus::getFinalStatus(),
+		),
+	);
+
+	if ($statusId)
+	{
+		foreach ($lockedStatusList as $lockStatusType => $lockStatusIdList)
+		{
+			foreach ($lockStatusIdList as $lockStatusId)
+			{
+				if ($lockStatusId == $statusId && $statusType != $lockStatusType)
+				{
+					$errors[] = Loc::getMessage('SALE_STATUS_WRONG_TYPE', array(
+						'#STATUS_ID#' => htmlspecialcharsEx($statusId),
+						'#STATUS_TYPE#' => Loc::getMessage('SSEN_TYPE_'.$statusType))
+					);
+					break;
+				}
+			}
+		}
+	}
+
+
 	// prepare & check status
 	$status = array(
-		'TYPE'   => $_POST['TYPE'] == 'O' ? 'O' : 'D',
+		'TYPE'   => $statusType,
 		'SORT'   => ($statusSort = intval($_POST['SORT'])) ? $statusSort : 100,
 		'NOTIFY' => $_POST['NOTIFY'] ? 'Y' : 'N',
 	);
+
+	$isNew = true;
+
 	$result = new \Bitrix\Main\Entity\Result;
 	if ($statusId)
 	{
+		$isNew = false;
 		$sid = $statusId;
 		StatusTable::checkFields($result, $statusId, $status);
 	}
@@ -88,7 +124,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$readOnly && check_bitrix_sessid() 
 		$sid = $status['ID'] = trim($_POST['NEW_ID']);
 		StatusTable::checkFields($result, null, $status);
 	}
-	$errors = $result->getErrorMessages();
+
+	$errors = array_merge($errors, $result->getErrorMessages());
 
 	// prepare & check translations
 	foreach ($languages as $languageId => $languageName)
@@ -121,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$readOnly && check_bitrix_sessid() 
 	if (! $errors)
 	{
 		// update status, delete translations and group tasks
-		if ($statusId)
+		if (!$isNew)
 		{
 			$result = StatusTable::update($statusId, $status);
 			if ($result->isSuccess())
@@ -139,10 +176,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$readOnly && check_bitrix_sessid() 
 			if ($result->isSuccess())
 			{
 				$statusId = $status['ID'];
-				CSaleStatus::CreateMailTemplate($statusId);
 			}
 			else
+			{
 				$errors = $result->getErrorMessages();
+			}
+
 		}
 	}
 
@@ -150,11 +189,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$readOnly && check_bitrix_sessid() 
 	if (! $errors)
 	{
 		foreach ($translations as $data)
+		{
 			StatusLangTable::add($data);
+		}
+		
 		foreach ($groupTasks as $data)
+		{
 			StatusGroupTaskTable::add($data);
+		}
+
+		if ($result->isSuccess())
+		{
+			if ($isNew)
+			{
+				CSaleStatus::CreateMailTemplate($statusId);
+			}
+		}
+
+
 		if ($_POST['save'])
 			LocalRedirect('sale_status.php?lang='.LANGUAGE_ID.GetFilterParams('filter_', false));
+		else
+			LocalRedirect("sale_status_edit.php?ID=".$statusId."&lang=".LANGUAGE_ID.GetFilterParams("filter_", false));
 	}
 }
 // L O A D  O R  N E W /////////////////////////////////////////////////////////////////////////////////////////////////

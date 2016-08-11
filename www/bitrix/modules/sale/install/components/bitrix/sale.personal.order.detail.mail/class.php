@@ -16,7 +16,7 @@ use Bitrix\Main\Data;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
+class CBitrixPersonalOrderDetailMail extends CBitrixComponent
 {
 	const E_SALE_MODULE_NOT_INSTALLED 		= 10000;
 	const E_ORDER_NOT_FOUND 				= 10001;
@@ -981,6 +981,18 @@ class CBitrixPersonalOrderDetailComponent extends CBitrixComponent
 	 */
 	protected function obtainDataOrder()
 	{
+		if ($this->options['USE_ACCOUNT_NUMBER']) // supporting order ACCOUNT_NUMBER or ID in the URL
+		{
+			$orderDb = \Bitrix\Sale\Internals\OrderTable::getList(array(
+				'select' => array('ID'),
+				'filter' => array("ACCOUNT_NUMBER" => $this->requestData["ID"])
+			));
+
+			if ($order = $orderDb->fetch())
+			{
+				$this->requestData["ID"] = $order["ID"];
+			}
+		}
 
 		$sort = array("ID" => "ASC");
 		$filter = array(

@@ -57,7 +57,7 @@ if (strlen($filter_order_paid) > 0 && $filter_order_paid != 'NOT_REF')
 	$arFilter['PAID'] = $filter_order_paid;
 if (strlen($filter_site_id) > 0 && $filter_site_id != 'NOT_REF')
 	$arFilter['ORDER.LID'] = $filter_site_id;
-if (strlen($filter_pay_system_id) > 0 && $filter_pay_system_id != 'NOT_REF')
+if (is_array($filter_pay_system_id) && count($filter_pay_system_id) > 0 && $filter_pay_system_id[0] != 'NOT_REF')
 	$arFilter['PAY_SYSTEM_ID'] = $filter_pay_system_id;
 if (strlen($filter_company_id) > 0 && $filter_company_id != 'NOT_REF')
 	$arFilter['COMPANY_ID'] = $filter_company_id;
@@ -69,14 +69,37 @@ if (strlen($filter_currency) > 0 && $filter_currency != 'NOT_REF')
 	$arFilter['CURRENCY'] = $filter_currency;
 if (strlen($filter_pay_voucher_num) > 0)
 	$arFilter['PAY_VOUCHER_NUM'] = $filter_pay_voucher_num;
-if (strlen($filter_date_paid_from) > 0 && strlen($filter_date_paid_to) > 0)
-	$arFilter['><DATE_PAID'] = array($filter_date_paid_from, $filter_date_paid_to);
 if (strlen($filter_user_login)>0)
 	$arFilter["ORDER.USER.LOGIN"] = trim($filter_user_login);
 if (strlen($filter_user_email)>0)
 	$arFilter["ORDER.USER.EMAIL"] = trim($filter_user_email);
 if (IntVal($filter_user_id)>0)
 	$arFilter["ORDER.USER_ID"] = IntVal($filter_user_id);
+if(strlen($filter_date_paid_from)>0) $arFilter[">=DATE_PAID"] = trim($filter_date_paid_from);
+if(strlen($filter_date_paid_to)>0)
+{
+	if($arDate = ParseDateTime($filter_date_paid_to, CSite::GetDateFormat("FULL", SITE_ID)))
+	{
+		if(StrLen($filter_date_paid_to) < 11)
+		{
+			$arDate["HH"] = 23;
+			$arDate["MI"] = 59;
+			$arDate["SS"] = 59;
+		}
+
+		$filter_date_paid_to = date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL", SITE_ID)), mktime($arDate["HH"], $arDate["MI"], $arDate["SS"], $arDate["MM"], $arDate["DD"], $arDate["YYYY"]));
+		$arFilter["<=DATE_PAID"] = $filter_date_paid_to;
+	}
+	else
+	{
+		$filter_date_paid_to = "";
+	}
+}
+
+$allowedStatusesView = \Bitrix\Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('view'));
+
+if($saleModulePermissions < "W")
+	$arFilter["=ORDER.STATUS_ID"] = $allowedStatusesView;
 
 if (($ids = $lAdmin->GroupAction()) && !$bReadOnly)
 {
@@ -275,6 +298,7 @@ $select = array(
 	'RESPONSIBLE_BY_NAME' => 'RESPONSIBLE_BY.NAME',
 	'RESPONSIBLE_BY_LAST_NAME' => 'RESPONSIBLE_BY.LAST_NAME',
 	'ORDER_ACCOUNT_NUMBER' => 'ORDER.ACCOUNT_NUMBER',
+	'ORDER_USER_LOGIN' => 'ORDER.USER.LOGIN',
 	'ORDER_USER_NAME' => 'ORDER.USER.NAME',
 	'ORDER_USER_LAST_NAME' => 'ORDER.USER.LAST_NAME',
 	'ORDER_USER_ID' => 'ORDER.USER_ID'
@@ -359,6 +383,11 @@ $visibleHeaders = $lAdmin->GetVisibleHeaderColumns();
 
 while ($payment = $dbResultList->Fetch())
 {
+	if ($payment['ORDER_USER_NAME'] || $payment['ORDER_USER_LAST_NAME'])
+		$userName = htmlspecialcharsbx($payment['ORDER_USER_NAME'])." ".htmlspecialcharsbx($payment['ORDER_USER_LAST_NAME']);
+	else
+		$userName = htmlspecialcharsbx($payment['ORDER_USER_LOGIN']);
+
 	$row =& $lAdmin->AddRow($payment['ID'], $payment);
 	$row->AddField("ID", "<a href=\"sale_order_payment_edit.php?order_id=".$payment['ORDER_ID']."&payment_id=".$payment['ID']."&lang=".$lang.GetFilterParams("filter_")."\">".$payment['ID']."</a>");
 	$row->AddField("ORDER_ID", "<a href=\"sale_order_edit.php?ID=".$payment['ORDER_ID']."&lang=".$lang.GetFilterParams("filter_")."\">".$payment['ORDER_ID']."</a>");
@@ -367,7 +396,7 @@ while ($payment = $dbResultList->Fetch())
 	$row->AddField("PAID", ($payment['PAID'] == 'Y') ? GetMessage("PAYMENT_ORDER_PAID_YES"): GetMessage("PAYMENT_ORDER_PAID_NO"));
 	$row->AddField("PAY_SYSTEM_NAME", "<a href='sale_pay_system_edit.php?ID=".$payment['PAY_SYSTEM_ID']."&lang=".$lang."'>".htmlspecialcharsbx($payment['PAY_SYSTEM_NAME'])."</a>");
 	$row->AddField("COMPANY_BY", "<a href='sale_pay_system_edit.php?ID=".$payment['COMPANY_ID']."&lang=".$lang."'>".htmlspecialcharsbx($payment['COMPANY_BY_NAME'])."</a>");
-	$row->AddField("ORDER_USER_NAME", "<a href='/bitrix/admin/user_edit.php?ID=".$payment['ORDER_USER_ID']."&lang=".$lang."'>".htmlspecialcharsbx($payment['ORDER_USER_NAME'])." ".htmlspecialcharsbx($payment['ORDER_USER_LAST_NAME'])."</a>");
+	$row->AddField("ORDER_USER_NAME", "<a href='/bitrix/admin/user_edit.php?ID=".$payment['ORDER_USER_ID']."&lang=".$lang."'>".$userName."</a>");
 	$row->AddField("RESPONSIBLE_BY", "<a href=\"user_edit.php?ID=".$payment['RESPONSIBLE_ID']."\">".htmlspecialcharsbx($payment['RESPONSIBLE_BY_NAME'])." ".htmlspecialcharsbx($payment['RESPONSIBLE_BY_LAST_NAME'])."</a>");
 	$arActions = array();
 	$arActions[] = array("ICON"=>"edit", "TEXT"=>GetMessage("EDIT_PAYMENT_ALT"), "ACTION"=>$lAdmin->ActionRedirect("sale_order_payment_edit.php?order_id=".$payment['ORDER_ID']."&payment_id=".$payment['ID']."&lang=".$lang.GetFilterParams("filter_").""), "DEFAULT"=>true);
@@ -484,19 +513,48 @@ $oFilter->Begin();
 </tr>
 <?
 	$params = array(
-		'select' => array('ID', 'NAME')
+		'select' => array('ID', 'NAME'),
+		'filter' => array('ACTIVE' => 'Y'),
+		'order' => array("SORT"=>"ASC", "NAME"=>"ASC")
 	);
-	$res = \Bitrix\Sale\Internals\PaySystemServiceTable::getList($params);
+	$res = \Bitrix\Sale\PaySystem\Manager::getList($params);
 	$paySystems = $res->fetchAll();
 ?>
 <tr>
 	<td><?=GetMessage("PAYMENT_PAY_SYSTEM_ID");?>:</td>
 	<td>
-		<select name="filter_pay_system_id">
+		<select multiple name="filter_pay_system_id[]">
 			<option value="NOT_REF">(<?=GetMessage("PAYMENT_ORDER_PAID_ALL");?>)</option>
 			<?
-			foreach ($paySystems as $paySystem)
-				echo '<option value="'.$paySystem['ID'].'">'.htmlspecialcharsbx($paySystem['NAME']).'</option>';
+			$ptRes = \Bitrix\Sale\Internals\PersonTypeTable::getList(array(
+				'order' => array("SORT"=>"ASC", "NAME"=>"ASC")
+			));
+
+			$personTypes = array();
+			while ($personType = $ptRes->fetch())
+				$personTypes[$personType['ID']] = $personType;
+
+			foreach ($paySystems as $paySystem):
+				$dbRestRes = \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::getList(array(
+					'select' => array('PARAMS'),
+					'filter' => array(
+						'=CLASS_NAME' => '\Bitrix\Sale\Services\PaySystem\Restrictions\PersonType',
+						'SERVICE_ID' => $paySystem['ID']
+					)
+				));
+
+				$ptParams = $dbRestRes->fetch();
+				$personTypeString = '';
+				if ($ptParams['PARAMS']['PERSON_TYPE_ID'])
+				{
+					$psPt = array();
+					foreach ($ptParams['PARAMS']['PERSON_TYPE_ID'] as $id)
+						$psPt[] = ((strlen($personTypes[$id]['NAME']) > 15) ? substr($personTypes[$id]['NAME'], 0, 6)."...".substr($personTypes[$id]['NAME'], -7) : $personTypes[$id]['NAME'])."/".$personTypes[$id]["LID"]."";
+					if ($psPt)
+						$personTypeString = ' ('.join(', ', $psPt).')';
+				}
+				?><option title="<?echo htmlspecialcharsbx($paySystem["NAME"].$personTypeString);?>" value="<?echo htmlspecialcharsbx($paySystem["ID"])?>"<?if(is_array($filter_pay_system_id) && in_array($paySystem["ID"], $filter_pay_system_id)) echo " selected"?>>[<?echo htmlspecialcharsbx($paySystem["ID"]) ?>] <?echo htmlspecialcharsbx($paySystem["NAME"].$personTypeString);?></option><?
+			endforeach;
 			?>
 		</select>
 	</td>

@@ -17,6 +17,9 @@ if (!Loader::includeModule("sale"))
 	return;
 }
 
+$context = \Bitrix\Main\Application::getInstance()->getContext();
+$request = $context->getRequest();
+
 $bUseCatalog = Loader::includeModule("catalog");
 $bUseIblock = $bUseCatalog;
 
@@ -560,6 +563,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 			}
 
 			$arResult["PRICE_WITHOUT_DISCOUNT"] = SaleFormatCurrency($arResult["ORDER_PRICE"] + $DISCOUNT_PRICE_ALL, $allCurrency);
+			$arResult["PRICE_WITHOUT_DISCOUNT_VALUE"] = $arResult["ORDER_PRICE"] + $DISCOUNT_PRICE_ALL;
 
 			// count weight for set parent products
 			foreach ($arResult["BASKET_ITEMS"] as &$arItem)
@@ -664,35 +668,41 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 								$arResult["ERROR"][] = $e->getMessage();
 						}
 
-						$psPreAction = new CSalePaySystemPrePayment;
-						if($psPreAction->init())
+						$service = new \Bitrix\Sale\PaySystem\Service($arPaySysAction);
+						if ($service->isPrePayable())
 						{
-							$psPreAction->encoding = $arPaySysAction["ENCODING"];
-							if($psPreAction->IsAction())
+							$service->initPrePayment(null, $request);
+							if ($request->get('paypal') == 'Y' && $request->get('token'))
 							{
-								$arResult["PREPAY_ORDER_PROPS"] = $psPreAction->getProps();
-								if(IntVal($arUserResult["PAY_SYSTEM_ID"]) <= 0)
+								$arResult["PREPAY_ORDER_PROPS"] = $service->getPrePaymentProps();
+								if ((int)$arUserResult["PAY_SYSTEM_ID"] <= 0)
 								{
 									$arUserResult["PERSON_TYPE_ID"] = $arResult["PREPAY_PS"]["PERSON_TYPE_ID"];
 								}
 								$arUserResult["PREPAYMENT_MODE"] = true;
 								$arUserResult["PAY_SYSTEM_ID"] = $arResult["PREPAY_PS"]["PAY_SYSTEM_ID"];
 							}
-							elseif($_POST["PAY_SYSTEM_ID"] == $arResult["PREPAY_PS"]["PAY_SYSTEM_ID"])
+							else if ($request->get("PAY_SYSTEM_ID") == $arResult["PREPAY_PS"]["PAY_SYSTEM_ID"])
 							{
 								$orderData = array(
 										"PATH_TO_ORDER" => $APPLICATION->GetCurPage(),
 										"AMOUNT" => $arResult["ORDER_PRICE"],
 										"ORDER_REQUEST" => "Y",
 										"BASKET_ITEMS" => $arResult["BASKET_ITEMS"],
-									);
-								$arResult["REDIRECT_URL"] = $psPreAction->BasketButtonAction($orderData);
-
-								if(strlen($arResult["REDIRECT_URL"]) > 1)
+								);
+								$arResult["REDIRECT_URL"] = $service->basketButtonAction($orderData);
+								if ($arResult["REDIRECT_URL"] != '')
 									$arResult["NEED_REDIRECT"] = "Y";
 							}
 
-							$arResult["PREPAY_ADIT_FIELDS"] = $psPreAction->getHiddenInputs();
+							ob_start();
+							$service->setTemplateParams(array(
+								'TOKEN' => $request->get('token'),
+								'PAYER_ID' => $request->get('PayerID')
+							));
+							$service->showTemplate(null, 'prepay_hidden_fields');
+							$arResult["PREPAY_ADIT_FIELDS"] = ob_get_contents();
+							ob_end_clean();
 						}
 					}
 				}
@@ -807,7 +817,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 
 			if (isset($_POST["DELIVERY_ID"]) && strlen($_POST["DELIVERY_ID"]) > 0)
 			{
-				$arFilter["RELATED"]["DELIVERY_ID"] = $_POST["DELIVERY_ID"];
+				$arFilter["RELATED"]["DELIVERY_ID"] = \CSaleDelivery::getCodeById($_POST["DELIVERY_ID"]);
 				$arFilter["RELATED"]["TYPE"] = "WITH_NOT_RELATED";
 			}
 
@@ -1089,8 +1099,14 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 			$dbRes = CSaleDelivery::GetDelivery2PaySystem(array());
 			while ($arRes = $dbRes->Fetch())
 			{
-				$arD2P[$arRes["DELIVERY_ID"]][$arRes["PAYSYSTEM_ID"]] = $arRes["PAYSYSTEM_ID"];
-				$arP2D[$arRes["PAYSYSTEM_ID"]][$arRes["DELIVERY_ID"]] = $arRes["DELIVERY_ID"];
+				$dCode = $arRes["DELIVERY_ID"];
+
+				if(!empty($arRes["DELIVERY_PROFILE_ID"]))
+					$dCode .= ':'.$arRes["DELIVERY_PROFILE_ID"];
+
+				$dId = CSaleDelivery::getIdByCode($dCode);
+				$arD2P[$dId][$arRes["PAYSYSTEM_ID"]] = $arRes["PAYSYSTEM_ID"];
+				$arP2D[$arRes["PAYSYSTEM_ID"]][$dId] = $dId;
 				$bShowDefaultSelected = False;
 			}
 
@@ -1134,7 +1150,8 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 				"LOCATION_TO" => isset($arUserResult["DELIVERY_LOCATION_BCODE"]) ? $arUserResult["DELIVERY_LOCATION_BCODE"] : $arUserResult["DELIVERY_LOCATION"],
 				"LOCATION_ZIP" => $arUserResult["DELIVERY_LOCATION_ZIP"],
 				"ITEMS" =>  $arResult["BASKET_ITEMS"],
-				"CURRENCY" => $arResult["BASE_LANG_CURRENCY"]
+				"CURRENCY" => $arResult["BASE_LANG_CURRENCY"],
+				"PERSON_TYPE_ID" => $arUserResult["PERSON_TYPE_ID"]
 			));
 
 			if(!empty($arUserResult["PAY_SYSTEM_ID"]) && $arParams["DELIVERY_TO_PAYSYSTEM"] == "p2d")
@@ -1147,7 +1164,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 			}
 
 			/** @var \Bitrix\Sale\Delivery\Services\Base[]  $arDeliveryServiceAll */
-			$arDeliveryServiceAll = \Bitrix\Sale\Delivery\Services\Manager::getServicesForShipment($shipment);
+			$arDeliveryServiceAll = \Bitrix\Sale\Delivery\Services\Manager::getRestrictedObjectsList($shipment);
 
 			if(intval($arUserResult["DELIVERY_ID"]) > 0)
 				$bFound = array_key_exists($arUserResult["DELIVERY_ID"], $arDeliveryServiceAll );
@@ -1161,7 +1178,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 
 			foreach($arDeliveryServiceAll as $deliveryObj)
 			{
-				if (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0 || in_array($deliveryObj->getCode(), $arP2D[$arUserResult["PAY_SYSTEM_ID"]]))
+				if (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0 || in_array($deliveryObj->getId(), $arP2D[$arUserResult["PAY_SYSTEM_ID"]]))
 				{
 					if($deliveryObj->isProfile())
 						$name = $deliveryObj->getNameWithParent();
@@ -1169,13 +1186,13 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 						$name = $deliveryObj->getName();
 
 					$arDelivery = array(
-						"ID" => $deliveryObj->id,
+						"ID" => $deliveryObj->getId(),
 						"NAME" => $name,
-						"DESCRIPTION" => $deliveryObj->description,
+						"DESCRIPTION" => $deliveryObj->getDescription(),
 						"FIELD_NAME" => "DELIVERY_ID"
 					);
 
-					if ((IntVal($arUserResult["DELIVERY_ID"]) == IntVal($deliveryObj->id)))
+					if ((IntVal($arUserResult["DELIVERY_ID"]) == IntVal($deliveryObj->getId())))
 					{
 						$arDelivery["CHECKED"] = "Y";
 						$bSelected = true;
@@ -1183,15 +1200,15 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 					}
 					else
 					{
-						$mustBeCalculated = $deliveryObj->countPriceImmediately;
+						$mustBeCalculated = $deliveryObj->isCalculatePriceImmediately();
 					}
 
 					if($mustBeCalculated)
 					{
-						if(!empty($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->id]))
+						if(!empty($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->getId()]))
 						{
-							$shipment->setExtraServices($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->id]);
-							$deliveryObj->getExtraServices()->setValues($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->id]);
+							$shipment->setExtraServices($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->getId()]);
+							$deliveryObj->getExtraServices()->setValues($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryObj->getId()]);
 						}
 
 						$calcResult = $deliveryObj->calculate($shipment);
@@ -1218,13 +1235,13 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 						}
 					}
 
-					if (intval($deliveryObj->logotip) > 0)
-						$arDelivery["LOGOTIP"] = CFile::GetFileArray($deliveryObj->logotip);
+					if (intval($deliveryObj->getLogotip()) > 0)
+						$arDelivery["LOGOTIP"] = CFile::GetFileArray($deliveryObj->getLogotip());
 
 					$arDelivery['EXTRA_SERVICES'] = $deliveryObj->getExtraServices()->getItems();
 					$arDelivery['STORE'] = \Bitrix\Sale\Delivery\ExtraServices\Manager::getStoresList($deliveryObj->getId());
-					$arDelivery['SORT'] = $deliveryObj->sort;
-					$arResult["DELIVERY"][$deliveryObj->id] = $arDelivery;
+					$arDelivery['SORT'] = $deliveryObj->getSort();
+					$arResult["DELIVERY"][$deliveryObj->getId()] = $arDelivery;
 					$bFirst = false;
 
 
@@ -1331,6 +1348,48 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 
 			while ($arPaySystem = $dbPaySystem->Fetch())
 			{
+				if ($arPaySystem['ID'] == Bitrix\Sale\PaySystem\Manager::getInnerPaySystemId())
+					continue;
+
+				$dbRes = \Bitrix\Sale\Services\PaySystem\Restrictions\Manager::getList(array('filter' => array('SERVICE_ID' => $arPaySystem["ID"])));
+				while ($restriction = $dbRes->fetch())
+				{
+					if ($restriction['CLASS_NAME'] == '\Bitrix\Sale\Services\PaySystem\Restrictions\Price')
+					{
+						$fullPrice = $arResult["DELIVERY"][$arUserResult['DELIVERY_ID']]['PRICE'] + $arResult["ORDER_PRICE"];
+						$maxValue = $restriction['PARAMS']['MAX_VALUE'];
+						$minValue = $restriction['PARAMS']['MIN_VALUE'];
+
+						if ($maxValue > 0 &&
+							$minValue > 0 &&
+							(
+								$maxValue < $fullPrice ||
+								$minValue > $fullPrice
+							)
+						)
+						{
+							continue(2);
+						}
+
+						if ($maxValue > 0 && $maxValue < $fullPrice)
+							continue(2);
+						if ($minValue > 0 && $minValue > $fullPrice)
+							continue(2);
+					}
+
+					if (isset($arResult['BASE_LANG_CURRENCY']) && $restriction['CLASS_NAME'] == '\Bitrix\Sale\Services\PaySystem\Restrictions\Currency')
+					{
+						if (!in_array($arResult['BASE_LANG_CURRENCY'], $restriction['PARAMS']['CURRENCY']))
+							continue(2);
+					}
+
+					if ($restriction['CLASS_NAME'] == '\Bitrix\Sale\Services\PaySystem\Restrictions\Site')
+					{
+						if (!in_array(SITE_ID, $restriction['PARAMS']['SITE_ID']))
+							continue(2);
+					}
+				}
+//				break;
 				//if (count($arD2P[$delivery]) <= 0 || in_array($arPaySystem["ID"], $arD2P[$delivery]))
 				//{
 
@@ -1397,6 +1456,8 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 		$deliveryOrderData = CSaleOrder::makeOrderArray(SITE_ID, $USER->GetID(), $arResult["BASKET_ITEMS"]);
 
 		$deliveryOrderData = array_merge($deliveryOrderData, $arUserResult);
+		$arResult['ORDER_DATA'] = $deliveryOrderData;
+		unset($arResult['ORDER_DATA']['BASKET_ITEMS']);
 
 		if(!empty($arResult["DELIVERY"]) && is_array($arResult["DELIVERY"]))
 		{
@@ -1407,11 +1468,11 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 					// calculate discount price
 					$orderDeliveryPriceData = $deliveryOrderData;
 					$orderDeliveryPriceData['PRICE_DELIVERY'] = $orderDeliveryPriceData['DELIVERY_PRICE'] = $deliveryData["PRICE"];
-					$orderDeliveryPriceData['DELIVERY_ID'] = $deliveryData['ID'];
+					$orderDeliveryPriceData['DELIVERY_ID'] = \Bitrix\Sale\Delivery\Services\Manager::getCodeById($deliveryData['ID']);
 
 					CSaleDiscount::DoProcessOrder($orderDeliveryPriceData, array(), $arErrors);
 
-					if (floatval($orderDeliveryPriceData['DELIVERY_PRICE']) > 0 && $deliveryData["PRICE"] != $orderDeliveryPriceData['DELIVERY_PRICE'])
+					if (floatval($orderDeliveryPriceData['DELIVERY_PRICE']) >= 0 && $deliveryData["PRICE"] != $orderDeliveryPriceData['DELIVERY_PRICE'])
 					{
 						$arResult["DELIVERY"][$deliveryKey]['DELIVERY_DISCOUNT_PRICE'] = $orderDeliveryPriceData['DELIVERY_PRICE'];
 						$arResult["DELIVERY"][$deliveryKey]["DELIVERY_DISCOUNT_PRICE_FORMATED"] = SaleFormatCurrency($orderDeliveryPriceData['DELIVERY_PRICE'], $arResult["BASE_LANG_CURRENCY"]);
@@ -1444,7 +1505,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 				$arRelFilter["RELATED"]["PAYSYSTEM_ID"] = $arUserResult["PAY_SYSTEM_ID"];
 
 			if ($arUserResult["DELIVERY_ID"] != false)
-				$arRelFilter["RELATED"]["DELIVERY_ID"] = $arUserResult["DELIVERY_ID"];
+				$arRelFilter["RELATED"]["DELIVERY_ID"] = \CSaleDelivery::getCodeById($arUserResult["DELIVERY_ID"]);
 
 			if (isset($arRelFilter["RELATED"]) && count($arRelFilter["RELATED"]) > 0)
 			{
@@ -1473,11 +1534,15 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 				unset($arResult["BASKET_ITEMS"][$id]);
 		}
 
-		$deliveryId = (intval($arUserResult["DELIVERY_ID"]) > 0 ? \Bitrix\Sale\Delivery\Services\Table::getCodeById($arUserResult["DELIVERY_ID"]) : "");
+		$deliveryId = (intval($arUserResult["DELIVERY_ID"]) > 0 ? \CSaleDelivery::getCodeById($arUserResult["DELIVERY_ID"]) : "");
 		$arOptions = array();
 
-		if(!empty($_POST["DELIVERY_EXTRA_SERVICES"][$deliveryId]))
-			$arOptions["DELIVERY_EXTRA_SERVICES"] = $_POST["DELIVERY_EXTRA_SERVICES"][$deliveryId];
+		if(intval($arUserResult["DELIVERY_ID"]) > 0)
+			if(!empty($_POST["DELIVERY_EXTRA_SERVICES"][intval($arUserResult["DELIVERY_ID"])]))
+				$arOptions["DELIVERY_EXTRA_SERVICES"] = $_POST["DELIVERY_EXTRA_SERVICES"][intval($arUserResult["DELIVERY_ID"])];
+
+		if (!empty($arParams['COUNT_DELIVERY_TAX']))
+			$arOptions['COUNT_DELIVERY_TAX'] = $arParams['COUNT_DELIVERY_TAX'];
 
 		$arOrderDat = CSaleOrder::DoCalculateOrder(
 			SITE_ID,
@@ -1817,7 +1882,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 						"USER_ID" => (int)$USER->GetID(),
 						"PAY_SYSTEM_ID" => $arUserResult["PAY_SYSTEM_ID"],
 						"PRICE_DELIVERY" => $arResult["DELIVERY_PRICE"],
-						"DELIVERY_ID" => (intval($arUserResult["DELIVERY_ID"]) > 0 ? \Bitrix\Sale\Delivery\Services\Table::getCodeById($arUserResult["DELIVERY_ID"]) : ""),
+						"DELIVERY_ID" => (intval($arUserResult["DELIVERY_ID"]) > 0 ? \CSaleDelivery::getCodeById($arUserResult["DELIVERY_ID"]) : ""),
 						"DISCOUNT_VALUE" => $arResult["DISCOUNT_PRICE"],
 						"TAX_VALUE" => $arResult["bUsingVat"] == "Y" ? $arResult["VAT_SUM"] : $arResult["TAX_PRICE"],
 						"USER_DESCRIPTION" => $arUserResult["~ORDER_DESCRIPTION"]
@@ -1856,6 +1921,11 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 				{
 					if ($isPayFromUserBudget)
 						$arFields['ONLY_FULL_PAY_FROM_ACCOUNT'] = $isPayFullFromUserBudget;
+				}
+
+				if (!empty($arParams['COUNT_DELIVERY_TAX']))
+				{
+					$arFields['COUNT_DELIVERY_TAX'] = $arParams['COUNT_DELIVERY_TAX'];
 				}
 
 				$arResult["ORDER_ID"] = (int)CSaleOrder::DoSaveOrder($arOrderDat, $arFields, 0, $arResult["ERROR"]);
@@ -1902,21 +1972,29 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 					}
 					if($arResult["HAVE_PREPAYMENT"])
 					{
-						if($psPreAction && $psPreAction->IsAction())
+						if ($service &&
+							$service->isPrePayable() &&
+							$request->get('paypal') == 'Y' &&
+							$request->get('token')
+						)
 						{
-							$psPreAction->orderId = $arResult["ORDER_ID"];
-
 							$payment = \Bitrix\Sale\Internals\PaymentTable::getRow(
 								array(
 									'select' => array('ID'),
-									'filter' => array('ORDER_ID' => $arResult["ORDER_ID"], '!PAY_SYSTEM_ID' => \Bitrix\Sale\Internals\PaySystemInner::getId())
+									'filter' => array('ORDER_ID' => $arResult["ORDER_ID"], '!PAY_SYSTEM_ID' => \Bitrix\Sale\PaySystem\Manager::getInnerPaySystemId())
 								)
 							);
 
-							$psPreAction->paymentId = $payment["ID"];
-							$psPreAction->orderAmount = $orderTotalSum;
-							$psPreAction->deliveryAmount = $arResult["DELIVERY_PRICE"];
-							$psPreAction->taxAmount = $arResult["TAX_PRICE"];
+							$service->setOrderDataForPrePayment(
+								array(
+									'ORDER_ID' => $arResult["ORDER_ID"],
+									'PAYMENT_ID' => $payment["ID"],
+									'ORDER_PRICE' => $orderTotalSum,
+									'DELIVERY_PRICE' => $arResult["DELIVERY_PRICE"],
+									'TAX_PRICE' => $arResult["TAX_PRICE"]
+								)
+							);
+
 							$orderData = array();
 							$dbBasketItems = CSaleBasket::GetList(
 								array("ID" => "ASC"),
@@ -1932,7 +2010,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 							while ($arItem = $dbBasketItems->Fetch())
 								$orderData['BASKET_ITEMS'][] = $arItem;
 
-							$psPreAction->payOrder($orderData);
+							$service->payOrderByPrePayment($orderData);
 						}
 					}
 				}
@@ -2101,7 +2179,7 @@ if ($USER->IsAuthorized() || $arParams["ALLOW_AUTO_REGISTER"] == "Y" )
 		$payment = \Bitrix\Sale\Internals\PaymentTable::getRow(
 			array(
 				'select' => array('ID', 'PAY_SYSTEM_ID', 'SUM', 'DATE_BILL'),
-				'filter' => array('ORDER_ID' => $arResult["ORDER_ID"], '!PAY_SYSTEM_ID' => \Bitrix\Sale\Internals\PaySystemInner::getId())
+				'filter' => array('ORDER_ID' => $arResult["ORDER_ID"], '!PAY_SYSTEM_ID' => \Bitrix\Sale\PaySystem\Manager::getInnerPaySystemId())
 			)
 		);
 

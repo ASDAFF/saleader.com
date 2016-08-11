@@ -47,4 +47,5 @@ $MESS["INPUT_DATE_SELECT"] = "Select date";
 $MESS["INPUT_LOCATION"] = "Location";
 $MESS["INPUT_LOCATION_TEMPLATE"] = "Template";
 $MESS["INPUT_EITHERYN_ALL"] = "(all)";
+$MESS["INPUT_ENUM_EMPTY_OPTION"] = "Not selected";
 ?>

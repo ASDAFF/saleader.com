@@ -262,4 +262,5 @@ $MESS["SALE_BLOCK_TITLE_PAYMENT"] = "Payment";
 $MESS["SALE_BLOCK_TITLE_BASKET"] = "Order";
 $MESS["SALE_BLOCK_TITLE_ADDITIONAL"] = "Additional information";
 $MESS["SOE_ORDER_LOCKED2"] = "The order was temporarily held by the customer #ID# (#DATE#)";
+$MESS["SOE_TO_UNLOCK"] = "Unlock order";
 ?>

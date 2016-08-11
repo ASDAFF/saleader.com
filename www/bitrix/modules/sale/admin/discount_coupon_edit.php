@@ -1,9 +1,9 @@
 <?
 /** @global CMain $APPLICATION */
-use Bitrix\Main;
-use Bitrix\Main\Loader;
-use Bitrix\Main\Localization\Loc;
-use Bitrix\Sale\Internals;
+use Bitrix\Main,
+	Bitrix\Main\Loader,
+	Bitrix\Main\Localization\Loc,
+	Bitrix\Sale\Internals;
 
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_before.php');
 require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/sale/prolog.php');
@@ -20,9 +20,7 @@ Loader::includeModule('sale');
 Loc::loadMessages(__FILE__);
 
 if ($subWindow)
-{
 	require_once($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/iblock/classes/general/subelement.php');
-}
 
 if (!$subWindow && $ex = $APPLICATION->GetException())
 {
@@ -34,31 +32,38 @@ if (!$subWindow && $ex = $APPLICATION->GetException())
 
 $couponTypes = Internals\DiscountCouponTable::getCouponTypes(true);
 
+$request = Main\Context::getCurrent()->getRequest();
+
 $multiCoupons = false;
 $discountID = 0;
 if ($subWindow)
 {
-	$multiCoupons = (isset($_REQUEST['MULTI']) && $_REQUEST['MULTI'] == 'Y');
-	if (isset($_REQUEST['DISCOUNT_ID']))
-		$discountID = (int)$_REQUEST['DISCOUNT_ID'];
-	$discountIterator = Internals\DiscountTable::getList(array(
+	$multiCoupons = (string)$request->get('MULTI') == 'Y';
+	$discountID = (int)$request->get('DISCOUNT_ID');
+	$discount = Internals\DiscountTable::getList(array(
 		'select' => array('ID'),
 		'filter' => array('=ID' => $discountID)
-	));
-	if (!($discount = $discountIterator->fetch()))
+	))->fetch();
+	if (!$discount)
 	{
 		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/prolog_admin_after.php');
 		ShowError(Loc::getMessage('BX_SALE_DISCOUNT_COUPON_ERR_DISCOUNT_ID_ABSENT'));
 		require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');
 		die();
 	}
+	unset($discount);
 }
 $returnUrl = '';
-if (!$subWindow && !empty($_REQUEST['return_url']))
+if (!$subWindow)
 {
-	$currentUrl = $APPLICATION->GetCurPage();
-	if (strtolower(substr($_REQUEST['return_url'], strlen($currentUrl))) != strtolower($currentUrl))
-		$returnUrl = $_REQUEST['return_url'];
+	$rawReturnUrl = (string)$request->get('return_url');
+	if ($rawReturnUrl != '')
+	{
+		$currentUrl = $APPLICATION->GetCurPage();
+		if (strtolower(substr($rawReturnUrl, strlen($currentUrl))) != strtolower($currentUrl))
+			$returnUrl = $rawReturnUrl;
+	}
+	unset($rawReturnUrl);
 }
 
 $tabList = array(
@@ -99,40 +104,43 @@ $couponFormID .= '_form';
 
 $errors = array();
 $fields = array();
-$couponID = 0;
 $copy = false;
-if (isset($_REQUEST['ID']))
-{
-	$couponID = (int)$_REQUEST['ID'];
-	if ($couponID < 0)
-		$couponID = 0;
-}
+$couponID = (int)$request->get('ID');
+if ($couponID < 0)
+	$couponID = 0;
+
 if ($couponID > 0)
-	$copy = (isset($_REQUEST['action']) && (string)$_REQUEST['action'] == 'copy');
+	$copy = ($request->get('action') == 'copy');
 
 if (
 	check_bitrix_sessid()
 	&& !$readOnly
-	&& $_SERVER['REQUEST_METHOD'] == 'POST'
-	&& isset($_POST['Update']) && (string)$_POST['Update'] == 'Y'
+	&& $request->isPost()
+	&& (string)$request->getPost('Update') == 'Y'
 )
 {
+	$rawData = $request->getPostList();
 	if ($multiCoupons)
 	{
 		$fields['COUNT'] = 0;
 		$fields['COUPON'] = array(
-			'DISCOUNT_ID' => $discountID
+			'DISCOUNT_ID' => $discountID,
+			'MAX_USE' => 0
 		);
-		if (!empty($_POST[$prefix.'ACTIVE_FROM']))
-			$fields['COUPON']['ACTIVE_FROM'] = new Main\Type\DateTime($_POST[$prefix.'ACTIVE_FROM']);
-		if (!empty($_POST[$prefix.'ACTIVE_TO']))
-			$fields['COUPON']['ACTIVE_TO'] = new Main\Type\DateTime($_POST[$prefix.'ACTIVE_TO']);
-		if (isset($_POST[$prefix.'TYPE']))
-			$fields['COUPON']['TYPE'] = $_POST[$prefix.'TYPE'];
-		if (isset($_POST[$prefix.'MAX_USE']))
-			$fields['COUPON']['MAX_USE'] = $_POST[$prefix.'MAX_USE'];
-		if (isset($_POST[$prefix.'COUNT']))
-			$fields['COUNT'] = (int)$_POST[$prefix.'COUNT'];
+
+		if (!empty($rawData[$prefix.'ACTIVE_FROM']))
+			$fields['COUPON']['ACTIVE_FROM'] = new Main\Type\DateTime($rawData[$prefix.'ACTIVE_FROM']);
+		if (!empty($rawData[$prefix.'ACTIVE_TO']))
+			$fields['COUPON']['ACTIVE_TO'] = new Main\Type\DateTime($rawData[$prefix.'ACTIVE_TO']);
+		if (isset($rawData[$prefix.'TYPE']))
+			$fields['COUPON']['TYPE'] = $rawData[$prefix.'TYPE'];
+		if (isset($fields['COUPON']['TYPE']) && $fields['COUPON']['TYPE'] == Internals\DiscountCouponTable::TYPE_MULTI_ORDER)
+		{
+			if (isset($rawData[$prefix.'MAX_USE']))
+				$fields['COUPON']['MAX_USE'] = $rawData[$prefix.'MAX_USE'];
+		}
+		if (isset($rawData[$prefix.'COUNT']))
+			$fields['COUNT'] = (int)$rawData[$prefix.'COUNT'];
 
 		if ($fields['COUNT'] <= 0)
 			$errors[] = Loc::getMessage('BX_SALE_DISCOUNT_COUPON_ERR_COUPON_COUNT');
@@ -149,9 +157,8 @@ if (
 				$fields['COUNT']
 			);
 			if (!$couponsResult->isSuccess())
-			{
 				$errors = $couponsResult->getErrorMessages();
-			}
+			unset($couponsResult);
 		}
 		unset($checkResult);
 	}
@@ -159,27 +166,30 @@ if (
 	{
 		if ($subWindow)
 			$fields['DISCOUNT_ID'] = $discountID;
-		elseif (!empty($_POST['DISCOUNT_ID']))
-			$fields['DISCOUNT_ID'] = $_POST['DISCOUNT_ID'];
+		elseif (!empty($rawData['DISCOUNT_ID']))
+			$fields['DISCOUNT_ID'] = $rawData['DISCOUNT_ID'];
 
-		if (isset($_POST['COUPON']))
-			$fields['COUPON'] = $_POST['COUPON'];
-		if (!empty($_POST[$prefix.'ACTIVE']))
-			$fields['ACTIVE'] = $_POST[$prefix.'ACTIVE'];
-		if (isset($_POST[$prefix.'ACTIVE_FROM']))
-			$fields['ACTIVE_FROM'] = (!empty($_POST[$prefix.'ACTIVE_FROM']) ? new Main\Type\DateTime($_POST[$prefix.'ACTIVE_FROM']) : null);
-		if (isset($_POST[$prefix.'ACTIVE_TO']))
-			$fields['ACTIVE_TO'] = (!empty($_POST[$prefix.'ACTIVE_TO']) ? new Main\Type\DateTime($_POST[$prefix.'ACTIVE_TO']) : null);
-		if (isset($_POST[$prefix.'TYPE']))
-			$fields['TYPE'] = $_POST[$prefix.'TYPE'];
-		if (isset($_POST[$prefix.'MAX_USE']))
-			$fields['MAX_USE'] = $_POST[$prefix.'MAX_USE'];
-		if (isset($_POST[$prefix.'USER_ID']))
-			$fields['USER_ID'] = $_POST[$prefix.'USER_ID'];
-		if (isset($_POST[$prefix.'DESCRIPTION']))
-			$fields['DESCRIPTION'] = $_POST[$prefix.'DESCRIPTION'];
+		if (isset($rawData['COUPON']))
+			$fields['COUPON'] = $rawData['COUPON'];
+		if (!empty($rawData[$prefix.'ACTIVE']))
+			$fields['ACTIVE'] = $rawData[$prefix.'ACTIVE'];
+		if (isset($rawData[$prefix.'ACTIVE_FROM']))
+			$fields['ACTIVE_FROM'] = (!empty($rawData[$prefix.'ACTIVE_FROM']) ? new Main\Type\DateTime($rawData[$prefix.'ACTIVE_FROM']) : null);
+		if (isset($rawData[$prefix.'ACTIVE_TO']))
+			$fields['ACTIVE_TO'] = (!empty($rawData[$prefix.'ACTIVE_TO']) ? new Main\Type\DateTime($rawData[$prefix.'ACTIVE_TO']) : null);
+		if (isset($rawData[$prefix.'TYPE']))
+			$fields['TYPE'] = $rawData[$prefix.'TYPE'];
+		if (isset($fields['TYPE']) && $fields['TYPE'] == Internals\DiscountCouponTable::TYPE_MULTI_ORDER)
+		{
+			if (isset($rawData[$prefix.'MAX_USE']))
+				$fields['MAX_USE'] = $rawData[$prefix.'MAX_USE'];
+		}
+		if (isset($rawData[$prefix.'USER_ID']))
+			$fields['USER_ID'] = $rawData[$prefix.'USER_ID'];
+		if (isset($rawData[$prefix.'DESCRIPTION']))
+			$fields['DESCRIPTION'] = $rawData[$prefix.'DESCRIPTION'];
 
-		if ($couponID == 0)
+		if ($couponID == 0 || $copy)
 			$result = Internals\DiscountCouponTable::add($fields);
 		else
 			$result = Internals\DiscountCouponTable::update($couponID, $fields);
@@ -189,11 +199,12 @@ if (
 		}
 		else
 		{
-			if ($couponID == 0)
+			if ($couponID == 0 || $copy)
 				$couponID = $result->getId();
 		}
 		unset($result);
 	}
+	unset($rawData);
 
 	if (empty($errors))
 	{
@@ -207,16 +218,16 @@ top.ReloadSubList();
 		}
 		else
 		{
-			if (!empty($_POST['apply']))
-				LocalRedirect('sale_discount_coupon_edit.php?lang='.LANGUAGE_ID.'&ID='.$couponID.GetFilterParams('filter_', false));
+			if ((string)$request->getPost('apply') != '')
+				LocalRedirect('sale_discount_coupon_edit.php?lang='.LANGUAGE_ID.'&ID='.$couponID.'&'.$control->ActiveTabParam().GetFilterParams('filter_', false));
 			else
-				LocalRedirect('sale_discount_coupons.php?lang='.LANGUAGE_ID.'&'.$control->ActiveTabParam().GetFilterParams('filter_', false));
+				LocalRedirect('sale_discount_coupons.php?lang='.LANGUAGE_ID.GetFilterParams('filter_', false));
 		}
 	}
 }
 elseif ($subWindow)
 {
-	if (!empty($_REQUEST['dontsave']))
+	if ((string)$request->get('dontsave') != '')
 	{
 		?><script type="text/javascript">top.BX.closeWait(); top.BX.WindowManager.Get().AllowClose(); top.BX.WindowManager.Get().Close();</script><?
 		die();
@@ -302,7 +313,8 @@ if (!$multiCoupons)
 		'MAX_USE' => 0,
 		'USE_COUNT' => 0,
 		'USER_ID' => 0,
-		'DESCRIPTION' => ''
+		'DESCRIPTION' => '',
+		'DATE_APPLY' => null
 	);
 	$selectFields = array('ID', 'DISCOUNT_NAME' => 'DISCOUNT.NAME');
 	$selectFields = array_merge($selectFields, array_keys($defaultValues));
@@ -311,7 +323,7 @@ else
 {
 	$defaultValues = array(
 		'COUNT' => '',
-		array(
+		'COUPON' => array(
 			'DISCOUNT_ID' => '',
 			'ACTIVE_FROM' => null,
 			'ACTIVE_TO' => null,
@@ -324,15 +336,12 @@ else
 $coupon = array();
 if (!$multiCoupons && $couponID > 0)
 {
-	$couponIterator = Internals\DiscountCouponTable::getList(array(
+	$coupon = Internals\DiscountCouponTable::getList(array(
 		'select' => $selectFields,
 		'filter' => array('=ID' => $couponID)
-	));
-	if (!($coupon = $couponIterator->fetch()))
-	{
+	))->fetch();
+	if (!$coupon)
 		$couponID = 0;
-	}
-	unset($couponIterator);
 }
 if ($couponID == 0)
 	$coupon = $defaultValues;
@@ -394,8 +403,10 @@ if ($multiCoupons)
 	<td width="40%"><? echo $control->GetCustomLabelHTML(); ?></td>
 	<td width="60%"><?
 		$periodValue = '';
+		CTimeZone::Disable();
 		$activeFrom = ($coupon['COUPON']['ACTIVE_FROM'] instanceof Main\Type\DateTime ? $coupon['COUPON']['ACTIVE_FROM']->toString() : '');
 		$activeTo = ($coupon['COUPON']['ACTIVE_TO'] instanceof Main\Type\DateTime ? $coupon['COUPON']['ACTIVE_TO']->toString() : '');
+		CTimeZone::Enable();
 		if ($activeFrom != '' || $activeTo != '')
 			$periodValue = CAdminCalendar::PERIOD_INTERVAL;
 
@@ -419,13 +430,44 @@ if ($multiCoupons)
 		Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_TYPE'),
 		true,
 		$couponTypes,
-		$coupon['COUPON']['TYPE']
+		$coupon['COUPON']['TYPE'],
+		array('id="'.$prefix.'TYPE'.'"', 'size="3"')
 	);
-	$control->AddEditField($prefix.'MAX_USE', Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_MAX_USE'), false, array(), ($coupon['COUPON']['MAX_USE'] > 0 ? $coupon['COUPON']['MAX_USE'] : ''));
+	$control->AddEditField(
+		$prefix.'MAX_USE',
+		Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_MAX_USE'),
+		false,
+		array('id' => $prefix.'MAX_USE'),
+		($coupon['COUPON']['MAX_USE'] > 0 ? $coupon['COUPON']['MAX_USE'] : '')
+	);
 	$control->Buttons(false, '');
 	$control->Show();
 ?>
-<script type="text/javascript">top.BX.WindowManager.Get().adjustSizeEx();</script>
+<script type="text/javascript">
+	var couponType = BX('<?=$prefix.'TYPE'; ?>'),
+		maxUse = BX('<?=$prefix.'MAX_USE'; ?>'),
+		rowMaxUse;
+
+	rowMaxUse = BX.findParent(maxUse, { 'tagName': 'tr' });
+
+	BX.ready(function(){
+		BX.style(
+			rowMaxUse,
+			'display',
+			(couponType.value == '<?=Internals\DiscountCouponTable::TYPE_MULTI_ORDER; ?>' ? 'table-row' : 'none')
+		);
+		BX.bind(couponType, 'change', function ()
+		{
+			BX.style(
+				rowMaxUse,
+				'display',
+				(couponType.value == '<?=Internals\DiscountCouponTable::TYPE_MULTI_ORDER; ?>' ? 'table-row' : 'none')
+			);
+			top.BX.WindowManager.Get().adjustSizeEx();
+		});
+		top.BX.WindowManager.Get().adjustSizeEx();
+	});
+</script>
 <?
 }
 else
@@ -492,14 +534,20 @@ else
 	$control->EndCustomField('COUPON',
 		'<input type="hidden" name="COUPON" value="'.htmlspecialcharsbx($coupon['COUPON']).'">'
 	);
-	if ($couponID == 0 || $coupon['USE_COUNT'] == 0 || !isset($couponTypes[$coupon['TYPE']]))
+	$showTypeSelect = (
+		$couponID == 0
+		|| !isset($couponTypes[$coupon['TYPE']])
+		|| $coupon['DATE_APPLY'] == null
+	);
+	if ($showTypeSelect)
 	{
 		$control->AddDropDownField(
 			$prefix.'TYPE',
 			Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_TYPE'),
 			true,
 			$couponTypes,
-			$coupon['TYPE']
+			$coupon['TYPE'],
+			array('id="'.$prefix.'TYPE'.'"', 'size="3"')
 		);
 	}
 	else
@@ -516,8 +564,10 @@ else
 		<td width="40%"><? echo $control->GetCustomLabelHTML(); ?></td>
 		<td width="60%"><?
 		$periodValue = '';
+		CTimeZone::Disable();
 		$activeFrom = ($coupon['ACTIVE_FROM'] instanceof Main\Type\DateTime ? $coupon['ACTIVE_FROM']->toString() : '');
 		$activeTo = ($coupon['ACTIVE_TO'] instanceof Main\Type\DateTime ? $coupon['ACTIVE_TO']->toString() : '');
+		CTimeZone::Enable();
 		if ($activeFrom != '' || $activeTo != '')
 			$periodValue = CAdminCalendar::PERIOD_INTERVAL;
 
@@ -549,8 +599,28 @@ else
 		?></td>
 	</tr><?
 	$control->EndCustomField($prefix.'USER_ID');
-	$control->AddEditField($prefix.'MAX_USE', Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_MAX_USE'), false, array(), ($coupon['MAX_USE'] > 0 ? $coupon['MAX_USE'] : ''));
-	$control->AddTextField($prefix.'DESCRIPTION', Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_DESCRIPTION'), $coupon['DESCRIPTION'], array(), false);
+	if ($showTypeSelect || ($couponID > 0 && $coupon['TYPE'] == Internals\DiscountCouponTable::TYPE_MULTI_ORDER))
+		$control->AddEditField(
+			$prefix.'MAX_USE',
+			Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_MAX_USE'),
+			false,
+			array('id' => $prefix.'MAX_USE'),
+			($coupon['MAX_USE'] > 0 ? $coupon['MAX_USE'] : '')
+		);
+	if ($couponID > 0 && $coupon['TYPE'] == Internals\DiscountCouponTable::TYPE_MULTI_ORDER && $coupon['USE_COUNT'] > 0)
+		$control->AddViewField(
+			$prefix.'USE_COUNT',
+			Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_USE_COUNT'),
+			$coupon['USE_COUNT'],
+			false
+		);
+	$control->AddTextField(
+		$prefix.'DESCRIPTION',
+		Loc::getMessage('BX_SALE_DISCOUNT_COUPON_FIELD_DESCRIPTION'),
+		$coupon['DESCRIPTION'],
+		array(),
+		false
+	);
 	if ($subWindow)
 	{
 		$control->Buttons(false, '');
@@ -567,84 +637,114 @@ else
 	$control->Show();
 ?>
 <script type="text/javascript">
-	BX.ready(function(){
-		var obCouponValue = BX('COUPON'),
-			obCouponBtn = BX('COUPON_GENERATE');
-		if (!!obCouponValue && !!obCouponBtn)
-		{
-			BX.bind(obCouponBtn, 'click', function(){
-				var url,
-					data;
+BX.ready(function(){
+	var obCouponValue = BX('COUPON'),
+		obCouponBtn = BX('COUPON_GENERATE'),
+		couponType = BX('<?=$prefix.'TYPE'; ?>'),
+		maxUse,
+		rowMaxUse;
 
-				BX.showWait();
-				url = '/bitrix/tools/sale/generate_coupon.php';
-				data = {
-					lang: BX.message('LANGUAGE_ID'),
-					sessid: BX.bitrix_sessid()
-				};
-				BX.ajax.loadJSON(
-					url,
-					data,
-					function(data){
-						var boolFlag = true,
-							strErr = '',
-							obCouponErr,
-							obCouponCell;
-						if (BX.type.isString(data))
+	if (!!obCouponValue && !!obCouponBtn)
+	{
+		BX.bind(obCouponBtn, 'click', function(){
+			var url,
+				data;
+
+			BX.showWait();
+			url = '/bitrix/tools/sale/generate_coupon.php';
+			data = {
+				lang: BX.message('LANGUAGE_ID'),
+				sessid: BX.bitrix_sessid()
+			};
+			BX.ajax.loadJSON(
+				url,
+				data,
+				function(data){
+					var boolFlag = true,
+						strErr = '',
+						obCouponErr,
+						obCouponCell;
+					if (BX.type.isString(data))
+					{
+						boolFlag = false;
+						strErr = data;
+					}
+					else
+					{
+						if (data.STATUS != 'OK')
 						{
 							boolFlag = false;
-							strErr = data;
+							strErr = data.MESSAGE;
 						}
-						else
+					}
+					obCouponErr = BX('COUPON_GENERATE_ERR');
+					if (boolFlag)
+					{
+						obCouponValue.value = data.COUPON;
+						if (!!obCouponErr)
+							obCouponErr = BX.remove(obCouponErr);
+					}
+					else
+					{
+						if (!obCouponErr)
 						{
-							if (data.STATUS != 'OK')
+							obCouponCell = BX('td_COUPON_VALUE');
+							if (!!obCouponCell)
 							{
-								boolFlag = false;
-								strErr = data.MESSAGE;
-							}
-						}
-						obCouponErr = BX('COUPON_GENERATE_ERR');
-						if (boolFlag)
-						{
-							obCouponValue.value = data.COUPON;
-							if (!!obCouponErr)
-								obCouponErr = BX.remove(obCouponErr);
-						}
-						else
-						{
-							if (!obCouponErr)
-							{
-								obCouponCell = BX('td_COUPON_VALUE');
-								if (!!obCouponCell)
-								{
-									obCouponErr = obCouponCell.insertBefore(BX.create(
-										'IMG',
-										{
-											props: {
-												id: 'COUPON_GENERATE_ERR',
-												src: '/bitrix/panel/main/images_old/icon_warn.gif'
-											},
-											style: {
-												marginRight: '10px',
-												verticalAlign: 'middle'
-											}
+								obCouponErr = obCouponCell.insertBefore(BX.create(
+									'IMG',
+									{
+										props: {
+											id: 'COUPON_GENERATE_ERR',
+											src: '/bitrix/panel/main/images_old/icon_warn.gif'
+										},
+										style: {
+											marginRight: '10px',
+											verticalAlign: 'middle'
 										}
-									), obCouponBtn);
-								}
+									}
+								), obCouponBtn);
 							}
-							BX.adjust(obCouponErr, {props: { title: strErr }});
 						}
-						BX.closeWait();
-					});
-			});
-		}
-	});
-	<?
-	if ($subWindow)
-	{
-		?>top.BX.WindowManager.Get().adjustSizeEx();
-		<?
+						BX.adjust(obCouponErr, {props: { title: strErr }});
+					}
+					BX.closeWait();
+				});
+		});
 	}
+	if (!!couponType)
+	{
+		maxUse = BX('<?=$prefix.'MAX_USE'; ?>');
+		rowMaxUse = BX.findParent(maxUse, { 'tagName': 'tr' });
+
+		BX.style(
+			rowMaxUse,
+			'display',
+			(couponType.value == '<?=Internals\DiscountCouponTable::TYPE_MULTI_ORDER; ?>' ? 'table-row' : 'none')
+		);
+		BX.bind(couponType, 'change', function ()
+		{
+			BX.style(
+				rowMaxUse,
+				'display',
+				(couponType.value == '<?=Internals\DiscountCouponTable::TYPE_MULTI_ORDER; ?>' ? 'table-row' : 'none')
+			);
+			<?
+			if ($subWindow)
+			{
+			?>top.BX.WindowManager.Get().adjustSizeEx();
+			<?
+			}
+			?>
+		});
+	}
+});
+<?
+if ($subWindow)
+{
+?>top.BX.WindowManager.Get().adjustSizeEx();
+<?
+}
 ?></script><?
 }
 require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin.php');

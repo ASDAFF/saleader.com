@@ -28,10 +28,11 @@ class CAllSaleLocationGroup
 				$fieldMap = array(
 					'D_SPIKE' => 'D_SPIKE',
 					'LLOCATION_ID' => 'C.ID',
+					'LOCATION_CODE' => 'C.CODE',
 					'LOCATION_GROUP_ID' => 'LOCATION_GROUP_ID'
 				);
 				$fieldProxy = array(
-					'LLOCATION_ID' => 'LOCATION_ID'
+					'LLOCATION_ID' => 'LOCATION_ID',
 				);
 				
 				$query->registerRuntimeField(
@@ -84,9 +85,7 @@ class CAllSaleLocationGroup
 				$query->setFilter($filterFields);
 
 				$res = $query->exec();
-				$res->addReplacedAliases(array(
-					'LLOCATION_ID' => 'LOCATION_ID'
-				));
+				$res->addReplacedAliases($fieldProxy);
 
 				return $res;
 			}

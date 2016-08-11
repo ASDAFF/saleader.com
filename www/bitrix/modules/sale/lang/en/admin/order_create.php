@@ -15,4 +15,6 @@ $MESS["SALE_OK_BLOCK_TITLE_ADDITIONAL"] = "Additional information";
 $MESS["SALE_OK_BLOCK_TITLE_FINANCEINFO"] = "Order financial information";
 $MESS["SALE_OK_TITLE_SITE"] = "Add Order. Site: ##SITE##";
 $MESS["SALE_OK_TITLE_NO_SITE"] = "Add Order";
+$MESS["SALE_OK_ORDER_CREATE_ERROR"] = "Error creating an order.";
+$MESS["SALE_OK_ORDER_CREATE_ERROR_NO_PRODUCT"] = "The product \"##NAME##\" is unavailable";
 ?>

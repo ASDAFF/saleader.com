@@ -16,6 +16,7 @@ $MESS["SALE_COMPANY_DELETE_DESCR"] = "Удалить";
 $MESS["SALE_COMPANY"] = "Компании";
 $MESS["SALE_COMPANY_CONFIRM_DEL"] = "Вы уверены, что хотите удалить компанию?";
 $MESS["SALE_COMPANY_ERROR_DELETE"] = "Ошибка удаления записи";
+$MESS["SALE_COMPANY_ERROR_DELETE_LINK"] = "Компания привязана к оплате или отгрузке";
 $MESS["SALE_COMPANY_ERROR_NO_NAME"] = "Не указано название компании.";
 $MESS["SALE_COMPANY_ERROR_NO_LOCATION_ID"] = "Не указан адрес компании.";
 $MESS["SALE_COMPANY_LOCATION"] = "Местоположение";

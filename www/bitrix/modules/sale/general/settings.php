@@ -33,7 +33,7 @@ class CSaleLang
 		return Bitrix\Sale\Internals\SiteCurrencyTable::delete($siteId)->isSuccess();
 	}
 
-	function GetByID($siteId)
+	public static function GetByID($siteId)
 	{
 		return Bitrix\Sale\Internals\SiteCurrencyTable::getCurrency($siteId);
 	}
@@ -42,16 +42,17 @@ class CSaleLang
 	* @deprecated deprecated since sale 15.0.0
 	* @see \Bitrix\Sale\Internals\SiteCurrencyTable::getSiteCurrency
 	*/
-	function GetLangCurrency($siteId)
+	public static function GetLangCurrency($siteId)
 	{
 		return Sale\Internals\SiteCurrencyTable::getSiteCurrency($siteId);
 	}
 
-	function OnBeforeCurrencyDelete($currency)
+	public static function OnBeforeCurrencyDelete($currency)
 	{
-		global $DB;
+		global $DB, $APPLICATION;
 
-		if (strlen($currency)<=0) return false;
+		if (strlen($currency)<=0)
+			return true;
 
 		if (Bitrix\Sale\Internals\SiteCurrencyTable::getList(array(
 			'select' => array('*'),
@@ -59,11 +60,11 @@ class CSaleLang
 			'limit'  => 1
 		))->fetch())
 		{
-			$GLOBALS["APPLICATION"]->ThrowException(str_replace("#CURRENCY#", $currency, GetMessage("SKGO_ERROR_CURRENCY")), "ERROR_CURRENCY");
+			$APPLICATION->ThrowException(str_replace("#CURRENCY#", $currency, GetMessage("SKGO_ERROR_CURRENCY")), "ERROR_CURRENCY");
 			return false;
 		}
 
-		return True;
+		return true;
 	}
 }
 
@@ -270,4 +271,3 @@ class CAllSaleGroupAccessToFlag
 		return $DB->Query("DELETE FROM b_sale_order_flags2group WHERE ORDER_FLAG = '".$DB->ForSql($ORDER_FLAG, 1)."' ", true);
 	}
 }
-?>

@@ -70,6 +70,25 @@ if(!isset($arFilter["USER_ID"]))
 	{
 		$arFilter["STATUS_PERMS_GROUP_ID"] = $GLOBALS["USER"]->GetUserGroupArray();
 		$arFilter[">=STATUS_PERMS_PERM_VIEW"] = "Y";
+
+		$arUserGroups = $USER->GetUserGroupArray();
+		$arAccessibleSites = array();
+		$dbAccessibleSites = CSaleGroupAccessToSite::GetList(
+				array(),
+				array("GROUP_ID" => $arUserGroups),
+				false,
+				false,
+				array("SITE_ID")
+		);
+
+		while ($arAccessibleSite = $dbAccessibleSites->Fetch())
+		{
+			if(!in_array($arAccessibleSite["SITE_ID"], $arAccessibleSites))
+				$arAccessibleSites[] = $arAccessibleSite["SITE_ID"];
+		}
+
+		if(count($arAccessibleSites) > 0)
+			$arFilter["LID"] = $arAccessibleSites;
 	}
 }
 
@@ -224,6 +243,8 @@ if(!empty($arResult["ORDERS"]))
 
 		if(isset($arPaySysNames[$arOrder["PAY_SYSTEM_ID"]]))
 			$arOrder["ADD_PAY_SYSTEM_NAME"] = $arPaySysNames[$arOrder["PAY_SYSTEM_ID"]].' /';
+		else
+			$arOrder["ADD_PAY_SYSTEM_NAME"] = GetMessage("SMOL_NONE").' /';
 
 		if(isset($arStatNames[$arOrder["STATUS_ID"]]))
 			$arOrder["STATUS_NAME"] = $arStatNames[$arOrder["STATUS_ID"]];

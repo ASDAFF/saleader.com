@@ -20,6 +20,11 @@ IncludeTemplateLangFile(__FILE__);
         <link rel="shortcut icon" type="image/x-icon" href="<?= SITE_TEMPLATE_PATH ?>/images/favicon.ico"/>
         <title ><? $APPLICATION->ShowTitle(); ?> » SaLeader.com</title>
         <? $APPLICATION->ShowHead(); ?>
+        <?
+        if (!$USER->IsAuthorized()) {
+            CJSCore::Init(array('ajax', 'json', 'ls', 'session', 'jquery', 'popup', 'pull'));
+        }
+        ?>
         <? Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/fonts/roboto/roboto.css"); ?>
         <? Asset::getInstance()->addCss(SITE_TEMPLATE_PATH . "/themes/" . $TEMPLATE_BACKGROUND_NAME . "/" . $TEMPLATE_THEME_NAME . "/style.css"); ?>
         <? $APPLICATION->ShowCSS(true, false); ?>

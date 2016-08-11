@@ -290,8 +290,10 @@ if(!empty($arProfile) && !empty($arUser))
 					while ($arVariants = $dbVariants->Fetch())
 					{
 						$selected = "";
-						if (in_array($arVariants["VALUE"], $arCurVal))
+						if (is_array($arCurVal) && in_array($arVariants["VALUE"], $arCurVal))
+						{
 							$selected .= " selected";
+						}
 					?>
 						<option <?echo $selected;?> value="<?echo htmlspecialcharsbx($arVariants["VALUE"]);?>"><?echo htmlspecialcharsbx($arVariants["NAME"]);?></option>
 					<?

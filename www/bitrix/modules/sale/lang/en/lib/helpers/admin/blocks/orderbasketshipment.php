@@ -24,4 +24,8 @@ $MESS["SALE_ORDER_SHIPMENT_BASKET_BARCODE_ENTER"] = "Enter barcodes";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_ALREADY_SHIPPED"] = "Shipment fulfilled. The cart cannot be modified.";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_NOT_FOUND"] = "No product matching this barcode was found.";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_COMPOSITION"] = "Shipping list";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_QUANTITY"] = "#BASKET_ITEM#: incorrect quantity specified";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_BARCODE_EMPTY"] = "No barcodes scanned";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_WRONG_BASKET_ITEM"] = "Incorrect shopping cart object";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_BASKET_ITEM_NOT_FOUND"] = "A shopping cart item ##BASKET_ITEM_ID# linked to the shipment was not found.";
 ?>

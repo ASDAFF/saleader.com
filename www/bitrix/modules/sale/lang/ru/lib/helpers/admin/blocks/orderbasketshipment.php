@@ -23,3 +23,5 @@ $MESS["SALE_ORDER_SHIPMENT_BASKET_BARCODE_CLOSE"] = "Закрыть";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_BARCODE_ENTER"] = "Введите штрихкоды";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_ALREADY_SHIPPED"] = "Отгрузка отгружена. Работа с корзиной невозможна";
 $MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_NOT_FOUND"] = "Товар с данным штрихкодом не найден";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_ERROR_QUANTITY"] = "#BASKET_ITEM#: указано некорректное количество";
+$MESS["SALE_ORDER_SHIPMENT_BASKET_BARCODE_EMPTY"] = "Штрихкоды не введены";

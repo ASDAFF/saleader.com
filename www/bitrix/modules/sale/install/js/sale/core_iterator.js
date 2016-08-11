@@ -176,9 +176,11 @@ BX.merge(BX.iterator.prototype, {
 					ctx.stopIterator();
 					var errors = [];
 
-					if(typeof result.errors != 'undefined'){
+					if(typeof result.errors != 'undefined')
+					{
 						for(var k in result.errors)
-							errors.push({message: result.errors[k]});
+							if(result.errors.hasOwnProperty(k))
+								errors.push({message: result.errors[k]});
 					}
 					
 					ctx.fireEvent('server-error', [errors]);

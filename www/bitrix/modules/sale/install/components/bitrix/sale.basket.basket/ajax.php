@@ -310,8 +310,34 @@ if (isset($_POST[$action_var]) && strlen($_POST[$action_var]) > 0)
 		$arRes["COLUMNS"] = $strColumns;
 
 		$arRes["CODE"] = "SUCCESS";
+
+
+		if(!empty($_POST["coupon"]) && $arRes['VALID_COUPON'] === true)
+		{
+			if(!empty($arRes['BASKET_DATA']['FULL_DISCOUNT_LIST']))
+			{
+				global $USER;
+				$userId = $USER instanceof CAllUser? $USER->getId() : null;
+				$giftManager = \Bitrix\Sale\Discount\Gift\Manager::getInstance()->setUserId($userId);
+
+				\Bitrix\Sale\Compatible\DiscountCompatibility::stopUsageCompatible();
+				$collections = $giftManager->getCollectionsByBasket(
+					\Bitrix\Sale\Basket::loadItemsForFUser(\Bitrix\Sale\Fuser::getId(), SITE_ID),
+					$arRes['BASKET_DATA']['FULL_DISCOUNT_LIST'],
+					$arRes['BASKET_DATA']['APPLIED_DISCOUNT_LIST']
+				);
+				\Bitrix\Sale\Compatible\DiscountCompatibility::revertUsageCompatible();
+				if(count($collections))
+				{
+					$arRes['BASKET_DATA']['NEED_TO_RELOAD_FOR_GETTING_GIFTS'] = true;
+				}
+			}
+		}
+
 	}
 }
+
+unset($arRes['BASKET_DATA']['APPLIED_DISCOUNT_LIST'], $arRes['BASKET_DATA']['FULL_DISCOUNT_LIST']);
 
 $arRes["PARAMS"]["QUANTITY_FLOAT"] = (isset($_POST["quantity_float"]) && $_POST["quantity_float"] == "Y") ? "Y" : "N";
 

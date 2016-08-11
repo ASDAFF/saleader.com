@@ -15,4 +15,6 @@ $MESS["SALE_OK_BLOCK_TITLE_RELPROPS"] = "Свойства, связанные с
 $MESS["SALE_OK_BLOCK_TITLE_BASKET"] = "Заказ";
 $MESS["SALE_OK_BLOCK_TITLE_ADDITIONAL"] = "Дополнительная информация";
 $MESS["SALE_OK_BLOCK_TITLE_FINANCEINFO"] = "Финансовая информация о заказе";
+$MESS["SALE_OK_ORDER_CREATE_ERROR"] = "Ошибка создания заказа";
+$MESS["SALE_OK_ORDER_CREATE_ERROR_NO_PRODUCT"] = "Товар \"##NAME##\" не доступен";
 ?>

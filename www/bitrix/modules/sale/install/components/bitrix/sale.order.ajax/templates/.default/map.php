@@ -252,7 +252,8 @@ $rnd = "or".randString(4);
 	if (BX('BUYER_STORE') && parseInt(BX('BUYER_STORE').value) > 0)
 	{
 		BX('POPUP_STORE_ID').value = BX('BUYER_STORE').value;
-		BX('POPUP_STORE_NAME').value =  BX.util.htmlspecialchars(arStore[BX('BUYER_STORE').value]["TITLE"]);
+		if (arStore[BX('BUYER_STORE').value])
+			BX('POPUP_STORE_NAME').value =  BX.util.htmlspecialchars(arStore[BX('BUYER_STORE').value]["TITLE"]);
 	}
 </script>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/epilog_after.php");?>

@@ -12,4 +12,5 @@ $MESS["SALE_DLVR_HANDL_DESCRIPTION"] = "Configurable delivery service for compat
 $MESS["SALE_DLVR_HANDL_CONF_TITLE"] = "Handler settings";
 $MESS["SALE_DLVR_HANDL_CONF_DESCRIPTION"] = "Delivery service handler parameters";
 $MESS["SALE_DLVR_HANDL_CONF_PERIOD_DLV"] = "Delivery time";
+$MESS["SALE_DLVR_HANDL_CONF_PERIOD_MIN"] = "minutes";
 ?>

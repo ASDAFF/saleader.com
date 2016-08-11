@@ -51,13 +51,15 @@ if(isset($_REQUEST["reorder"]) && IntVal($_REQUEST["reorder"]) > 0)
 	$urlProduct = "";
 
 	$dbBasketList = \Bitrix\Sale\Internals\BasketTable::getList(array(
-		                                                            'order' => array("PRODUCT_ID" => "ASC"),
-		                                                            'filter' => array(
-			                                                            "LID" => $lid,
-			                                                            "ORDER_ID" => $ORDER_ID
-		                                                            ),
-		                                                            'select' => array('PRODUCT_ID', 'ID', 'QUANTITY')
-	                                                            ));
+		'order' => array("PRODUCT_ID" => "ASC"),
+		'filter' => array(
+			"LID" => $lid,
+			"ORDER_ID" => $ORDER_ID,
+			"SET_PARENT_ID" => false
+		),
+		'select' => array('PRODUCT_ID', 'ID', 'QUANTITY')
+	));
+
 	while ($arBasket = $dbBasketList->fetch())
 		$urlProduct .= "&product[".$arBasket["PRODUCT_ID"]."]=".$arBasket["QUANTITY"];
 
@@ -670,7 +672,7 @@ if(!empty($arUser))
 	}
 	if (strlen($filter_order_prod_name) > 0)
 	{
-		$arOrderFilter["%BASKET_NAME"] = $filter_order_prod_name;
+		$arOrderFilter["%BASKET.NAME"] = $filter_order_prod_name;
 	}
 
 	$getListParams = array(
@@ -890,7 +892,9 @@ if(!empty($arUser))
 			}
 
 			if (CSaleBasketHelper::isSetParent($arBasketOrder))
-				$orderProduct .= "<a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_".$arBasketOrder["SET_PARENT_ID"]."\" onclick=\"fToggleSetItems(".$arBasketOrder["ID"].", 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a>";
+			{
+				$orderProduct .= "<a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_".$arBasketOrder["ID"]."\" onclick=\"fToggleSetItems(".$arBasketOrder["ID"].", 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a>";
+			}
 
 			$orderProduct .= "</div>";
 		}
@@ -915,7 +919,7 @@ if(!empty($arUser))
 
 	//BUYERS BASKET
 	$sTableID_tab4 = "t_stat_list_tab4";
-	$oSort_tab4 = new CAdminSorting($sTableID_tab4);
+	$oSort_tab4 = new CAdminSorting($sTableID_tab4, false, false, "basket_by", "basket_sort");
 	$lAdmin_tab4 = new CAdminList($sTableID_tab4, $oSort_tab4);
 
 	//FILTER BASKET
@@ -926,10 +930,14 @@ if(!empty($arUser))
 	);
 	$lAdmin_tab4->InitFilter($arFilterFields);
 
-	if (!isset($_REQUEST["by"]))
+
+	$basketBy = (!empty($_REQUEST["basket_by"]) ? trim($_REQUEST["basket_by"]) : "DATE_INSERT");
+	$basketSort = (!empty($_REQUEST["basket_sort"]) ? trim($_REQUEST["basket_sort"]) : "DESC");
+
+	if (!isset($_REQUEST["basket_by"]))
 		$arBasketSort = array("DATE_INSERT" => "DESC", "LID" => "ASC");
 	else
-		$arBasketSort[$by] = $order;
+		$arBasketSort[$basketBy] = $basketSort;
 
 	$arBasketFilter = array("FUSER.USER_ID" => $ID, "ORDER_ID" => "NULL");
 
@@ -1049,7 +1057,7 @@ if(!empty($arUser))
 
 		if (CSaleBasketHelper::isSetParent($arBasket))
 		{
-			$name .= "<br/><a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_b2".$arBasket["SET_PARENT_ID"]."\" onclick=\"fToggleSetItems('b2".$arBasket["ID"]."', 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a><br/>";
+			$name .= "<br/><a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_b2".$arBasket["ID"]."\" onclick=\"fToggleSetItems('b2".$arBasket["ID"]."', 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a><br/>";
 
 			if (!empty($arSetData) && array_key_exists($arBasket["ID"], $arSetData))
 			{
@@ -1263,7 +1271,7 @@ if(!empty($arUser))
 
 				if (!empty($arSets))
 				{
-					$name .= "<br/><a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_b3".$arBasket["SET_PARENT_ID"]."\" onclick=\"fToggleSetItems('b3".$arBasket["ID"]."', 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a><br/>";
+					$name .= "<br/><a href=\"javascript:void(0);\" class=\"dashed-link show-set-link\" id=\"set_toggle_link_b3".$arBasket["ID"]."\" onclick=\"fToggleSetItems('b3".$arBasket["ID"]."', 'set_toggle_link_');\">".GetMessage("BUYER_F_SHOW_SET")."</a><br/>";
 
 					$name .= "<div class=\"set_item_b3".$arBasket["ID"]."\" style=\"display:none\">";
 					foreach ($arSets as $arSetData)
@@ -1350,7 +1358,7 @@ if(!empty($arUser))
 	}
 
 	if ($rsCount === 1)
-		$siteLID = "&SITE_ID=".$arSitesShop[0]["ID"]."&user_id=".$ID;
+		$siteLID = "&SITE_ID=".$arSitesShop[0]["ID"]."&USER_ID=".$ID;
 	else
 	{
 		foreach ($arSitesShop as $key => $val)

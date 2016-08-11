@@ -1,0 +1,51 @@
+.boxberry_overlay {
+    display:none;
+    background:rgba(0, 0, 0, 0.3);
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    position:fixed;
+    z-index:1200;
+}
+.boxberry_container {
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    box-shadow: 0 3px 7px #333;
+    color: #000;
+    display: none;
+    width:1090px;
+    height:630px;
+    position: absolute;
+    text-shadow: 0 1px 0 #fff;
+    z-index: 1250;
+    top:0;
+    left:0;
+    padding:3px;
+}
+.boxberry_toppanel {
+    /*border-bottom:1px solid #bbb;
+    padding:0px 8px;
+    border-radius:4px 4px 0 0;
+    text-align:right;*/
+}
+.boxberry_container_close {
+    text-decoration:none;
+    color:#ed1651;
+    font:12px Tahoma, Verdana, sans-serif;
+    position: absolute;
+    float: right;
+    right: 7px;
+    margin: 9px 0;
+
+}
+.boxberry_content {
+    overflow:hidden;
+    padding:5px 10px;
+    margin-top:5px;
+}
+.boxberry_logo{
+    margin: 3px 5px;
+
+}

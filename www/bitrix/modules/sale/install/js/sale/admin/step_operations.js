@@ -1,6 +1,13 @@
 BX.namespace('BX.Sale.Admin.StepOperations');
+/**
+ * @extends {BX.Catalog.StepOperations}
+ */
 BX.Sale.Admin.StepOperations.StepOperationsFilter = (function()
 {
+/**
+ * @constructor
+ * @extends {BX.Catalog.StepOperations}
+ */
 var classDescription = function(params)
 {
 	this.useFilter = false;
@@ -11,9 +18,9 @@ var classDescription = function(params)
 		this.filterFields = params.filter;
 	this.useFilter = this.filterFields.length > 0;
 
-	classDescription.superclass.constructor.apply(this, arguments); // = parent::__construct()
+	classDescription.superclass.constructor.apply(this, arguments);
 };
-BX.extend(classDescription, BX.Catalog.StepOperations); // = class classDescription extends BX.Catalog.StepOperations
+BX.extend(classDescription, BX.Catalog.StepOperations);
 
 classDescription.prototype.init = function()
 {
@@ -55,6 +62,18 @@ classDescription.prototype.nextStep = function()
 		this.ajaxParams.filter = this.filterValues;
 	}
 	classDescription.superclass.nextStep.apply(this, arguments);
+};
+
+classDescription.prototype.finishOperation = function()
+{
+	classDescription.superclass.finishOperation.apply(this, arguments);
+	BX.ajax.get(
+		this.url,
+		{
+			sessid: BX.bitrix_sessid(),
+			clearTags: 'Y'
+		}
+	);
 };
 
 classDescription.prototype.getFilterCounter = function()

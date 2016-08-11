@@ -7,7 +7,11 @@ namespace Bitrix\Sale\AdminPage;
  */
 
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ObjectException;
 use Bitrix\Main\Text\Encoding;
+use Bitrix\Main\Type\Date;
+use Bitrix\Main\Type\DateTime;
+use Bitrix\Main\Web;
 use Bitrix\Sale;
 use Bitrix\Sale\Result;
 use Bitrix\Sale\Provider;
@@ -38,7 +42,7 @@ if(!isset($_REQUEST["action"]))
 }
 elseif($saleModulePermissions == "D" || !check_bitrix_sessid())
 {
-	$result->addError(new EntityError(Loc::getMessage("SALE_OA_ERROR_HAPPENED")));
+	$result->addError(new EntityError(Loc::getMessage("SALE_OA_ERROR_HAPPENED2")));
 	$result->setData(array("SYSTEM_ERROR" => "Access denied!"));
 }
 elseif(!\Bitrix\Main\Loader::includeModule('sale'))
@@ -170,6 +174,7 @@ class AjaxProcessor
 		$productId = isset($this->request['productId']) ? intval($this->request['productId']) : 0;
 		$quantity = isset($this->request['quantity']) ? floatval($this->request['quantity']) : 1;
 		$columns = isset($this->request['columns']) ? $this->request['columns'] : array();
+		$customPrice = isset($this->request['customPrice']) ? $this->request['customPrice'] : false;
 
 		$alreadyInBasketCode = "";
 		$productParams = array();
@@ -185,6 +190,7 @@ class AjaxProcessor
 					continue;
 
 				$params["QUANTITY"] += $quantity;
+				$this->request["ADD_QUANTITY_INSTEAD_ONLY"] = "Y";
 				$alreadyInBasketCode = $basketCode;
 				$productParams = $params;
 				break;
@@ -196,10 +202,16 @@ class AjaxProcessor
 			$productParams = Admin\Blocks\OrderBasket::getProductDetails(
 				$productId,
 				$quantity,
-				!empty($this->request["formData"]["USER_ID"]) ? $this->request["formData"]["USER_ID"] : \CSaleUser::GetAnonymousUserID(),
+				!empty($this->request["formData"]["USER_ID"]) ? $this->request["formData"]["USER_ID"] : 0,
 				isset($this->request["formData"]["SITE_ID"]) ? $this->request["formData"]["SITE_ID"] : SITE_ID,
 				$columns
 			);
+
+			if($customPrice !== false)
+			{
+				$productParams["CUSTOM_PRICE"] = "Y";
+				$productParams["PRICE"] = $customPrice;
+			}
 		}
 
 		if(
@@ -230,16 +242,18 @@ class AjaxProcessor
 		$errors = array();
 
 		if(!\CSaleOrder::CanUserCancelOrder($orderId, $USER->GetUserGroupArray(), $this->userId))
-			throw new UserMessageException("Insufficient rights to cancel order");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_CANCEL_ORDER'));
 
 		/** @var  \Bitrix\Sale\Order $saleOrder*/
 		if(!$saleOrder = \Bitrix\Sale\Order::load($orderId))
-			throw new UserMessageException("Can't load order with id: ".$orderId);
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": ".$orderId);
 
 		$state = $saleOrder->getField("CANCELED");
 
 		if($state != $canceled)
-			throw new UserMessageException($state == "Y" ? "Order already canceled." : "Order not canceled yet.");
+			throw new UserMessageException(
+				$state == "Y" ? Loc::getMessage('SALE_OA_ERROR_CANCEL_ORDER_ALREADY') : Loc::getMessage('SALE_OA_ERROR_CANCEL_ORDER_NOT_YET')
+			);
 
 		/** @var \Bitrix\Sale\Result $res */
 		$res = $saleOrder->setField("CANCELED", $canceled == "Y" ? "N" : "Y");
@@ -280,11 +294,13 @@ class AjaxProcessor
 		$res = Sale\Internals\OrderTable::update(
 			$this->request['orderId'],
 			array(
-				"COMMENTS" => $this->request['comments']
+				"COMMENTS" => $this->request['comments'],
+				"DATE_UPDATE" => new DateTime()
 		));
 
 		if(!$res->isSuccess())
 			$this->addResultError(join("\n", $res->getErrorMessages()));
+
 		$CBXSanitizer = new \CBXSanitizer;
 		$CBXSanitizer->SetLevel(\CBXSanitizer::SECURE_LEVEL_MIDDLE);
 		$this->addResultData("COMMENTS", $CBXSanitizer->SanitizeHtml($this->request['comments']));
@@ -303,11 +319,11 @@ class AjaxProcessor
 		$order = \Bitrix\Sale\Order::load($this->request['orderId']);
 
 		if (!$order)
-			throw new UserMessageException("Can't load order with id: \"".$this->request['orderId']."\"");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": \"".$this->request['orderId']."\"");
 
 		$statusesList = \Bitrix\Sale\OrderStatus::getAllowedUserStatuses(
 			$this->userId,
-			\Bitrix\Sale\OrderStatus::getInitialStatus()
+			$order->getField('STATUS_ID')
 		);
 
 		if(array_key_exists($this->request['statusId'], $statusesList))
@@ -342,16 +358,32 @@ class AjaxProcessor
 	{
 		$formData = isset($this->request["formData"]) ? $this->request["formData"] : array();
 		$additional = isset($this->request["additional"]) ? $this->request["additional"] : array();
+
+		/** @var \Bitrix\Sale\Shipment $shipment */
 		$shipment = null;
+
+		/** @var \Bitrix\Sale\Payment $payment */
+		$payment = null;
 		$opResults = new Result();
 
-		//use data from form, don't refresh data from provider
-		Admin\OrderEdit::$isTrustProductFormData = true;
+		//Use or not data from form and don't refresh data from provider
+		Admin\OrderEdit::$isTrustProductFormData = (!empty($additional["operation"]) && $additional["operation"] == "DATA_ACTUALIZE") ? false : true;
 		$order = $this->getOrder($formData, $opResults);
 		$isStartField = $order->isStartField();
 
 		if($order->getId() > 0)
+		{
 			$order = Admin\OrderEdit::editOrderByFormData($formData, $order, $this->userId, false, array(), $opResults);
+
+			if(!$order)
+			{
+				if(!$opResults->isSuccess())
+				{
+					$this->addFilteredErrors($opResults);
+					return;
+				}
+			}
+		}
 
 		if($order->getId() <= 0)
 		{
@@ -360,14 +392,17 @@ class AjaxProcessor
 				$res = Admin\Blocks\OrderShipment::updateData($order, $formData['SHIPMENT']);
 				$res->getErrorMessages();
 				$data = $res->getData();
-				/** @var \Bitrix\Sale\Shipment $shipment */
 				$shipment = array_shift($data['SHIPMENT']);
+				if (!$shipment->isCustomPrice())
+					$shipment->setField('BASE_PRICE_DELIVERY', Admin\Blocks\OrderShipment::getDeliveryPrice($shipment));
 			}
 
 			if(isset($formData['PAYMENT']) && is_array($formData['PAYMENT']))
 			{
 				$res = Admin\Blocks\OrderPayment::updateData($order, $formData['PAYMENT'], true);
 				$res->getErrorMessages();
+				$data = $res->getData();
+				$payment = array_shift($data['PAYMENT']);
 			}
 		}
 
@@ -386,26 +421,18 @@ class AjaxProcessor
 		if ($shipment)
 		{
 			if ($shipment->getField('CUSTOM_PRICE_DELIVERY') == 'Y')
-				$result["CUSTOM_PRICE"] = Admin\Blocks\OrderShipment::getDeliveryPrice($shipment);
+				$result["CALCULATED_PRICE"] = Admin\Blocks\OrderShipment::getDeliveryPrice($shipment);
 
 			if (!isset($data['SHIPMENT_DATA']['DELIVERY_SERVICE_LIST']))
 			{
 				$deliveryService = Admin\Blocks\OrderShipment::getDeliveryServiceList();
-				foreach ($deliveryService as $i => $dlService)
-				{
-					if($dlService['ID'] <= 0)
-						continue;
-
-					if (!Sale\Delivery\Services\Manager::checkServiceRestriction($dlService['ID'], $shipment, '\Bitrix\Sale\Delivery\Restrictions\BySite'))
-						unset($deliveryService[$i]);
-				}
 				$deliveryServiceTree = Admin\Blocks\OrderShipment::makeDeliveryServiceTree($deliveryService);
 				$result['DELIVERY_SERVICE_LIST'] = Admin\Blocks\OrderShipment::getTemplate($deliveryServiceTree);
 				if (!isset($data['SHIPMENT_DATA']['DELIVERY_ERROR']))
 				{
 					foreach ($deliveryService as $delivery)
 					{
-						if ($shipment->getDeliveryId() == $delivery['ID'] && $delivery['RESTRICTED'])
+						if ($shipment->getDeliveryId() == $delivery['ID'] && $delivery['RESTRICTED'] != Sale\Services\PaySystem\Restrictions\Manager::SEVERITY_NONE)
 							$result['DELIVERY_ERROR'] = Loc::getMessage('SALE_OA_ERROR_DELIVERY_SERVICE');
 					}
 				}
@@ -414,19 +441,23 @@ class AjaxProcessor
 			{
 				if ($shipment->getDeliveryId())
 				{
-					$service = Sale\Delivery\Services\Manager::getService($shipment->getDeliveryId());
-					$parentService = $service->getParentService();
-					if ($parentService && $parentService->canHasProfiles())
+					$service = Sale\Delivery\Services\Manager::getObjectById($shipment->getDeliveryId());
+
+					if($service)
 					{
-						$profiles = Admin\Blocks\OrderShipment::getDeliveryServiceProfiles($parentService->getId());
-						$profiles = Admin\Blocks\OrderShipment::checkProfilesRestriction($profiles, $shipment);
-						$result["PROFILES"] = Admin\Blocks\OrderShipment::getProfileEditControl($profiles);
-						if (!isset($data['SHIPMENT_DATA']['DELIVERY_ERROR']))
+						$parentService = $service->getParentService();
+						if ($parentService && $parentService->canHasProfiles())
 						{
-							foreach ($profiles as $profile)
+							$profiles = Admin\Blocks\OrderShipment::getDeliveryServiceProfiles($parentService->getId());
+							$profiles = Admin\Blocks\OrderShipment::checkProfilesRestriction($profiles, $shipment);
+							$result["PROFILES"] = Admin\Blocks\OrderShipment::getProfileEditControl($profiles);
+							if (!isset($data['SHIPMENT_DATA']['DELIVERY_ERROR']))
 							{
-								if ($shipment->getDeliveryId() == $profile['ID'] && !$profile['RESTRICTED'])
-									$result['DELIVERY_ERROR'] = Loc::getMessage('SALE_OA_ERROR_DELIVERY_SERVICE');
+								foreach ($profiles as $profile)
+								{
+									if ($shipment->getDeliveryId() == $profile['ID'] && $profile['RESTRICTED'] == Sale\Delivery\Restrictions\Manager::SEVERITY_SOFT)
+										$result['DELIVERY_ERROR'] = Loc::getMessage('SALE_OA_ERROR_DELIVERY_SERVICE');
+								}
 							}
 						}
 					}
@@ -434,25 +465,39 @@ class AjaxProcessor
 			}
 		}
 
-		$paySystemList = Admin\Blocks\OrderPayment::getPaySystemList($order);
-		$result['PAY_SYSTEM_LIST'] = Admin\Blocks\OrderPayment::makePaymentSelectHtmlBody($paySystemList);
+		if ($payment)
+		{
+			$paySystemList = Admin\Blocks\OrderPayment::getPaySystemList($payment);
+
+			if (isset($paySystemList[$payment->getPaymentSystemId()]['RESTRICTED']))
+				$result['PAYSYSTEM_ERROR'] = Loc::getMessage('SALE_OA_ERROR_PAYSYSTEM_SERVICE');
+
+			$result['PAY_SYSTEM_LIST'] = Admin\Blocks\OrderPayment::makePaymentSelectHtmlBody($paySystemList);
+			$result['PRICE_COD'] = $this->updatePriceCodAction($payment);
+		}
 		$orderBasket = new Admin\Blocks\OrderBasket($order,"", $this->request["formData"]["BASKET_PREFIX"]);
 		$basketPrepareParams = array();
 
 		if((
 			!empty($additional["operation"]) && $additional["operation"] == "PRODUCT_ADD")
-			||$this->request["action"] == "addProductToBasket"
+			|| ($this->request["action"] == "addProductToBasket"
+				&& (!isset($this->request["ADD_QUANTITY_INSTEAD_ONLY"])
+					|| $this->request["ADD_QUANTITY_INSTEAD_ONLY"] != "Y"
+				)
+			)
 		)
 		{
 			$basketPrepareParams["SKIP_SKU_INFO"] = false;
+			$basketPrepareParams["ADDED_PRODUCTS"] = array($this->request["productId"]);
 		}
 		else
 		{
 			$basketPrepareParams["SKIP_SKU_INFO"] = true;
+			$basketPrepareParams["ADDED_PRODUCTS"] = array();
 		}
 
 		$result["BASKET"] = $orderBasket->prepareData($basketPrepareParams);
-
+		$result["BASKET"]["LIGHT"] = "Y";
 		// collect info about changed fields
 		if($basketPrepareParams["SKIP_SKU_INFO"] && !empty($formData["PRODUCT"]) && is_array($formData["PRODUCT"]))
 		{
@@ -494,8 +539,8 @@ class AjaxProcessor
 		else
 			$result['BASE_PRICE_DELIVERY'] = $order->getDeliveryPrice();
 
-		$result['BASE_PRICE_DELIVERY'] = roundEx($result['BASE_PRICE_DELIVERY'], SALE_VALUE_PRECISION);
-		$result['DELIVERY_PRICE_DISCOUNT'] = roundEx($result["DISCOUNTS_LIST"]['PRICES']['DELIVERY']['PRICE'], SALE_VALUE_PRECISION);
+		$result['BASE_PRICE_DELIVERY'] = Sale\PriceMaths::roundByFormatCurrency($result['BASE_PRICE_DELIVERY'], $order->getCurrency());
+		$result['DELIVERY_PRICE_DISCOUNT'] = Sale\PriceMaths::roundByFormatCurrency($result["DISCOUNTS_LIST"]['PRICES']['DELIVERY']['PRICE'], $order->getCurrency());
 		$result["COUPONS_LIST"] = Admin\OrderEdit::getCouponList($order, false);
 		$result["TOTAL_PRICES"] = Admin\OrderEdit::getTotalPrices($order, $orderBasket, false);
 		$result["DELIVERY_DISCOUNT"] = $result["TOTAL_PRICES"]["DELIVERY_DISCOUNT"];
@@ -515,45 +560,41 @@ class AjaxProcessor
 			$result = array_merge($result, $demanded);
 		}
 
-		/* * */
+		$this->addFilteredErrors($opResults);
+		$this->addResultData("ORDER_DATA", $result);
+	}
+
+	/* We don't show all errors during forming order via ajax requests */
+	protected function addFilteredErrors(Result $opResults)
+	{
 		if(!$opResults->isSuccess())
 		{
 			foreach($opResults->getErrors() as $error)
 			{
 				if($error->getCode() == "CATALOG_QUANTITY_NOT_ENOGH"
-					|| $error->getCode() == "SALE_ORDER_SYSTEM_SHIPMENT_LESS_QUANTITY"
-					|| $error->getCode() == "CATALOG_NO_QUANTITY_PRODUCT"
-			)
+						|| $error->getCode() == "SALE_ORDER_SYSTEM_SHIPMENT_LESS_QUANTITY"
+						|| $error->getCode() == "CATALOG_NO_QUANTITY_PRODUCT"
+						|| $error->getCode() == "SALE_SHIPMENT_SYSTEM_QUANTITY_ERROR"
+						|| $error->getCode() == "SALE_BASKET_AVAILABLE_QUANTITY"
+						|| $error->getCode() == "SALE_BASKET_ITEM_WRONG_AVAILABLE_QUANTITY"
+
+				)
 					$this->addResultError($error->getMessage());
 			}
 		}
-
-		$this->addResultData("ORDER_DATA", $result);
 	}
 
 	protected function changeResponsibleUserAction()
 	{
-		if(!isset($this->request['user_id']) || intval($this->request['user_id']) <= 0)
-			throw new ArgumentNullException("user_id");
+		if(!isset($this->request['userId']) || intval($this->request['userId']) <= 0)
+			throw new ArgumentNullException("userId");
 
+		$siteId = strlen($this->request['siteId']) > 0 ? $this->request['siteId'] : "";
 		global $USER;
-		$dateResponsible = new \Bitrix\Main\Type\DateTime();
-		$userInformation = $USER->GetByID($this->request['user_id'])->Fetch();
-		$this->addResultData(
-			"RESPONSIBLE",
-			array(
-				htmlspecialcharsbx($userInformation['NAME']),
-				htmlspecialcharsbx($userInformation['LAST_NAME'])
-			)
-		);
 
-		$this->addResultData(
-			"EMP_RESPONSIBLE",
-			array(
-				htmlspecialcharsbx($USER->GetFirstName()),
-				htmlspecialcharsbx($USER->GetLastName())
-			)
-		);
+		$dateResponsible = new \Bitrix\Main\Type\DateTime();
+		$this->addResultData("RESPONSIBLE", Admin\OrderEdit::getUserName($this->request['userId'], $siteId));
+		$this->addResultData("EMP_RESPONSIBLE", Admin\OrderEdit::getUserName($USER->GetID(), $siteId));
 		$this->addResultData("DATE_RESPONSIBLE", $dateResponsible->toString());
 	}
 
@@ -570,9 +611,11 @@ class AjaxProcessor
 		$fields = array();
 		$orderStatusId = '';
 		/** @var \Bitrix\Sale\Order $order */
-		$order = \Bitrix\Sale\Order::load($this->request['orderId']);
+		$order = Sale\Order::load($this->request['orderId']);
+
 		/** @var \Bitrix\Sale\Payment $payment */
 		$payment = $order->getPaymentCollection()->getItemById($this->request['paymentId']);
+		$hasErrors = false;
 
 		if ($this->request['method'] == 'save')
 		{
@@ -580,25 +623,42 @@ class AjaxProcessor
 			{
 				$res = $payment->setReturn('N');
 				if (!$res->isSuccess())
+				{
 					$this->addResultError(join("\n", $res->getErrorMessages()));
+					$hasErrors = true;
+				}
 			}
 			else
 			{
 				$res = $payment->setPaid('Y');
 				if (!$res->isSuccess())
+				{
 					$this->addResultError(join("\n", $res->getErrorMessages()));
+					$hasErrors = true;
+				}
 			}
 
-			foreach ($this->request['data'] as $key => $value)
+			if (!$hasErrors)
 			{
-				$newKey = substr($key, 0, strripos($key, '_'));
-				if (strpos($newKey, 'PAY_VOUCHER') !== false)
-					$fields[$newKey] = $value;
+				foreach ($this->request['data'] as $key => $value)
+				{
+					$newKey = substr($key, 0, strripos($key, '_'));
+					if (strpos($newKey, 'PAY_VOUCHER') !== false)
+						$fields[$newKey] = $value;
+					if ($newKey == 'ORDER_STATUS_ID')
+						$orderStatusId = $value;
+				}
+				try
+				{
+					$fields['PAY_VOUCHER_DATE'] = new \Bitrix\Main\Type\Date($fields['PAY_VOUCHER_DATE']);
+				}
+				catch (ObjectException $exception)
+				{
+					$this->addResultError(Loc::getMessage('SALE_OA_ERROR_INCORRECT_DATE'));
+					return;
+				}
 
-				if ($newKey == 'ORDER_STATUS_ID')
-					$orderStatusId = $value;
 			}
-			$fields['PAY_VOUCHER_DATE'] = new \Bitrix\Main\Type\Date($fields['PAY_VOUCHER_DATE']);
 		}
 		else
 		{
@@ -609,11 +669,16 @@ class AjaxProcessor
 					$fields[$newKey] = $value;
 			}
 
-			if (isset($fields['PAY_RETURN_OPERATION_ID']) && $fields['PAY_RETURN_OPERATION_ID'] == 'RETURN')
+			if (isset($fields['PAY_RETURN_OPERATION_ID']))
 			{
-				$res = $payment->setReturn('Y');
-				if (!$res->isSuccess())
-					$this->addResultError(join("\n", $res->getErrorMessages()));
+				/** @var Result $refResult */
+				$refResult = $payment->setReturn($fields['PAY_RETURN_OPERATION_ID']);
+				if (!$refResult->isSuccess())
+				{
+					$this->addResultError(join("\n", $refResult->getErrorMessages()));
+					return;
+				}
+
 				unset($fields['PAY_RETURN_OPERATION_ID']);
 			}
 			else
@@ -622,52 +687,83 @@ class AjaxProcessor
 				if (!$res->isSuccess())
 					$this->addResultError(join("\n", $res->getErrorMessages()));
 			}
-			$fields['PAY_RETURN_DATE'] = new \Bitrix\Main\Type\Date($fields['PAY_RETURN_DATE']);
+			try
+			{
+				$fields['PAY_RETURN_DATE'] = new Date($fields['PAY_RETURN_DATE']);
+			}
+			catch (ObjectException $exception)
+			{
+				$this->addResultError(Loc::getMessage('SALE_OA_ERROR_INCORRECT_DATE'));
+				return;
+			}
 		}
 
-		$saveResult = $payment->setFields($fields);
-		if ($saveResult->isSuccess())
+		if (!$hasErrors)
 		{
-			if (!empty($orderStatusId))
+			$saveResult = $payment->setFields($fields);
+			if ($saveResult->isSuccess())
 			{
-				if ($USER && $USER->isAuthorized())
-					$statusesList = Sale\OrderStatus::getAllowedUserStatuses($USER->getID(), $order->getField('STATUS_ID'));
-				else
-					$statusesList = Sale\OrderStatus::getAllStatuses();
-
-				if ($order->getField('STATUS_ID') != $orderStatusId && array_key_exists($orderStatusId, $statusesList))
+				if (!empty($orderStatusId))
 				{
-					$res = $order->setField('STATUS_ID', $orderStatusId);
-					if (!$res->isSuccess())
+					if ($USER && $USER->isAuthorized())
+						$statusesList = Sale\OrderStatus::getAllowedUserStatuses($USER->getID(), $order->getField('STATUS_ID'));
+					else
+						$statusesList = Sale\OrderStatus::getAllStatuses();
+
+					if ($order->getField('STATUS_ID') != $orderStatusId && array_key_exists($orderStatusId, $statusesList))
 					{
-						$this->addResultError(join("\n", $res->getErrorMessages()));
-						return;
+						/** @var Result $res */
+						$res = $order->setField('STATUS_ID', $orderStatusId);
+						if (!$res->isSuccess())
+						{
+							$this->addResultError(join("\n", $res->getErrorMessages()));
+							return;
+						}
 					}
 				}
-			}
 
-			$result = $order->save();
-			if ($result->isSuccess())
-			{
-				$preparedData = \Bitrix\Sale\Helpers\Admin\Blocks\OrderFinanceInfo::prepareData($order);
-				$preparedData["PAYMENT_PAID_".$payment->getId()] = $payment->isPaid() ? "Y" : "N";
+				$result = $order->save();
+				if ($result->isSuccess())
+				{
+					$preparedData = Admin\Blocks\OrderFinanceInfo::prepareData($order);
+					$preparedData["PAYMENT_PAID_".$payment->getId()] = $payment->isPaid() ? "Y" : "N";
 
-				$this->addResultData(
-					"RESULT",
-					$preparedData
-				);
+					$shipmentCollection = $order->getShipmentCollection();
+					if ($shipmentCollection)
+					{
+						/** @var \Bitrix\Sale\Shipment $shipment */
+						foreach ($shipmentCollection as $shipment)
+						{
+							if (!$shipment->isSystem())
+							{
+								$preparedData['DEDUCTED'] = $shipment->getField('DEDUCTED');
+								$preparedData['ALLOW_DELIVERY'] = $shipment->getField('ALLOW_DELIVERY');
+								break;
+							}
+						}
+					}
+
+					$this->addResultData(
+						"RESULT",
+						$preparedData
+					);
+				}
+				else
+				{
+					$this->addResultError(join("\n", $result->getErrorMessages()));
+					return;
+				}
 			}
 			else
-				$this->addResultError(join("\n", $result->getErrorMessages()));
-		}
-		else
-		{
-			$this->addResultError(join("\n", $saveResult->getErrorMessages()));
+			{
+				$this->addResultError(join("\n", $saveResult->getErrorMessages()));
+			}
 		}
 	}
 
 	protected function deletePaymentAction()
 	{
+		global $USER;
 		$orderId = $this->request['orderId'];
 		$paymentId = $this->request['paymentId'];
 
@@ -678,13 +774,19 @@ class AjaxProcessor
 		$order = \Bitrix\Sale\Order::load($orderId);
 
 		if (!$order)
-			throw new UserMessageException('Order with ID='.$orderId.' does not exist');
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": ".$orderId);
 
 		$paymentCollection = $order->getPaymentCollection();
 		$payment = $paymentCollection->getItemById($paymentId);
 
 		if (!$payment)
-			throw new UserMessageException('Payment with ID='.$paymentId.' does not exist');
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_PAYMENT').": ".$paymentId);
+
+		$allowedStatusesUpdate = Sale\OrderStatus::getStatusesUserCanDoOperations($USER->GetID(), array('update'));
+		if(!in_array($order->getField("STATUS_ID"), $allowedStatusesUpdate))
+		{
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_DELETE_PAYMENT_PERMISSION').': '.$paymentId);
+		}
 
 		$delResult = $payment->delete();
 
@@ -704,6 +806,7 @@ class AjaxProcessor
 
 	protected function deleteShipmentAction()
 	{
+		global $USER;
 		$orderId = $this->request['order_id'];
 		$shipmentId = $this->request['shipment_id'];
 
@@ -714,13 +817,19 @@ class AjaxProcessor
 		$order = \Bitrix\Sale\Order::load($orderId);
 
 		if (!$order)
-			throw new UserMessageException('Order with ID='.$orderId.' does not exist');
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": ".$orderId);
 
 		$shipmentCollection = $order->getShipmentCollection();
 		$shipmentItem = $shipmentCollection->getItemById($shipmentId);
 
 		if (!$shipmentItem)
-			throw new UserMessageException('Shipment with ID='.$shipmentId.' does not exist');
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_SHIPMENT').': '.$shipmentId);
+		
+		$allowedStatusesDelete = Sale\DeliveryStatus::getStatusesUserCanDoOperations($USER->GetID(), array('delete'));
+		if(!in_array($shipmentItem->getField("STATUS_ID"), $allowedStatusesDelete))
+		{
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_DELETE_SHIPMENT_PERMISSION').': '.$shipmentId);
+		}
 
 		$delResult = $shipmentItem->delete();
 
@@ -768,7 +877,10 @@ class AjaxProcessor
 		$field = $this->request['field'];
 		$newStatus = $this->request['status'];
 
+		/** @var \Bitrix\Sale\Order $order */
 		$order = \Bitrix\Sale\Order::load($orderId);
+
+		/** @var \Bitrix\Sale\Shipment $shipment */
 		$shipment = $order->getShipmentCollection()->getItemById($shipmentId);
 
 		$setResult = $shipment->setField($field, $newStatus);
@@ -789,7 +901,15 @@ class AjaxProcessor
 		}
 
 		if($shipment)
-			$this->addResultData("RESULT", array("SHIPMENT_STATUS_".$shipment->getId() => $shipment->getField('STATUS_ID')));
+		{
+			$result = array(
+				"SHIPMENT_STATUS_".$shipment->getId() => $shipment->getField('STATUS_ID'),
+				'DEDUCTED' => $shipment->getField('DEDUCTED'),
+				'ALLOW_DELIVERY' => $shipment->getField('ALLOW_DELIVERY')
+			);
+
+			$this->addResultData("RESULT", $result);
+		}
 	}
 
 	protected function createNewPaymentAction()
@@ -840,11 +960,12 @@ class AjaxProcessor
 		if ($deliveryId <= 0)
 			return;
 
+		Admin\OrderEdit::$isTrustProductFormData = true;
 		$order = $this->getOrder($formData);
 
 		/** @var  \Bitrix\Sale\Delivery\Services\Base $service */
-		$service = Sale\Delivery\Services\Manager::getService($deliveryId);
-		if ($service->canHasProfiles())
+		$service = Sale\Delivery\Services\Manager::getObjectById($deliveryId);
+		if ($service && $service->canHasProfiles())
 		{
 			$profiles = Admin\Blocks\OrderShipment::getDeliveryServiceProfiles($deliveryId);
 			if (!isset($formData['SHIPMENT'][$index]['PROFILE']))
@@ -858,6 +979,7 @@ class AjaxProcessor
 
 		$res = Admin\Blocks\OrderShipment::updateData($order, $formData['SHIPMENT']);
 		$data = $res->getData();
+		/** @var \Bitrix\Sale\Shipment $shipment */
 		$shipment = array_shift($data['SHIPMENT']);
 
 		if ($service->canHasProfiles())
@@ -867,7 +989,7 @@ class AjaxProcessor
 
 			foreach ($profiles as $profile)
 			{
-				if ($formData['SHIPMENT'][$index]['PROFILE'] == $profile['ID'] && !$profile['RESTRICTED'])
+				if ($formData['SHIPMENT'][$index]['PROFILE'] == $profile['ID'] && $profile['RESTRICTED'] == Sale\Delivery\Restrictions\Manager::SEVERITY_SOFT)
 				{
 					$result['DELIVERY_ERROR'] = Loc::getMessage('SALE_OA_ERROR_DELIVERY_SERVICE');
 					break;
@@ -876,19 +998,12 @@ class AjaxProcessor
 		}
 
 		$deliveryService = Admin\Blocks\OrderShipment::getDeliveryServiceList($shipment);
-		foreach ($deliveryService as $i => $dlService)
-		{
-			if($dlService['ID'] <= 0)
-				continue;
-
-			if (!Sale\Delivery\Services\Manager::checkServiceRestriction($dlService['ID'], $shipment, '\Bitrix\Sale\Delivery\Restrictions\BySite'))
-				unset($deliveryService[$i]);
-		}
 		$deliveryServiceTree = Admin\Blocks\OrderShipment::makeDeliveryServiceTree($deliveryService);
 		$result['DELIVERY_SERVICE_LIST'] = Admin\Blocks\OrderShipment::getTemplate($deliveryServiceTree);
+
 		foreach ($deliveryService as $delivery)
 		{
-			if ($deliveryId == $delivery['ID'] && $delivery['RESTRICTED'])
+			if ($deliveryId == $delivery['ID'] && $delivery['RESTRICTED'] != Sale\Delivery\Restrictions\Manager::SEVERITY_NONE)
 			{
 				$result['DELIVERY_ERROR'] = Loc::getMessage('SALE_OA_ERROR_DELIVERY_SERVICE');
 				break;
@@ -914,9 +1029,15 @@ class AjaxProcessor
 		$deliveryPrice = Admin\Blocks\OrderShipment::getDeliveryPrice($shipment);
 
 		if ($shipment->getField('CUSTOM_PRICE_DELIVERY') == 'Y')
-			$result["CUSTOM_PRICE"] = $deliveryPrice;
+		{
+			$result["CALCULATED_PRICE"] = $deliveryPrice;
+		}
 		else
+		{
+			$result["PRICE_DELIVERY"] = $deliveryPrice;
+			$shipment->setField('PRICE_DELIVERY', $deliveryPrice);
 			$this->request['formData']['SHIPMENT'][$index]['PRICE_DELIVERY'] = $deliveryPrice;
+		}
 
 		$this->addResultData("SHIPMENT_DATA", $result);
 
@@ -940,7 +1061,7 @@ class AjaxProcessor
 		$this->addResultData(
 			"RESULT",
 			array(
-				"CUSTOM_PRICE" => $deliveryPrice
+				"CALCULATED_PRICE" => $deliveryPrice
 			)
 		);
 	}
@@ -1044,6 +1165,7 @@ class AjaxProcessor
 		$userId = isset($incomingFields["USER_ID"]) && intval($incomingFields["USER_ID"]) > 0 ? intval($incomingFields["USER_ID"])  : 0;
 		$currency = isset($incomingFields["CURRENCY"]) ? trim($incomingFields["CURRENCY"]) : "";
 		$personTypeId = isset($incomingFields['PERSON_TYPE_ID']) ? intval($incomingFields['PERSON_TYPE_ID']) : 0;
+		$siteId = !empty($incomingFields["SITE_ID"]) ? trim($incomingFields["SITE_ID"])  : SITE_ID;
 		$orderId = isset($incomingFields["ID"]) ? intval($incomingFields["ID"]) : 0;
 
 		if($order === null && intval($orderId) > 0)
@@ -1055,13 +1177,30 @@ class AjaxProcessor
 			{
 				case "BUYER_USER_NAME":
 
-					$result["BUYER_USER_NAME"] = intval($userId) > 0 ? \Bitrix\Sale\Helpers\Admin\OrderEdit::getUserName(intval($userId)) : "";
+					$siteId = (bool)$order ? $order->getSiteId() : "";
+					$result["BUYER_USER_NAME"] = intval($userId) > 0 ? \Bitrix\Sale\Helpers\Admin\OrderEdit::getUserName(intval($userId), $siteId) : "";
 					break;
 
 				case "PROPERTIES":
 
-					$profileId = isset($incomingFields["BUYER_PROFILE_ID"]) ? intval($incomingFields["BUYER_PROFILE_ID"]) : 0;
-					$result["PROPERTIES"] = \Bitrix\Sale\Helpers\Admin\Blocks\OrderBuyer::getProfileParams($userId, $profileId);
+					if($userId > 0)
+					{
+						$profileId = isset($incomingFields["BUYER_PROFILE_ID"]) ? intval($incomingFields["BUYER_PROFILE_ID"]) : 0;
+						$result["PROPERTIES"] = \Bitrix\Sale\Helpers\Admin\Blocks\OrderBuyer::getProfileParams($userId, $profileId);
+					}
+					else
+					{
+						$porder = Sale\Order::create($siteId);
+						$porder->setPersonTypeId($personTypeId);
+						$result["PROPERTIES"] = array();
+
+						/** @val \Bitrix\Sale\PropertyValue $prop */
+						foreach(\Bitrix\Sale\PropertyValue::loadForOrder($porder) as $prop)
+						{
+							$p = $prop->getProperty();
+							$result["PROPERTIES"][$prop->getPropertyId()] = !empty($p["DEFAULT_VALUE"]) ? $p["DEFAULT_VALUE"] : "";
+						}
+					}
 					break;
 
 				case "BUYER_PROFILES_LIST":
@@ -1074,7 +1213,7 @@ class AjaxProcessor
 
 				case "BUYER_PROFILES_DATA":
 
-					$result["BUYER_PROFILES_DATA"] = \Bitrix\Sale\Helpers\Admin\Blocks\OrderBuyer::getUserProfiles($userId);
+					$result["BUYER_PROFILES_DATA"] = \Bitrix\Sale\Helpers\Admin\Blocks\OrderBuyer::getUserProfiles($userId, $personTypeId);
 					break;
 
 				case "BUYER_BUDGET":
@@ -1108,7 +1247,7 @@ class AjaxProcessor
 
 					$order->setPersonTypeId($personTypeId);
 
-					$result["PROPERTIES_ARRAY"] = $order->getPropertyCollection()->getArray();
+					$result["PROPERTIES_ARRAY"] = $order->loadPropertyCollection()->getArray();
 					break;
 
 				case "PRODUCT":
@@ -1145,10 +1284,7 @@ class AjaxProcessor
 	 */
 	protected function getOrder(array $formData, Result &$result = null)
 	{
-		if(!isset($formData["ID"]))
-			$formData["ID"] = 0;
-		else
-			$formData["ID"] = intval($formData["ID"]);
+		$formData["ID"] = (!isset($formData["ID"]) ? 0 : (int)$formData["ID"]);
 
 		if($this->order !== null  && !$this->formDataChanged && $this->order->getId() == $formData["ID"])
 			return $this->order;
@@ -1156,25 +1292,43 @@ class AjaxProcessor
 		if(!$result)
 			$result = new Result();
 
-		Admin\OrderEdit::initCouponsData(
-			(intval($formData["USER_ID"]) > 0 ? intval($formData["USER_ID"]) : 0),
-			(intval($formData["ID"]) > 0 ?  intval($formData["ID"]) : 0),
-			(intval($formData["OLD_USER_ID"]) > 0 ?  intval($formData["OLD_USER_ID"]) : 0)
-		);
+		$currentUserId = 0;
+		$oldUserId = null;
+
+		if ($formData["ID"] > 0)
+		{
+			if ((int)$formData["USER_ID"] > 0)
+				$currentUserId = (int)$formData["USER_ID"];
+			if ((int)$formData["OLD_USER_ID"] > 0)
+				$oldUserId = (int)$formData["OLD_USER_ID"];
+		}
+		else
+		{
+			if (isset($formData["USER_ID"]))
+				$currentUserId = (int)$formData["USER_ID"];
+			if (isset($formData["OLD_USER_ID"]))
+				$oldUserId = (int)$formData["OLD_USER_ID"];
+		}
+
+		Admin\OrderEdit::initCouponsData($currentUserId, $formData["ID"], $oldUserId);
+		unset($oldUserId, $currentUserId);
 
 		if($formData["ID"] > 0)
 		{
 			$this->order = Sale\Order::load($formData["ID"]);
 
 			if(!$this->order)
-				throw new UserMessageException("Can't load order with id:\"".$formData["ID"]."\"!");
+				throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": ".$formData["ID"]);
 		}
 		else
 		{
 			$this->order = Admin\OrderEdit::createOrderFromForm($formData, $this->userId, false, array(), $result);
 
 			if(!$this->order)
-				throw new UserMessageException("Can't create order!");
+			{
+				$this->addFilteredErrors($result);
+				throw new UserMessageException;
+			}
 		}
 
 		$this->formDataChanged = false;
@@ -1217,12 +1371,12 @@ class AjaxProcessor
 		if ($this->request["orderId"])
 			$orderId = $this->request["orderId"];
 		else
-			throw new UserMessageException("Incorrect order ID!");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_ORDER_ID_WRONG'));
 
 		if ($this->request["paymentId"])
 			$paymentId = $this->request["paymentId"];
 		else
-			throw new UserMessageException("Incorrect payment ID!");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_PAYMENT_ID_WRONG'));
 
 		/** @var \Bitrix\Sale\Order $order */
 		$order = Sale\Order::load($orderId);
@@ -1236,38 +1390,23 @@ class AjaxProcessor
 
 			if ($payment)
 			{
-				$psResultFile = '';
-				$psParams = Admin\Blocks\OrderPayment::getPaySystemParams($payment->getPaymentSystemId(), $order->getPersonTypeId());
-
-				$psActionPath = $_SERVER["DOCUMENT_ROOT"].$psParams["ACTION_FILE"];
-
-				$psActionPath = str_replace("\\", "/", $psActionPath);
-				while (substr($psActionPath, strlen($psActionPath) - 1, 1) == "/")
-					$psActionPath = substr($psActionPath, 0, strlen($psActionPath) - 1);
-
-				if (file_exists($psActionPath) && is_dir($psActionPath))
+				/** @var Sale\PaySystem\Service $service */
+				$service = Sale\PaySystem\Manager::getObjectById($payment->getPaymentSystemId());
+				if ($service->isCheckable())
 				{
-					if (file_exists($psActionPath."/result.php") && is_file($psActionPath."/result.php"))
-						$psResultFile = $psActionPath."/result.php";
-				}
-				elseif (strlen($psParams["RESULT_FILE"]) > 0)
-				{
-					if (file_exists($_SERVER["DOCUMENT_ROOT"].$psParams["RESULT_FILE"])
-						&& is_file($_SERVER["DOCUMENT_ROOT"].$psParams["RESULT_FILE"])
-					)
-					{
-						$psResultFile = $_SERVER["DOCUMENT_ROOT"].$psParams["RESULT_FILE"];
-					}
-				}
-
-				if (strlen($psResultFile) > 0)
-				{
-					\CSalePaySystemAction::InitParamArrays($order->getFieldValues(), $orderId, $psParams["PARAMS"], array(), $payment->getFieldValues());
-
 					try
 					{
-						if (!include($psResultFile))
-							$this->addResultError(GetMessage("SALE_OA_ERROR_PAY_SYSTEM_INFO"));
+						$res = $service->check($payment);
+						if ($res instanceof Sale\PaySystem\ServiceResult)
+						{
+							if (!$res->isSuccess())
+								$this->addResultError(join('\n', $res->getErrorMessages()));
+						}
+						else
+						{
+							if (!$res)
+								$this->addResultError(Loc::getMessage('SALE_OA_ERROR_CONNECT_PAY_SYS'));
+						}
 					}
 					catch(SystemException $e)
 					{
@@ -1285,12 +1424,12 @@ class AjaxProcessor
 		if ($this->request["orderId"])
 			$orderId = $this->request["orderId"];
 		else
-			throw new UserMessageException("Incorrect order ID!");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_ORDER_ID_WRONG'));
 
 		if ($this->request["shipmentId"])
 			$shipmentId = $this->request["shipmentId"];
 		else
-			throw new UserMessageException("Incorrect shipment ID!");
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_SHIPMENT_ID_WRONG'));
 
 		if ($this->request['trackingNumber'])
 			$trackingNumber = $this->request['trackingNumber'];
@@ -1319,5 +1458,172 @@ class AjaxProcessor
 				}
 			}
 		}
+	}
+
+	protected function refreshTrackingStatusAction()
+	{
+		$shipmentId = !empty($this->request["shipmentId"]) && intval($this->request["shipmentId"]) > 0 ? intval($this->request["shipmentId"]) : 0;
+		$trackingNumber = !empty($this->request["trackingNumber"]) && strlen($this->request["trackingNumber"]) > 0 ? $this->request["trackingNumber"] : '';
+
+		if($shipmentId <= 0)
+			throw new ArgumentNullException('shipmentId');
+
+		if(strlen($trackingNumber) <= 0)
+			return;
+
+		$manager = Sale\Delivery\Tracking\Manager::getInstance();
+		$result = $manager->getStatusByShipmentId($shipmentId, $trackingNumber);
+
+		if($result->isSuccess())
+		{
+			$this->addResultData(
+				'TRACKING_STATUS',
+				Sale\Delivery\Tracking\Manager::getStatusName($result->status)
+			);
+			$this->addResultData('TRACKING_DESCRIPTION', $result->description);
+
+			$this->addResultData(
+				'TRACKING_LAST_CHANGE',
+				\Bitrix\Main\Type\DateTime::createFromTimestamp(
+					$result->lastChangeTimestamp
+				)->toString()
+			);
+
+			$res = $manager->updateShipment($shipmentId, $result);
+
+			if(!$res->isSuccess())
+				$this->addResultError(implode(", ", $res->getErrorMessages()));
+		}
+		else
+		{
+			$this->addResultError(implode("\n", $result->getErrorMessages()));
+		}
+	}
+
+	protected function unmarkOrderAction()
+	{
+		global $USER;
+		$orderId = isset($this->request['orderId']) ? intval($this->request['orderId']) : 0;
+
+		if(!\CSaleOrder::CanUserMarkOrder($orderId, $USER->GetUserGroupArray(), $this->userId))
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_UNMARK_RIGHTS'));
+
+		/** @var  \Bitrix\Sale\Order $saleOrder*/
+		if(!$saleOrder = \Bitrix\Sale\Order::load($orderId))
+			throw new UserMessageException(Loc::getMessage('SALE_OA_ERROR_LOAD_ORDER').": ".$orderId);
+
+		/** @var \Bitrix\Sale\Result $res */
+		$res = $saleOrder->setField("MARKED", "N");
+
+		$errors = array();
+
+		if(!$res->isSuccess())
+			$errors = $res->getErrorMessages();
+
+		if(!$res = $saleOrder->save())
+			$errors = array_merge($errors, $res->getErrorMessages());
+
+		if (!empty($errors))
+			$this->addResultError($errors);
+	}
+
+	protected function updatePriceCodAction($payment = null)
+	{
+		if ($payment === null)
+		{
+			if ($this->request["paySystemId"] !== null)
+				$paySystemId = $this->request["paySystemId"];
+			else
+				throw new ArgumentNullException('paymentId');
+
+			if ($this->request["orderId"] !== null)
+				$orderId = $this->request["orderId"];
+			else
+				throw new ArgumentNullException('orderId');
+
+			if ($this->request["paymentId"] !== null)
+				$paymentId = $this->request["paymentId"];
+			else
+				throw new ArgumentNullException('paymentId');
+
+			if ($orderId > 0)
+			{
+				/** @var \Bitrix\Sale\Order $order */
+				$order = Sale\Order::load($orderId);
+				if ($order)
+				{
+					/** @var \Bitrix\Sale\PaymentCollection $paymentCollection */
+					$paymentCollection = $order->getPaymentCollection();
+					if ($paymentCollection)
+					{
+						/** @var \Bitrix\Sale\Payment $payment */
+						if ($paymentId > 0)
+						{
+							$payment = $paymentCollection->getItemById($paymentId);
+							if ($payment)
+								$payment->setField('PAY_SYSTEM_ID', $paySystemId);
+						}
+						else
+						{
+							$payment = $paymentCollection->createItem(Sale\PaySystem\Manager::getObjectById($paySystemId));
+							$price = floatval($this->request["price"]);
+							$payment->setField('SUM', $price);
+						}
+					}
+				}
+			}
+		}
+		$priceCod = 0;
+
+		if ($payment && $payment->getPaymentSystemId() > 0)
+		{
+			$service = Sale\PaySystem\Manager::getObjectById($payment->getPaymentSystemId());
+			if ($service !== null)
+			{
+				$priceCod = $service->getPaymentPrice($payment);
+				$this->addResultData('PRICE_COD', $priceCod);
+			}
+		}
+		return $priceCod;
+	}
+
+	protected function getOrderTailsAction()
+	{
+		$orderId = isset($this->request["orderId"]) ? $this->request["orderId"] : array();
+		$formType = isset($this->request["formType"]) && $this->request["formType"] == "edit" ? "edit" : "view";
+		$idPrefix = isset($this->request["idPrefix"]) ? trim($this->request["idPrefix"]) : "";
+
+		$result = array();
+		/** @var \Bitrix\Sale\Order $order */
+		$order = \Bitrix\Sale\Order::load($orderId);
+		$orderBasket = new Admin\Blocks\OrderBasket($order, "", $idPrefix);
+		$result["DISCOUNTS_LIST"] = Admin\OrderEdit::getOrderedDiscounts($order, false);
+		$result["BASKET"] = $orderBasket->prepareData(
+			array("DISCOUNTS" => $result["DISCOUNTS_LIST"])
+		);
+		$result["ANALYSIS"] = Admin\Blocks\OrderAnalysis::getView($order, $orderBasket);
+		$result["SHIPMENTS"] = "";
+		Admin\Blocks\OrderShipment::setBackUrl($_SERVER['HTTP_REFERER']);
+
+		$httpReferrer = new Web\Uri($_SERVER['HTTP_REFERER']);
+		Admin\Blocks\OrderShipment::setBackUrl($httpReferrer->getPathQuery());
+
+		$shipments = $order->getShipmentCollection();
+		$index = 0;
+
+		/** @var \Bitrix\Sale\Shipment  $shipment*/
+		foreach ($shipments as $shipment)
+		{
+			if(!$shipment->isSystem())
+			{
+				$result["SHIPMENTS"] .= Admin\Blocks\OrderShipment::getView(
+					$shipment,
+					$index++,
+					$formType == 'edit' ? 'edit' : ''
+				);
+			}
+		}
+
+		$this->addResultData("", $result);
 	}
 }

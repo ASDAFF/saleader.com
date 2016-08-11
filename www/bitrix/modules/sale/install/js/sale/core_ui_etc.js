@@ -366,10 +366,12 @@
 			clearTimeout(this.timer);
 		};
 
-		this.callActions = function(actType, args){
+		this.callActions = function(actType, args)
+		{
 			for(var k in this.actions[actType])
-				this.actions[actType][k].apply(this, args);
-		}
+				if(this.actions[actType].hasOwnProperty(k))
+					this.actions[actType][k].apply(this, args);
+		};
 
 		return this;
 	};
@@ -415,7 +417,10 @@
 		var scan = '';
 		var search = '';
 		var searched = {};
-		for(var k in chunks){
+		for(var k in chunks)
+		{
+			if(!chunks.hasOwnProperty(k))
+				continue;
 
 			search = chunks[k].toString().toLowerCase();
 			scan = haystack.toLowerCase();

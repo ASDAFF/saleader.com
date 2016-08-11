@@ -53,7 +53,7 @@ final class LocationTable extends Tree
 		return self::getList($parameters);
 	}
 
-	public static function checkFields($result, $primary, array $data)
+	public static function checkFields(Entity\Result $result, $primary, array $data)
 	{
 		parent::checkFields($result, $primary, $data);
 
@@ -90,6 +90,11 @@ final class LocationTable extends Tree
 		}
 	}
 
+	public static function add(array $data)
+	{
+		return self::addExtended($data);
+	}
+
 	/**
 	* Adds a new location
 	*
@@ -104,7 +109,7 @@ final class LocationTable extends Tree
 	*		</li>
 	*	</ul>
 	*
-	* @param mixed[] $behaviour an additional behaviour flags:
+	* @param mixed[] $additional an additional behaviour flags:
 	*
 	*	<ul>
 	*		<li>
@@ -112,16 +117,11 @@ final class LocationTable extends Tree
 	*		</li>
 	*	</ul>
 	*
-	* @return Bitrix\Main\Entity\AddResult the result of add operation
+	* @return \Bitrix\Main\Entity\AddResult the result of add operation
 	*/
-	public static function add($data = array(), $behaviour = array('REBALANCE' => true, 'RESET_LEGACY' => true))
+	public static function addExtended(array $data, array $additional = array())
 	{
-		if(!is_array($behaviour))
-			$behaviour = array();
-		if(!isset($behaviour['REBALANCE']))
-			$behaviour['REBALANCE'] = true;
-		if(!isset($behaviour['RESET_LEGACY']))
-			$behaviour['RESET_LEGACY'] = true;
+		$resetLegacy = !isset($additional['RESET_LEGACY']) || $additional['RESET_LEGACY'] !== false;
 
 		if(isset($data['EXTERNAL']))
 		{
@@ -143,7 +143,7 @@ final class LocationTable extends Tree
 		self::applyRestrictions($data);
 
 		// store tree data and basic
-		$addResult = parent::add($data, $behaviour);
+		$addResult = parent::addExtended($data, $additional);
 
 		// add connected data
 		if($addResult->isSuccess())
@@ -158,12 +158,8 @@ final class LocationTable extends Tree
 			if(isset($name))
 				Name\LocationTable::addMultipleForOwner($primary, $name);
 
-			if($behaviour['RESET_LEGACY'] && intval($data['TYPE_ID']))
-			{
-				$type = TypeTable::getList(array('filter' => array('=ID' => $data['TYPE_ID']), 'select' => array('CODE')))->fetch();
-				if(strlen($type['CODE']) && in_array($type['CODE'], array('COUNTRY', 'REGION', 'CITY')))
-					static::resetLegacyPath();
-			}
+			if(intval($data['TYPE_ID']) > 0 && $resetLegacy)
+				self::resetLegacy(intval($data['TYPE_ID']));
 
 			Search\Finder::setIndexInvalid();
 			$GLOBALS['CACHE_MANAGER']->ClearByTag('sale-location-data');
@@ -172,6 +168,17 @@ final class LocationTable extends Tree
 		return $addResult;
 	}
 
+	protected static function resetLegacy($typeId)
+	{
+		$type = TypeTable::getList(array('filter' => array('=ID' => $typeId), 'select' => array('CODE')))->fetch();
+		if(strlen($type['CODE']) && in_array($type['CODE'], array('COUNTRY', 'REGION', 'CITY')))
+			static::resetLegacyPath();
+	}
+
+	public static function update($primary, array $data)
+	{
+		return self::updateExtended($primary, $data);
+	}
 	/**
 	* Updates an existed location
 	*
@@ -187,7 +194,7 @@ final class LocationTable extends Tree
 	*		</li>
 	*	</ul>
 	*
-	* @param mixed[] $behaviour an additional behaviour flags:
+	* @param mixed[] $additional an additional behaviour flags:
 	*
 	*	<ul>
 	*		<li>
@@ -195,17 +202,12 @@ final class LocationTable extends Tree
 	*		</li>
 	*	</ul>
 	*
-	* @return Bitrix\Main\Entity\UpdateResult the result of update operation
+	* @return \Bitrix\Main\Entity\UpdateResult the result of update operation
 	*/
-	public static function update($primary, $data = array(), $behaviour = array('REBALANCE' => true, 'RESET_LEGACY' => true))
+	public static function updateExtended($primary, array $data, array $additional = array())
 	{
 		$primary = Assert::expectIntegerPositive($primary, '$primary');
-		if(!is_array($behaviour))
-			$behaviour = array();
-		if(!isset($behaviour['REBALANCE']))
-			$behaviour['REBALANCE'] = true;
-		if(!isset($behaviour['RESET_LEGACY']))
-			$behaviour['RESET_LEGACY'] = true;
+		$resetLegacy = !isset($additional['RESET_LEGACY']) || $additional['RESET_LEGACY'] !== false;
 
 		// first update parent, and if it succeed, do updates of the connected data
 
@@ -228,7 +230,7 @@ final class LocationTable extends Tree
 		// you are not allowed to modify tree data over LocationTable::update()
 		self::applyRestrictions($data);
 
-		$updResult = parent::update($primary, $data, $behaviour);
+		$updResult = parent::updateExtended($primary, $data, $additional);
 
 		// update connected data
 		if($updResult->isSuccess())
@@ -241,12 +243,8 @@ final class LocationTable extends Tree
 			if(isset($name))
 				Name\LocationTable::updateMultipleForOwner($primary, $name);
 
-			if($behaviour['RESET_LEGACY'] && (intval($data['TYPE_ID']) || isset($data['PARENT_ID'])))
-			{
-				$type = TypeTable::getList(array('filter' => array('=ID' => $data['TYPE_ID']), 'select' => array('CODE')))->fetch();
-				if(strlen($type['CODE']) && in_array($type['CODE'], array('COUNTRY', 'REGION', 'CITY')))
-					static::resetLegacyPath();
-			}
+			if($resetLegacy && (intval($data['TYPE_ID']) > 0 || isset($data['PARENT_ID'])))
+				self::resetLegacy(intval($data['TYPE_ID']));
 
 			$GLOBALS['CACHE_MANAGER']->ClearByTag('sale-location-data');
 
@@ -257,36 +255,38 @@ final class LocationTable extends Tree
 		return $updResult;
 	}
 
+	public static function delete($primary)
+	{
+		return self::deleteExtended($primary);
+	}
 	/**
-	* Deletes location from the tree
-	*
-	*
-	*/
-	public static function delete($primary, $behaviour = array('REBALANCE' => true, 'DELETE_SUBTREE' => true, 'RESET_LEGACY' => true))
+	 * Deletes location from the tree
+	 *
+	 * @param $primary
+	 * @param array $additional
+	 * @return Entity\DeleteResult
+	 * @throws Main\ArgumentException
+	 * @throws Main\SystemException
+	 * @throws Tree\NodeNotFoundException
+	 */
+	public static function deleteExtended($primary, array $additional = array())
 	{
 		$primary = Assert::expectIntegerPositive($primary, '$primary');
-		if(!is_array($behaviour))
-			$behaviour = array();
-		if(!isset($behaviour['REBALANCE']))
-			$behaviour['REBALANCE'] = true;
-		if(!isset($behaviour['RESET_LEGACY']))
-			$behaviour['RESET_LEGACY'] = true;
-		if(!isset($behaviour['DELETE_SUBTREE']))
-			$behaviour['DELETE_SUBTREE'] = true;
+		$resetLegacy = !isset($additional['RESET_LEGACY']) || $additional['RESET_LEGACY'] !== false;
+		$deleteSubtree = isset($additional['DELETE_SUBTREE']) && $additional['DELETE_SUBTREE'] == false;
 
 		// delete connected data of sub-nodes
-		if($behaviour['DELETE_SUBTREE'])
+		if($deleteSubtree)
 		{
 			$rangeSql = parent::getSubtreeRangeSqlForNode($primary);
-
 			Name\LocationTable::deleteMultipleByParentRangeSql($rangeSql);
 			ExternalTable::deleteMultipleByParentRangeSql($rangeSql);
 		}
 
-		if($behaviour['RESET_LEGACY'])
+		if($resetLegacy)
 			$data = static::getList(array('filter' => array('=ID' => $primary), 'select' => array('TYPE_ID')))->fetch();
 
-		$delResult = parent::delete($primary, $behaviour);
+		$delResult = parent::deleteExtended($primary, $additional);
 
 		// delete connected data
 		if($delResult->isSuccess())
@@ -294,7 +294,7 @@ final class LocationTable extends Tree
 			Name\LocationTable::deleteMultipleForOwner($primary);
 			ExternalTable::deleteMultipleForOwner($primary);
 
-			if($behaviour['RESET_LEGACY'] && intval($data['TYPE_ID']))
+			if($resetLegacy && intval($data['TYPE_ID']))
 			{
 				$type = TypeTable::getList(array('filter' => array('=ID' => $data['TYPE_ID']), 'select' => array('CODE')))->fetch();
 				if(strlen($type['CODE']) && in_array($type['CODE'], array('COUNTRY', 'REGION', 'CITY')))
@@ -302,7 +302,6 @@ final class LocationTable extends Tree
 			}
 
 			$GLOBALS['CACHE_MANAGER']->ClearByTag('sale-location-data');
-
 			Search\Finder::setIndexInvalid();
 		}
 

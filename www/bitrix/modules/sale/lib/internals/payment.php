@@ -33,10 +33,16 @@ class PaymentTable extends Main\Entity\DataManager
 				'required' => true,
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_ORDER_ID_FIELD'),
 			),
+			new Main\Entity\StringField(
+					'ACCOUNT_NUMBER',
+					array(
+							'size' => 100
+					)
+			),
 			'ORDER' => array(
 				'data_type' => 'Order',
 				'reference' => array(
-							'=this.ORDER_ID' => 'ref.ID'
+					'=this.ORDER_ID' => 'ref.ID'
 				)
 			),
 
@@ -67,9 +73,9 @@ class PaymentTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PAY_SYSTEM_ID_FIELD'),
 			),
 			'PAY_SYSTEM' => array(
-				'data_type' => 'Bitrix\Sale\PaySystemAction',
+				'data_type' => 'Bitrix\Sale\Internals\PaySystemAction',
 				'reference' => array(
-					'=this.PAY_SYSTEM_ID' => 'ref.PAY_SYSTEM_ID'
+					'=this.PAY_SYSTEM_ID' => 'ref.ID'
 				)
 			),
 			'PS_STATUS' => array(
@@ -82,6 +88,10 @@ class PaymentTable extends Main\Entity\DataManager
 				'data_type' => 'string',
 				'validation' => array(__CLASS__, 'validatePsStatusCode'),
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PS_STATUS_CODE_FIELD'),
+			),
+			'PS_INVOICE_ID' => array(
+				'data_type' => 'string',
+				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PS_INVOICE_ID_FIELD'),
 			),
 			'PS_STATUS_DESCRIPTION' => array(
 				'data_type' => 'string',
@@ -120,7 +130,7 @@ class PaymentTable extends Main\Entity\DataManager
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_DATE_PAY_BEFORE_FIELD'),
 			),
 			'DATE_BILL' => array(
-				'data_type' => 'date',
+				'data_type' => 'datetime',
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_DATE_BILL_FIELD'),
 			),
 			'XML_ID' => array(
@@ -130,8 +140,13 @@ class PaymentTable extends Main\Entity\DataManager
 			),
 			'SUM' => array(
 				'data_type' => 'float',
-				'required' => true,
+				'default_value' => '0.0000',
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_SUM_FIELD'),
+			),
+			'PRICE_COD' => array(
+				'data_type' => 'float',
+				'required' => false,
+				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PRICE_COD_FIELD'),
 			),
 			'CURRENCY' => array(
 				'data_type' => 'string',
@@ -162,7 +177,7 @@ class PaymentTable extends Main\Entity\DataManager
 			'EMP_RESPONSIBLE_BY' => array(
 				'data_type' => 'Bitrix\Main\User',
 				'reference' => array(
-							'=this.EMP_RESPONSIBLE_ID' => 'ref.ID'
+					'=this.EMP_RESPONSIBLE_ID' => 'ref.ID'
 				)
 			),
 			'DATE_RESPONSIBLE_ID' => array(
@@ -205,11 +220,29 @@ class PaymentTable extends Main\Entity\DataManager
 				'data_type' => 'string',
 				'title' => Loc::getMessage('ORDER_PAYMENT_ENTITY_PAY_RETURN_COMMENT_FIELD'),
 			),
-			new Main\Entity\BooleanField(
+			new Main\Entity\EnumField(
 				'IS_RETURN',
 				array(
-					'values' => array('N','Y'),
+					'values' => array('N','Y','P'),
 					'default_value' => 'N'
+				)
+			),
+
+			new Main\Entity\BooleanField(
+				'UPDATED_1C',
+				array(
+					'values' => array('N', 'Y')
+				)
+			),
+
+			new Main\Entity\StringField('ID_1C'),
+
+			new Main\Entity\StringField('VERSION_1C'),
+
+			new Main\Entity\EnumField(
+				'EXTERNAL_PAYMENT',
+				array(
+					'values' => array('N', 'Y', 'F')
 				)
 			),
 		);
@@ -245,7 +278,7 @@ class PaymentTable extends Main\Entity\DataManager
 	public static function validatePsStatusCode()
 	{
 		return array(
-			new Main\Entity\Validator\Length(null, 5),
+			new Main\Entity\Validator\Length(null, 255),
 		);
 	}
 	/**

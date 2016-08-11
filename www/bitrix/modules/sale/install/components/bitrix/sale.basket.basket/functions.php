@@ -38,7 +38,10 @@ if (!function_exists("getProductByProps"))
 			}
 			elseif ($property['PROPERTY_TYPE'] == Iblock\PropertyTable::TYPE_ELEMENT)
 			{
-				$arOfFilter['PROPERTY_'.$property['ID']] = $arSkuProps[$property['CODE']];
+				if ((int)$arSkuProps[$property['CODE']].'' == $arSkuProps[$property['CODE']].'')
+					$arOfFilter['PROPERTY_'.$property['ID']] = $arSkuProps[$property['CODE']];
+				else
+					$arOfFilter['PROPERTY_'.$property['ID'].'.NAME'] = $arSkuProps[$property['CODE']];
 			}
 			elseif ($property['PROPERTY_TYPE'] == Iblock\PropertyTable::TYPE_STRING && $property['USER_TYPE'] == 'directory')
 			{

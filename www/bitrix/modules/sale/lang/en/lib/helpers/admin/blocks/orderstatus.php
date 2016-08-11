@@ -16,4 +16,5 @@ $MESS["SALE_ORDER_STATUS_USER_CAN_VIEW"] = "visible to customer";
 $MESS["SALE_ORDER_STATUS_TOGGLE"] = "hide";
 $MESS["SALE_ORDER_STATUS_SITE"] = "Site";
 $MESS["SALE_ORDER_STATUS_SOURCE"] = "Order source";
+$MESS["SALE_ORDER_STATUS_AFFILIATE"] = "Affiliate";
 ?>

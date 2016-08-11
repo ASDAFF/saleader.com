@@ -1,6 +1,7 @@
 <?php
 
 namespace Bitrix\Sale\Delivery\Pecom;
+use Bitrix\Sale\Location\LocationTable;
 
 /**
  * Class Adapter
@@ -133,6 +134,64 @@ class Adapter
 		return $result;
 	}
 
+	protected static function getUpperCityId($locationId)
+	{
+		if(strlen($locationId) <= 0)
+			return 0;
+
+		$res = LocationTable::getList(array(
+			'filter' => array(
+				array(
+					'LOGIC' => 'OR',
+					'=CODE' => $locationId,
+					'=ID' => $locationId
+				),
+				'=PARENTS.TYPE.CODE' => 'CITY',
+			),
+			'select' => array(
+				'ID', 'CODE',
+				'PID' => 'PARENTS.ID',
+			)
+		));
+
+		if($loc = $res->fetch())
+			return $loc['PID'];
+
+		return 0;
+	}
+
+	protected static function mapLocation2($internalLocationId)
+	{
+		if(intval($internalLocationId) <=0)
+			return array();
+
+		static $result = array();
+
+		if(!isset($result[$internalLocationId]))
+		{
+			$result[$internalLocationId] = array();
+
+			$internalLocation = \CSaleHelper::getLocationByIdHitCached($internalLocationId);
+			$externalId = Location::getExternalId($internalLocationId);
+
+			//Let's try to find upper city
+			if(strlen($externalId) <= 0)
+			{
+				$cityId = self::getUpperCityId($internalLocationId);
+				$externalId = Location::getExternalId($cityId);
+			}
+
+			if(strlen($externalId) > 0)
+			{
+				$result[$internalLocationId] = array(
+						$externalId => !empty($internalLocation["CITY_NAME_LANG"]) ? $internalLocation["CITY_NAME_LANG"] : ""
+				);
+			}
+		}
+
+		return $result[$internalLocationId];
+	}
+
 	/**
 	 * Returns Pecom .location id
 	 * @param $locationId - Bitrix location id
@@ -141,6 +200,9 @@ class Adapter
 	 */
 	public static function mapLocation($locationId, $cleanCache = false)
 	{
+		if(Location::isInstalled())
+			return self::mapLocation2($locationId);
+
 		$cityName = static::getCityNameFromLocationId($locationId);
 
 		if(!$cityName)

@@ -32,7 +32,8 @@ class CDeliveryRusPostFirst
 	{
 		self::$TARIFS = array(
 							'WEIGHT_LESS_100' => array(6, GetMessage('SALE_DH_RPF_WRP_LESS_100')),
-							'WEIGHT_MORE_100' => array(7, GetMessage('SALE_DH_RPF_WRP_MORE_100')),
+							'WEIGHT_LESS_100_DECLARED_VALUE' => array(11, GetMessage('SALE_DH_RPF_WRP_LESS_100_DECLARED_VALUE')),
+							'WEIGHT_MORE_100' => array(7, GetMessage('SALE_DH_RPF_WRP_MORE_100'))
 			);
 
 		self::$SERVICES = array(
@@ -56,6 +57,7 @@ class CDeliveryRusPostFirst
 			'GETFEATURES' => array('CDeliveryRusPostFirst', 'GetFeatures'),
 			'COMPABILITY' => array('CDeliveryRusPostFirst', 'Compability'),
 			'CALCULATOR' => array('CDeliveryRusPostFirst', 'Calculate'),
+			"TRACKING_CLASS_NAME" => '\Bitrix\Sale\Delivery\Tracking\RusPost',
 
 			/* List of delivery profiles */
 			'PROFILES' => array(
@@ -105,6 +107,13 @@ class CDeliveryRusPostFirst
 					'TYPE' => 'SECTION',
 					'TITLE' => GetMessage('SALE_DH_RPF_TARIFS'),
 					'GROUP' => 'wrapper',
+		);
+
+		$arConfig['CONFIG']['RESET_TARIF_SETTINGS'] = array(
+			'TYPE' => 'CUSTOM',
+			'TITLE' => GetMessage('SALE_DH_RPF_SET_DEFAULT_TARIF'),
+			'GROUP' => 'wrapper',
+			'DEFAULT' => '<a href="javascript:void(0);" onclick="BX.Sale.Delivery.resetRusPostTarifSettings();">'.GetMessage('SALE_DH_RPF_SET_DEFAULT_TARIF_SET').'</a>'
 		);
 
 		$arTarifs = CSaleHelper::getOptionOrImportValues(
@@ -157,11 +166,28 @@ class CDeliveryRusPostFirst
 
 	function GetSettings($strSettings)
 	{
-		return unserialize($strSettings);
+		$result = unserialize($strSettings);
+
+		if(isset($result['RESET_TARIF_SETTINGS']))
+			unset($result['RESET_TARIF_SETTINGS']);
+
+		if(isset($_REQUEST["RESET_TARIF_SETTINGS"]) && $_REQUEST["RESET_TARIF_SETTINGS"] == "Y" && !isset($_REQUEST["apply"]))
+		{
+			COption::RemoveOption('sale', 'delivery_rus_post_first_tarifs');
+
+			foreach($result as $key => $value)
+				if(substr($key, 0, 6) == 'TARIF_' || substr($key, 0, 8) == 'service_')
+					unset($result[$key]);
+		}
+
+		return $result;
 	}
 
 	function SetSettings($arSettings)
 	{
+		if(isset($arSettings['RESET_TARIF_SETTINGS']))
+			unset($arSettings['RESET_TARIF_SETTINGS']);
+
 		foreach ($arSettings as $key => $value)
 		{
 			if (strlen($value) > 0)
@@ -327,15 +353,20 @@ class CDeliveryRusPostFirst
 	private static function calculatePackPrice($arPackage, $profile, $arConfig, $arLocationTo)
 	{
 		$arDebug = array();
-		$basePrice = $totalPrice = 0;
+		$totalPrice = 0;
+		$declaredValue = self::isConfCheckedVal($arConfig, 'service_'.self::$SERVICES['DECLARED_VALUE'][self::$TARIF_IDX].'_enabled');
 
 		//2. Wrapper
 		//2.1, 2.2  declared value, weight less 100 gramm
 
-		$basePrice = floatval(self::getConfValue($arConfig, 'TARIF_'.self::$TARIFS['WEIGHT_LESS_100'][self::$TARIF_IDX]));
+		if($declaredValue && floatval($arConfig['TARIF_'.self::$TARIFS['WEIGHT_LESS_100_DECLARED_VALUE'][self::$TARIF_IDX]]['VALUE']) > 0)
+			$basePrice = floatval(self::getConfValue($arConfig, 'TARIF_'.self::$TARIFS['WEIGHT_LESS_100_DECLARED_VALUE'][self::$TARIF_IDX]));
+		else
+			$basePrice = floatval(self::getConfValue($arConfig, 'TARIF_'.self::$TARIFS['WEIGHT_LESS_100'][self::$TARIF_IDX]));
+
 		$arDebug[] = 'Base Price less 100 g: '.$basePrice;
 
-		// 2.3 weight more tha 100 g
+		// 2.3 weight more than 100 g
 		if($arPackage['WEIGHT'] > self::$BASE_WEIGHT)
 		{
 			$addWeight = ceil($arPackage['WEIGHT'] / self::$BASE_WEIGHT - 1);
@@ -366,10 +397,10 @@ class CDeliveryRusPostFirst
 
 		// 4. Service "declared value"
 		$dvPrice = 0;
-		if(self::isConfCheckedVal($arConfig, 'service_'.self::$SERVICES['DECLARED_VALUE'][self::$TARIF_IDX].'_enabled'))
+		if($declaredValue)
 		{
 			$dvTarif = floatval(self::getConfValue($arConfig, 'service_'.self::$SERVICES['DECLARED_VALUE'][self::$TARIF_IDX].'_value'));
-			$dvPrice += ($arPackage['PRICE']+$totalPrice)*$dvTarif;
+			$dvPrice += ($arPackage['PRICE'])*$dvTarif;
 			$arDebug[] = 'Declared value: '.$dvPrice;
 			$totalPrice += $dvPrice;
 		}

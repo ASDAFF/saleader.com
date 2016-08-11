@@ -93,10 +93,24 @@ if (isset($filter_mail))
 	$arFilter["EMAIL"] = trim($filter_mail);
 
 if (isset($filter_phone))
-	$arFilter["PERSONAL_PHONE"] = trim($filter_phone);
+{
+	if (strpos($filter_phone, '%') === false)
+	{
+		$filter_phone = '%'. $filter_phone .'%';
+	}
+
+	$arFilter["~PERSONAL_PHONE"] = trim($filter_phone);
+}
 
 if (isset($filter_mobile))
-	$arFilter["PERSONAL_MOBILE"] = trim($filter_mobile);
+{
+	if (strpos($filter_mobile, '%') === false)
+	{
+		$filter_mobile = '%'. $filter_mobile .'%';
+	}
+	
+	$arFilter["~PERSONAL_MOBILE"] = trim($filter_mobile);
+}
 
 if (!empty($find_last_login_1))
 {
@@ -283,7 +297,7 @@ while ($arBuyers = $dbUsersList->Fetch())
 	$arActions[] = array("ICON"=>"view", "TEXT"=>GetMessage("BUYER_SUB_ACTION_PROFILE"), "ACTION"=>$lAdmin->ActionRedirect("sale_buyers_profile.php?USER_ID=".$arBuyers["USER_ID"]."&lang=".LANGUAGE_ID), "DEFAULT"=>true);
 
 	foreach($arSitesShop as $val)
-		$arActions[] = array("ICON"=>"view", "TEXT"=>GetMessage("BUYER_SUB_ACTION_ORDER")." [".$val["ID"]."]", "ACTION"=>$lAdmin->ActionRedirect("sale_order_new.php?user_id=".$arBuyers["USER_ID"]."&LID=".$val["ID"]."&lang=".LANGUAGE_ID));
+		$arActions[] = array("ICON"=>"view", "TEXT"=>GetMessage("BUYER_SUB_ACTION_ORDER")." [".$val["ID"]."]", "ACTION"=>$lAdmin->ActionRedirect("sale_order_create.php?USER_ID=".$arBuyers["USER_ID"]."&SITE_ID=".$val["ID"]."&lang=".LANGUAGE_ID));
 
 	$row->AddActions($arActions);
 }

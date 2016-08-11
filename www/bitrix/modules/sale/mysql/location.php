@@ -5,7 +5,7 @@ use Bitrix\Sale\Location;
 
 class CSaleLocation extends CAllSaleLocation
 {
-	function GetList($arOrder = array("SORT"=>"ASC", "COUNTRY_NAME_LANG"=>"ASC", "CITY_NAME_LANG"=>"ASC"), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
+	public static function GetList($arOrder = array("SORT"=>"ASC", "COUNTRY_NAME_LANG"=>"ASC", "CITY_NAME_LANG"=>"ASC"), $arFilter = array(), $arGroupBy = false, $arNavStartParams = false, $arSelectFields = array())
 	{
 		global $DB;
 
@@ -114,7 +114,7 @@ class CSaleLocation extends CAllSaleLocation
 		return $dbRes;
 	}
 
-	function GetByID($ID, $strLang = LANGUAGE_ID)
+	public static function GetByID($ID, $strLang = LANGUAGE_ID)
 	{
 		if(self::isLocationProMigrated())
 			return parent::GetByID($ID, $strLang);
@@ -160,7 +160,7 @@ class CSaleLocation extends CAllSaleLocation
 		return False;
 	}
 
-	function GetCountryList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
+	public static function GetCountryList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
 	{
 		if(self::isLocationProMigrated())
 			return self::GetLocationTypeList('COUNTRY', $arOrder, $arFilter, $strLang);
@@ -267,7 +267,7 @@ class CSaleLocation extends CAllSaleLocation
 	* @param string $strLang language regions of the sample
 	* @return true false
 	*/
-	function GetRegionList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
+	public static function GetRegionList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
 	{
 		if(self::isLocationProMigrated())
 			return self::GetLocationTypeList('REGION', $arOrder, $arFilter, $strLang);
@@ -371,7 +371,7 @@ class CSaleLocation extends CAllSaleLocation
 	 * @param string $strLang language regions of the sample
 	 * @return true false
 	 */
-	function GetCityList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
+	public static function GetCityList($arOrder = Array("NAME_LANG"=>"ASC"), $arFilter=Array(), $strLang = LANGUAGE_ID)
 	{
 		if(self::isLocationProMigrated())
 			return self::GetLocationTypeList('CITY', $arOrder, $arFilter, $strLang);
@@ -468,7 +468,7 @@ class CSaleLocation extends CAllSaleLocation
 	}
 
 	// have to use old table as a temporal place to store countries, kz add of a country doesn`t mean add of a location
-	function AddCountry($arFields)
+	public static function AddCountry($arFields)
 	{
 		global $DB;
 
@@ -516,7 +516,7 @@ class CSaleLocation extends CAllSaleLocation
 	}
 
 	// have to use old table as a temporal place to store cities, kz we don`t know yet which country\region a newly-created city belongs to
-	function AddCity($arFields)
+	public static function AddCity($arFields)
 	{
 		global $DB;
 
@@ -564,7 +564,7 @@ class CSaleLocation extends CAllSaleLocation
 	}
 
 	// have to use old table as a temporal place to store region, kz we don`t know yet which country a newly-created region belongs to
-	function AddRegion($arFields)
+	public static function AddRegion($arFields)
 	{
 		global $DB;
 
@@ -611,7 +611,7 @@ class CSaleLocation extends CAllSaleLocation
 		return $ID;
 	}
 
-	function AddLocation($arFields)
+	public static function AddLocation($arFields)
 	{
 		global $DB;
 

@@ -26,7 +26,7 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			ctx.BXCallAllowed = true; // unlock form refresher
 		});
 
-		this.controls.scope = BX('order_form_div');
+		this.controls.scope = BX('bx-soa-order');
 
 		// user presses "add location" when he cannot find location in popup mode
 		BX.bindDelegate(this.controls.scope, 'click', {className: '-bx-popup-set-mode-add-loc'}, function(){
@@ -39,10 +39,10 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 				}
 			});
 
-			BX.prepend(input, BX('ORDER_FORM'));
+			BX.prepend(input, BX('bx-soa-order'));
 
 			ctx.BXCallAllowed = false;
-			submitForm();
+			BX.Sale.OrderAjaxComponent.sendRequest();
 		});
 	},
 
@@ -234,6 +234,10 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 		}
 
 		this.BXCallAllowed = true;
+
+		//set location initialized flag and refresh region & property actual content
+		if (BX.Sale.OrderAjaxComponent)
+			BX.Sale.OrderAjaxComponent.locationsCompletion();
 	},
 
 	checkMode: function(propId, mode){
@@ -372,7 +376,7 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			if(this.BXCallAllowed){
 
 				this.BXCallAllowed = false;
-				submitForm();
+				setTimeout(function(){BX.Sale.OrderAjaxComponent.sendRequest()}, 20);
 			}
 
 		}
@@ -406,7 +410,9 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			return;
 		}
 
-		ShowWaitWindow();
+		var loader;
+		if (!(loader = BX.Sale.OrderAjaxComponent.startLoader()))
+			return;
 
 		var ctx = this;
 
@@ -422,21 +428,19 @@ BX.saleOrderAjax = { // bad solution, actually, a singleton at the page
 			data: {'ACT': 'GET_LOC_BY_ZIP', 'ZIP': value},
 			//cache: true,
 			onsuccess: function(result){
+				BX.Sale.OrderAjaxComponent.endLoader(loader);
 
-				CloseWaitWindow();
-				if(result.result){
-
+				if(result.result)
+				{
 					ctx.indexCache[value] = result.data.ID;
-
 					successCallback.apply(ctx, [result.data.ID]);
-
-				}else
+				}
+				else
 					notFoundCallback.call(ctx);
 
 			},
 			onfailure: function(type, e){
-
-				CloseWaitWindow();
+				BX.Sale.OrderAjaxComponent.endLoader(loader);
 				// on error do nothing
 			}
 

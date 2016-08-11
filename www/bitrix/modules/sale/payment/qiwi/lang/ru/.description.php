@@ -21,7 +21,7 @@ $MESS['SALE_QH_API_PASS_DESCR'] = "Пароль для доступа к API. З
 
 $MESS['SALE_QH_CLIENT_PHONE'] = "Телефон клиента, на который выставлять счет.";
 $MESS['SALE_QH_CLIENT_PHONE_DESCR'] = "";
-$MESS["SALE_QH_ORDER_ID"] = "Номер транзакции в вашей системе";
+$MESS["SALE_QH_ORDER_ID"] = "Номер оплаты";
 $MESS["SALE_QH_ORDER_ID_DESCR"] = "(например, номер заказа в интернет-магазине)";
 $MESS["SALE_QH_SHOULD_PAY"] = "К оплате";
 $MESS["SALE_QH_SHOULD_PAY_DESCR"] = "Сумма счета.";

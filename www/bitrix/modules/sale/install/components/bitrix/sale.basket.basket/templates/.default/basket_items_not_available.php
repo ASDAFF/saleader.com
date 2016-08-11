@@ -1,4 +1,10 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<?
+$bPriceType  = false;
+$bDelayColumn  = false;
+$bDeleteColumn = false;
+$bPropsColumn  = false;
+?>
 <div id="basket_items_not_available" class="bx_ordercart_order_table_container" style="display:none">
 	<table>
 
@@ -14,7 +20,12 @@
 					if ($arHeader["name"] == '')
 						$arHeader["name"] = GetMessage("SALE_".$arHeader["id"]);
 
-					if ($arHeader["id"] == "PROPS") // some header columns are shown differently
+					if (in_array($arHeader["id"], array("TYPE")))
+					{
+						$bPriceType = true;
+						continue;
+					}
+					elseif ($arHeader["id"] == "PROPS") // some header columns are shown differently
 					{
 						$bPropsColumn = true;
 						continue;
@@ -172,7 +183,7 @@
 																	endforeach;
 																?>
 																<li style="width:10%;"<?=$selected?>>
-																	<a href="javascript:void(0)" class="cnt"><span class="cnt_item" style="background-image:url(<?=$arSkuValue["PICT"]["SRC"]?>"></span></a>
+																	<a href="javascript:void(0)" class="cnt"><span class="cnt_item" style="background-image:url(<?=$arSkuValue["PICT"]["SRC"];?>)"></span></a>
 																</li>
 																<?
 																endforeach;
@@ -250,7 +261,7 @@
 									<div class="current_price"><?=$arItem["PRICE_FORMATED"];?></div>
 								<?endif?>
 
-								<?if (strlen($arItem["NOTES"]) > 0):?>
+								<?if ($bPriceType && strlen($arItem["NOTES"]) > 0):?>
 									<div class="type_price"><?=GetMessage("SALE_TYPE")?></div>
 									<div class="type_price_value"><?=$arItem["NOTES"]?></div>
 								<?endif;?>

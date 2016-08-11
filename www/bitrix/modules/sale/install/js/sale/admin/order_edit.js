@@ -14,6 +14,7 @@ BX.Sale.Admin.OrderEditPage =
 	form: null,
 	adminTabControlId: "",
 	discountRefreshTimeoutId: 0,
+	autoPriceChange: true,
 
 	getForm: function()
 	{
@@ -60,6 +61,9 @@ BX.Sale.Admin.OrderEditPage =
 
 		for(i in elements)
 		{
+			if(!elements.hasOwnProperty(i))
+				continue;
+
 			btn = BX.findChild(document, {attr : {'name': elements[i]}}, true);
 
 			if (btn)
@@ -139,21 +143,26 @@ BX.Sale.Admin.OrderEditPage =
 	unRegisterProductFieldsUpdaters: function(basketCode)
 	{
 		for(var i in this.fieldsUpdaters)
-			if(i.indexOf("PRODUCT["+basketCode+"]") != -1)
-				delete(this.fieldsUpdaters[i]);
+			if(this.fieldsUpdaters.hasOwnProperty(i))
+				if(i.indexOf("PRODUCT["+basketCode+"]") != -1)
+					delete(this.fieldsUpdaters[i]);
 	},
 
 	unRegisterFieldsUpdaters: function(fieldNames)
 	{
 		for(var i in fieldNames)
-			if(this.fieldsUpdaters[fieldNames[i]])
-				delete(this.fieldsUpdaters[fieldNames[i]]);
+			if(fieldNames.hasOwnProperty(i))
+				if(this.fieldsUpdaters[fieldNames[i]])
+					delete(this.fieldsUpdaters[fieldNames[i]]);
 	},
 
 	registerFieldsUpdaters: function(updaters)
 	{
 		for(var i in updaters)
 		{
+			if(!updaters.hasOwnProperty(i))
+				continue;
+
 			if(typeof this.fieldsUpdaters[i] == 'undefined')
 				this.fieldsUpdaters[i] = [];
 
@@ -178,6 +187,9 @@ BX.Sale.Admin.OrderEditPage =
 
 		for(i in orderData)
 		{
+			if(!orderData.hasOwnProperty(i))
+				continue;
+
 			if(orderedDone[i])
 				continue;
 
@@ -192,6 +204,9 @@ BX.Sale.Admin.OrderEditPage =
 
 		for(var j in this.fieldsUpdaters[fieldId])
 		{
+			if(!this.fieldsUpdaters[fieldId].hasOwnProperty(j))
+				continue;
+
 			var data = this.fieldsUpdaters[fieldId][j];
 
 			if(data.context && data.callback)
@@ -235,8 +250,9 @@ BX.Sale.Admin.OrderEditPage =
 		}
 
 		for(var fieldName in data)
-			if(typeof(form.elements[fieldName]) != "undefined")
-				form.elements[fieldName].value = data[fieldName];
+			if(data.hasOwnProperty(fieldName))
+				if(typeof(form.elements[fieldName]) != "undefined")
+					form.elements[fieldName].value = data[fieldName];
 
 		return true;
 	},
@@ -373,18 +389,21 @@ BX.Sale.Admin.OrderEditPage =
 	 */
 	createDiscountsNode: function(itemCode, itemType, itemDiscounts, discountsList, mode)
 	{
-		var discountsNode = null;
+		var discountsNode = null,
+			i,
+			l,
+			discountId;
 
 		if(itemDiscounts && discountsList && discountsList.DISCOUNT_LIST)
 		{
 			discountsNode = BX.create('table');
 
-			for(var i= 0, l=itemDiscounts.length; i<l; i++)
+			for(i = 0, l = itemDiscounts.length; i<l; i++)
 			{
 				if(!itemDiscounts[i])
 					continue;
 
-				var discountId = itemDiscounts[i].DISCOUNT_ID;
+				discountId = itemDiscounts[i].DISCOUNT_ID;
 
 				if(discountsList.DISCOUNT_LIST[discountId])
 				{
@@ -422,13 +441,23 @@ BX.Sale.Admin.OrderEditPage =
 	addDiscountItemRow: function(itemCode, itemType, itemDiscount,  discountParams, table, mode)
 	{
 		var row = table.insertRow(-1),
-			itemAttrs = {'data-discount-id': discountParams.DISCOUNT_ID};
+			itemAttrs = {'data-discount-id': discountParams.DISCOUNT_ID},
+			name,
+			checkbox;
 
 		if (itemType == 'DISCOUNT_LIST')
+		{
 			itemAttrs['data-discount'] = 'Y';
+			itemAttrs['data-use-coupons'] = (discountParams.USE_COUPONS);
+		}
+		if (itemType === 'BASKET' || itemType === 'DELIVERY')
+		{
+			itemAttrs['data-coupon-id'] = (itemDiscount.COUPON_ID ? itemDiscount.COUPON_ID : '-');
+			itemAttrs['data-discount-target'] = 'Y';
+		}
 
-		var	name = "DISCOUNTS["+itemType+"]"+(itemCode != "" ? "["+itemCode+"]" : "")+"["+discountParams.DISCOUNT_ID+"]",
-			checkbox = BX.create('input',{
+		name = "DISCOUNTS["+itemType+"]"+(itemCode != "" ? "["+itemCode+"]" : "")+"["+discountParams.DISCOUNT_ID+"]";
+		checkbox = BX.create('input',{
 				props: {
 					type: "checkbox",
 					name: name,
@@ -469,7 +498,8 @@ BX.Sale.Admin.OrderEditPage =
 			if(itemDiscount.DESCR)
 			{
 				for(var i in itemDiscount.DESCR)
-					value += itemDiscount.DESCR[i];
+					if(itemDiscount.DESCR.hasOwnProperty(i))
+						value += itemDiscount.DESCR[i];
 			}
 			else
 			{
@@ -522,12 +552,66 @@ BX.Sale.Admin.OrderEditPage =
 	setDiscountCheckbox: function(e)
 	{
 		var target = e.target,
-			i;
-		if (!!target && target.hasAttribute('data-discount') && target.hasAttribute('data-discount-id'))
+			coll,
+			i,
+			summaryChecked,
+			itemCoupon;
+
+		if (!!target && target.hasAttribute('data-discount-id'))
 		{
-			if (target.getAttribute('data-discount') == 'Y')
+			if (target.hasAttribute('data-coupon'))
 			{
-				var coll = BX.findChild(
+				coll = BX.findChild(
+					BX.Sale.Admin.OrderEditPage.getForm(),
+					{ attribute: {
+						'data-discount-id': target.getAttribute('data-discount-id'),
+						'data-coupon-id': target.getAttribute('data-discount-coupon')
+					}},
+					true,
+					true
+				);
+				if (coll.length > 0)
+				{
+					for (i = 0; i < coll.length; i++)
+						coll[i].checked = target.checked;
+				}
+
+				summaryChecked = false;
+				coll = BX.findChild(
+					BX.Sale.Admin.OrderEditPage.getForm(),
+					{ attribute: {
+						'data-discount-id': target.getAttribute('data-discount-id'),
+						'data-coupon': 'Y'
+					}},
+					true,
+					true
+				);
+				if (coll.length > 0)
+				{
+					for (i = 0; i < coll.length; i++)
+					{
+						if (coll[i].checked)
+							summaryChecked = true;
+					}
+				}
+
+				coll = BX.findChild(
+					BX.Sale.Admin.OrderEditPage.getForm(),
+					{ attribute: {
+						'data-discount-id': target.getAttribute('data-discount-id'),
+						'data-discount': 'Y',
+						'data-use-coupons': 'Y'
+					}},
+					true,
+					false
+				);
+				if (coll)
+					coll.checked = summaryChecked;
+				coll = null;
+			}
+			else if (target.hasAttribute('data-discount'))
+			{
+				coll = BX.findChild(
 					BX.Sale.Admin.OrderEditPage.getForm(),
 					{ attribute: {
 						'data-discount-id': target.getAttribute('data-discount-id')
@@ -538,12 +622,54 @@ BX.Sale.Admin.OrderEditPage =
 				if (coll.length > 0)
 				{
 					for (i = 0; i < coll.length; i++)
-					{
 						coll[i].checked = target.checked;
+				}
+				coll = null;
+			}
+			else if (target.hasAttribute('data-discount-target'))
+			{
+				if (target.checked)
+				{
+					coll = BX.findChild(
+						BX.Sale.Admin.OrderEditPage.getForm(),
+						{ attribute: {
+							'data-discount-id': target.getAttribute('data-discount-id'),
+							'data-discount': 'Y'
+						}},
+						true,
+						false
+					);
+					if (coll)
+						coll.checked = true;
+					if (target.hasAttribute('data-coupon-id'))
+					{
+						itemCoupon = target.getAttribute('data-coupon-id');
+						if (itemCoupon != '' && itemCoupon != '-')
+						{
+							coll = BX.findChild(
+								BX.Sale.Admin.OrderEditPage.getForm(),
+								{ attribute: {
+									'data-discount-id': target.getAttribute('data-discount-id'),
+									'data-discount-coupon': itemCoupon
+								}},
+								true,
+								false
+							);
+							if (coll)
+								coll.checked = true;
+						}
 					}
+					coll = null;
 				}
 			}
 		}
+	},
+
+	onProblemCloseClick: function(orderId, blockId)
+	{
+		BX.Sale.Admin.OrderAjaxer.sendRequest(
+			this.ajaxRequests.unmarkOrder(orderId, blockId)
+		);
 	},
 
 	refreshDiscounts: function()
@@ -569,7 +695,7 @@ BX.Sale.Admin.OrderEditPage =
 
 	/* Ajax request templates */
 	ajaxRequests: {
-		addProductToBasket: function(productId, quantity, replaceBasketCode, columns)
+		addProductToBasket: function(productId, quantity, replaceBasketCode, columns, customPrice)
 		{
 			var postData = {
 				action: "addProductToBasket",
@@ -579,6 +705,9 @@ BX.Sale.Admin.OrderEditPage =
 				columns: columns,
 				callback: BX.Sale.Admin.OrderAjaxer.refreshOrderData.callback
 			};
+
+			if(customPrice !== false)
+				postData.customPrice = customPrice;
 
 			return BX.Sale.Admin.OrderAjaxer.refreshOrderData.modifyParams(postData);
 		},
@@ -682,6 +811,75 @@ BX.Sale.Admin.OrderEditPage =
 					callback: BX.Sale.Admin.OrderAjaxer.refreshOrderData.callback
 				});
 			}
+		},
+
+		unmarkOrder: function(orderId, blockId)
+		{
+			return {
+				action: "unmarkOrder",
+				orderId: orderId,
+				callback: function(result)
+				{
+					BX.Sale.Admin.OrderEditPage.unBlockForm();
+
+					if(result && !result.ERROR)
+						BX(blockId).style.display = 'none';
+					else if(result && result.ERROR)
+						BX.Sale.Admin.OrderEditPage.showDialog(BX.message("SALE_ORDEREDIT_UNMARK_ERROR") + ": "+result.ERROR);
+					else
+						BX.debug(BX.message("SALE_ORDEREDIT_UNMARK_ERROR"));
+				}
+			};
+		},
+
+		getOrderTails: function(orderId, formType, idPrefix)
+		{
+			return {
+				action: "getOrderTails",
+				orderId: orderId,
+				formType: formType,
+				idPrefix: idPrefix,
+				callback: function(result)
+				{
+					if(result && !result.ERROR)
+					{
+						BX.Sale.Admin.OrderEditPage.callFieldsUpdaters(result);
+						var node;
+
+						if(typeof result.ANALYSIS != 'undefined')
+						{
+							node = BX('sale-adm-order-analysis-content');
+
+							if(node)
+								node.innerHTML = result.ANALYSIS;
+						}
+
+						if(typeof result.SHIPMENTS != 'undefined')
+						{
+							node = BX('sale-adm-order-shipments-content');
+
+							if(node)
+							{
+								var data = BX.processHTML(result.SHIPMENTS);
+								BX.loadCSS(data['STYLE']);
+
+								node.innerHTML = data['HTML'];
+
+								for (var i in data['SCRIPT'])
+									BX.evalGlobal(data['SCRIPT'][i]['JS']);
+							}
+						}
+					}
+					else if(result && result.ERROR)
+					{
+						BX.Sale.Admin.OrderEditPage.showDialog(result.ERROR);
+					}
+					else
+					{
+						BX.debug("Can't order view tails");
+					}
+				}
+			};
 		}
 	}
 };

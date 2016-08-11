@@ -197,7 +197,7 @@ if ($page<=0) $page = 1;
 									}
 							?>
 						</td>
-						<td align="center"><?echo $arQuantities[$i] ?></td>
+						<td align="center"><?echo Bitrix\Sale\BasketItem::formatQuantity($arQuantities[$i]) ?></td>
 						<td align="right" nowrap><?echo number_format($arBasket["PRICE"], 2, ',', ' ');?></td>
 						<td align="right" nowrap><?echo number_format($arBasket["PRICE"]*$arQuantities[$i], 2, ',', ' ');?></td>
 					</tr>

@@ -157,7 +157,7 @@ var wind = new BX.PopupWindow('popup_notify', BX('popup_form_notify'), {
 							}
 							else if (rs['STATUS'] == 'Y')
 							{
-								notifyProduct(BX('popup_notify_url').value, 11);
+								notifyProduct(BX('popup_notify_url').value, '<?=$arParams['NOTIFY_ID']?>');
 								wind.close();
 							}
 						});

@@ -61,7 +61,7 @@ unset($arResult["DAILOG"]["STATUSES"]["TITLE"]);
 
 			if(el.checked)
 			{
-				statusId = el.id;
+				statusId = el.value;
 				break;
 			}
 		}
