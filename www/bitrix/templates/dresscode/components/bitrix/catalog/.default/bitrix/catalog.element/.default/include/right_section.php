@@ -5,8 +5,12 @@
 			</div>
 		<?endif;?>
 		<a rel="" class="price changePrice"><?=$arResult["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
-			<meta itemprop="price" content="<?=$arResult["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>">
+			<meta itemprop="price" content="<?=$arResult["MIN_PRICE"]["DISCOUNT_VALUE"]?>">
 			<meta itemprop="priceCurrency" content="RUB">
+			<link itemprop="itemCondition" content="http://schema.org/NewCondition">
+			<?if(/*$arResult["CATALOG_QUANTITY"] > 0*/$arResult["CAN_BUY"]):?>
+			<link itemprop="availability" href="http://schema.org/InStock">
+			<?endif;?>
 			<?if(!empty($arResult["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arResult["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
 				<s class="discount"><?=$arResult["MIN_PRICE"]["PRINT_VALUE"]?></s>
 			<?endif;?>

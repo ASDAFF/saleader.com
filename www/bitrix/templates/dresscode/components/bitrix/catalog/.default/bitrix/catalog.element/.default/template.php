@@ -106,6 +106,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                            alt="<?= $arResult["BRAND"]["NAME"] ?>"></a>
                             <? endif; ?>
                             <? if (!empty($arResult["PREVIEW_TEXT"])): ?>
+                                <meta itemprop="description" content="<?= $arResult["~PREVIEW_TEXT"] ?>" />
                                 <div class="description">
                                     <div class="heading"><?= GetMessage("CATALOG_ELEMENT_PREVIEW_TEXT_LABEL") ?></div>
                                     <div class="changeShortDescription"
@@ -201,7 +202,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                 <? if (!empty($arResult["DETAIL_TEXT"])): ?>
                     <div id="detailText">
                         <div class="heading"><?= GetMessage("CATALOG_ELEMENT_DETAIL_TEXT_HEADING") ?></div>
-                        <div class="changeDescription" itemprop="description"
+                        <div class="changeDescription"
                              data-first-value='<?= $arResult["~DETAIL_TEXT"] ?>'><?= $arResult["~DETAIL_TEXT"] ?></div>
                     </div>
                 <? endif; ?>
