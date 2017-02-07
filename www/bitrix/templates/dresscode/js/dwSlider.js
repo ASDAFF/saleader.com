@@ -36,6 +36,9 @@
             "width" : "100%"
         });
 
+        //check length
+        options["touch"] = slideElements.length > 1 &&  options["touch"] == true ? true : false;
+
         if(options["touch"]){
             var slideElementWidth = slideElements.width();
             var slideBoxWidth = ((slideElements.length - 1) * slideElementWidth);

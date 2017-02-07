@@ -10,6 +10,8 @@
             speed: 400,
         }, options);
 
+        options.tmpCountElement = options.countElement; //save original value
+
         var $_this = $(this);
         var $main = new Main($(this));
 
@@ -72,9 +74,10 @@
         };
 
         var calculateParams = function(windowSize) {
-            var currentCount = options.countElement;
+            var currentCount = options.tmpCountElement;
             var tmpCount = 15360;
-            if (options.resizeElement === true) {       
+            options.countElement = options.tmpCountElement;
+            if (options.resizeElement === true) {
                 if(options.resizeWidth !== false){
                     options.countElement = Math.floor($_this.outerWidth() / options.resizeWidth);
                 }else if(options.resizeAutoParams !== false){
@@ -84,10 +87,11 @@
                                 options.countElement = countElements;
                                 tmpCount = screenWidth;
                             }
-                   
+
                         }
                     });
                 }
+
             }
 
             if (options.countElement < $main.qtyLI) {

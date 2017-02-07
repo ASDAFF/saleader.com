@@ -280,13 +280,12 @@ class HttpRequest extends Request
 		return Text\Encoding::convertEncodingToCurrent(urldecode($url));
 	}
 
-	public function getHttpHost($raw = true)
+	/**
+	 * Returns the host from the server variable without a port number.
+	 * @return string
+	 */
+	public function getHttpHost()
 	{
-		if ($raw)
-		{
-			return $this->server->getHttpHost();
-		}
-
 		static $host = null;
 
 		if ($host === null)
@@ -302,9 +301,18 @@ class HttpRequest extends Request
 
 	public function isHttps()
 	{
-		$port = $this->server->get("SERVER_PORT");
+		if($this->server->get("SERVER_PORT") == 443)
+		{
+			return true;
+		}
+
 		$https = $this->server->get("HTTPS");
-		return ($port == 443 || (($https != null) && (strtolower($https) == "on")));
+		if($https !== null && strtolower($https) == "on")
+		{
+			return true;
+		}
+
+		return (Config\Configuration::getValue("https_request") === true);
 	}
 
 	public function modifyByQueryString($queryString)
@@ -395,5 +403,14 @@ class HttpRequest extends Request
 			"show_link_stat",
 		);
 		return $params;
+	}
+
+	/**
+	 * Returns raw request data from php://input.
+	 * @return bool|string
+	 */
+	public static function getInput()
+	{
+		return file_get_contents("php://input");
 	}
 }

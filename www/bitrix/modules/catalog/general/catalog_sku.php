@@ -7,7 +7,7 @@ use Bitrix\Main\Application,
 
 Loc::loadMessages(__FILE__);
 
-class CAllCatalogSKU
+class CAllCatalogSku
 {
 	const TYPE_CATALOG = 'D';
 	const TYPE_PRODUCT = 'P';
@@ -57,7 +57,7 @@ class CAllCatalogSKU
 				return self::$parentCache[$intOfferID];
 
 			if (!isset(self::$arOfferCache[$intIBlockID]))
-				$skuInfo = CCatalogSKU::GetInfoByOfferIBlock($intIBlockID);
+				$skuInfo = static::GetInfoByOfferIBlock($intIBlockID);
 			else
 				$skuInfo = self::$arOfferCache[$intIBlockID];
 
@@ -268,7 +268,7 @@ class CAllCatalogSKU
 	*/
 	public static function IsExistOffers($intProductID, $intIBlockID = 0)
 	{
-		$result = self::getExistOffers($intProductID, $intIBlockID);
+		$result = static::getExistOffers($intProductID, $intIBlockID);
 		return !empty($result[$intProductID]);
 	}
 
@@ -605,6 +605,7 @@ class CAllCatalogSKU
 			$iblockFields = $fields;
 			$iblockFields[] = $skuProperty;
 			$skuProperty .= '_VALUE';
+			$skuPropertyId = $skuProperty.'_ID';
 			$offersLinks = array();
 
 			$offersIterator = CIBlockElement::GetList(
@@ -618,6 +619,8 @@ class CAllCatalogSKU
 			{
 				$offerProduct = (int)$offer[$skuProperty];
 				unset($offer[$skuProperty]);
+				if (isset($offer[$skuPropertyId]))
+					unset($offer[$skuPropertyId]);
 				if (!isset($result[$offerProduct]))
 					continue;
 				$offer['ID'] = (int)$offer['ID'];
@@ -808,10 +811,11 @@ class CAllCatalogSKU
 		self::$arProductCache = array();
 		self::$arPropertyCache = array();
 		self::$arIBlockCache = array();
+		self::$parentCache = array();
 	}
 }
 
-class CCatalogSKU extends CAllCatalogSKU
+class CCatalogSku extends CAllCatalogSku
 {
 
 }

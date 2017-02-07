@@ -670,7 +670,9 @@ strong{
 }
 
 #bannersBlock ul li:first-child {
+    /*
 	margin-bottom: 12px;
+    */
 	float: none;
 }
 

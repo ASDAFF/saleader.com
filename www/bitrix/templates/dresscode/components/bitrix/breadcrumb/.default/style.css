@@ -23,6 +23,11 @@
 	line-height: 21px;
 }
 
+#breadcrumbs ul li span{
+	display: inline-block;
+	line-height: 21px;	
+}
+
 #breadcrumbs .arrow{
 	vertical-align: middle;
 	display: inline-block;

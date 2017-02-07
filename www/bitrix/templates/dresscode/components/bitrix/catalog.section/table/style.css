@@ -94,6 +94,10 @@
 	color: #000000;
 }
 
+#catalogTableList .price .measure{
+	font-size: 16px;
+}
+
 #catalogTableList .price .discount{
 	font-family: 'roboto_ltregular';
 	position: absolute;

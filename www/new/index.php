@@ -23,7 +23,7 @@ $APPLICATION->SetTitle("Новинки");?><h1>Новинки</h1><?$APPLICATION
 	array(
 		"COMPONENT_TEMPLATE" => ".default",
 		"IBLOCK_TYPE" => "catalog",
-		"IBLOCK_ID" => "9",
+		"IBLOCK_ID" => "25",
 		"PRICE_CODE" => array(
 			0 => "BASE",
 		),

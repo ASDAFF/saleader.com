@@ -2,7 +2,75 @@
 <?error_reporting(0);?>
 <?if(!empty($_GET["act"])){
 	if (CModule::IncludeModule("catalog") && CModule::IncludeModule("sale")){
-		if($_GET["act"] == "selectSku"){
+		if($_GET["act"] == "getAvailableWindow"){
+			if(!empty($_GET["product_id"])){
+				$APPLICATION->IncludeComponent(
+					"bitrix:catalog.store.amount", 
+					"fastView", 
+					array(
+						"COMPONENT_TEMPLATE" => "fastView",
+						"ELEMENT_ID" => intval($_GET["product_id"]),
+						"STORES" => array(
+						),
+						"ELEMENT_CODE" => "",
+						"STORE_PATH" => "/stores/#store_id#/",
+						"CACHE_TYPE" => "N",
+						"CACHE_TIME" => "36000",
+						"MAIN_TITLE" => "",
+						"USER_FIELDS" => array(
+							0 => "",
+							1 => "",
+						),
+						"FIELDS" => array(
+							0 => "TITLE",
+							1 => "ADDRESS",
+							2 => "DESCRIPTION",
+							3 => "PHONE",
+							4 => "EMAIL",
+							5 => "IMAGE_ID",
+							6 => "COORDINATES",
+							7 => "SCHEDULE",
+							8 => "",
+						),
+						"SHOW_EMPTY_STORE" => "Y",
+						"USE_MIN_AMOUNT" => "Y",
+						"SHOW_GENERAL_STORE_INFORMATION" => "N",
+						"MIN_AMOUNT" => "0"
+					),
+					false
+				);
+			}
+		}elseif($_GET["act"] == "getPricesWindow"){
+			if(!empty($_GET["product_id"])){
+				$APPLICATION->IncludeComponent(
+					"dresscode:catalog.prices.view", 
+					".default", 
+					array(
+						"COMPONENT_TEMPLATE" => ".default",
+						"CACHE_TYPE" => "A",
+						"CACHE_TIME" => "360000",
+						"PRODUCT_ID" => intval($_GET["product_id"])
+					),
+					false
+				);
+			}
+		}elseif($_GET["act"] == "getFastView"){
+			if(!empty($_GET["product_id"])){
+				$APPLICATION->IncludeComponent(
+					"dresscode:catalog.fast.view", 
+					".default", 
+					array(
+						"COMPONENT_TEMPLATE" => ".default",
+						"CACHE_TYPE" => "A",
+						"CACHE_TIME" => "360000",
+						"PRODUCT_ID" => intval($_GET["product_id"]),
+						'HIDE_MEASURES'=>'Y'
+					),
+					false
+				);
+			}
+		}
+		elseif($_GET["act"] == "selectSku"){
 			if(!empty($_GET["params"]) &&
 			   !empty($_GET["iblock_id"]) &&
 			   !empty($_GET["prop_id"]) &&
@@ -20,9 +88,9 @@
 					"PROPERTY_".intval($_GET["prop_id"]) => intval($_GET["product_id"])
  				);
 
-				if($OPTION_ADD_CART == N){
-					$arTmpFilter[">CATALOG_QUANTITY"] = 0;
-				}
+				// if($OPTION_ADD_CART == N){
+				// 	$arTmpFilter[">CATALOG_QUANTITY"] = 0;
+				// }
 
 				$arProps = array();
 				$arParams =  array();
@@ -31,16 +99,26 @@
 				$arProperties = array();
 				$arPropActive = array();
 				$arAllProperties = array();
+				$arPropCombination = array();
+				$arHighloadProperty = array();
 
 				$PROPS = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["props"]) : $_GET["props"];
 				$PARAMS = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["params"]) : $_GET["params"];
+				$HIGHLOAD = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["highload"]) : $_GET["highload"];
 
 				//normalize property
 				$exProps = explode(";", trim($PROPS, ";"));
 				$exParams = explode(";", trim($PARAMS, ";"));
+				$exHighload = explode(";", trim($HIGHLOAD, ";"));
 
 				if(empty($exProps) || empty($exParams))
 					die("error #1 | Empty params or propList _no valid data");
+
+				if(!empty($exHighload)){
+					foreach ($exHighload as $ihl => $nextHighLoad) {
+						$arHighloadProperty[$nextHighLoad] = "Y";
+					}
+				}
 
 				foreach ($exProps as $ip => $sProp) {
 					$msp = explode(":", $sProp);
@@ -50,7 +128,11 @@
 				foreach ($exParams as $ip => $pProp) {
 					$msr = explode(":", $pProp);
 					$arParams[$msr[0]] = $msr[1];
-					$arTmpParams["PROPERTY_".$msr[0]."_VALUE"] = $msr[1];
+					if(empty($arHighloadProperty[$msr[0]])){
+						$arTmpParams["PROPERTY_".$msr[0]."_VALUE"] = $msr[1];
+					}else{
+						$arTmpParams["PROPERTY_".$msr[0]] = $msr[1];
+					}
 				}
 
 				$arFilter = array_merge($arTmpFilter, array_slice($arTmpParams, 0, $_GET["level"]));
@@ -61,16 +143,21 @@
 					array(
 						"ID",
 						"NAME",
-						"IBLOCK_ID"
+						"IBLOCK_ID",
+						"CATALOG_MEASURE"
 					)
 				);
 
 				while($obOffer = $rsOffer->GetNextElement()){
+					$arOfferParams = $obOffer->GetFields();
 					$arFilterProp = $obOffer->GetProperties();
 					foreach ($arFilterProp as $ifp => $arNextProp) {
-						if($arNextProp["PROPERTY_TYPE"] == "L" && !empty($arNextProp["VALUE"])){
+						if($arNextProp["PROPERTY_TYPE"] == "L" && !empty($arNextProp["VALUE"])
+							|| $arNextProp["PROPERTY_TYPE"] == "S" && !empty($arNextProp["USER_TYPE_SETTINGS"]["TABLE_NAME"]) && !empty($arNextProp["VALUE"])
+						){
 							$arProps[$arNextProp["CODE"]][$arNextProp["VALUE"]] = N;
 							$arProperties[$arNextProp["CODE"]] = $arNextProp["VALUE"];
+							$arPropCombination[$arOfferParams["ID"]][$arNextProp["CODE"]][$arNextProp["VALUE"]] = "Y";
 						}
 					}
 				}
@@ -97,8 +184,33 @@
 						foreach ($arNextProp as $inv => $arNextPropValue) {
 							if($arNextPropValue == Y){
 								$arPropActive[$ip] = $inv;
+								$arPropActiveIndex[$activeIntertion++] = $inv;
 							}
 						}
+					}
+				}
+
+				if(!empty($arProps)){
+					$arPrevLevelProp = array();
+					$levelIteraion = 0;
+					foreach ($arProps as $inp => $arNextProp){ //level each
+						if($levelIteraion > 0){
+							foreach ($arNextProp as $inpp => $arNextPropEach) {
+								if($arNextPropEach == "N" && !empty($arPrevLevelProp)){
+									$seachSuccess = false;
+									foreach ($arPropCombination as $inc => $arNextCombination) {
+										if($arNextCombination[$inp][$inpp] == "Y" && $arNextCombination[$arPrevLevelProp["INDEX"]][$arPrevLevelProp["VALUE"]] == "Y"){
+											$seachSuccess = true;
+											break(1);
+										}
+									}
+									if($seachSuccess == false){
+										$arProps[$inp][$inpp] = "D";
+									}
+								}
+							}
+						}$levelIteraion++;
+						$arPrevLevelProp = array("INDEX" => $inp, "VALUE" => $arPropActive[$inp]);
 					}
 				}
 
@@ -108,16 +220,69 @@
 					"PROPERTY_".intval($_GET["prop_id"]) => intval($_GET["product_id"])
 				);
 
-				if($OPTION_ADD_CART == "N"){
-					$arTmpFilter[">CATALOG_QUANTITY"] = 0;
-				}
+				// if($OPTION_ADD_CART == "N"){
+				// 	$arTmpFilter[">CATALOG_QUANTITY"] = 0;
+				// }
 
 				foreach ($arPropActive as $icp => $arNextProp) {
-					$arLastFilter["PROPERTY_".$icp."_VALUE"] = $arNextProp;
+					if(empty($arHighloadProperty[$icp])){
+						$arLastFilter["PROPERTY_".$icp."_VALUE"] = $arNextProp;
+					}else{
+						$arLastFilter["PROPERTY_".$icp] = $arNextProp;
+					}
 				}
 
-				$arLastOffer = getLastOffer($arLastFilter, $arProps, $_GET["product_id"], $OPTION_CURRENCY);
-				$arLastOffer["PRODUCT"]["CAN_BUY"] = $OPTION_ADD_CART == "Y" ? true : false;
+				$arLastOffer = getLastOffer($arLastFilter, $arProps, $_GET["product_id"], $OPTION_CURRENCY, !empty($_GET["product-more-pictures"]));
+
+				if(!empty($arLastOffer["PRODUCT"]["CATALOG_MEASURE"])){
+					//коэффициент еденица измерения 
+					$rsMeasure = CCatalogMeasure::getList(
+						array(),
+						array(
+							"ID" => $arLastOffer["PRODUCT"]["CATALOG_MEASURE"]
+						),
+						false,
+						false,
+						false
+					);
+					
+					while($arNextMeasure = $rsMeasure->Fetch()) {
+						$arLastOffer["PRODUCT"]["MEASURE"] = $arNextMeasure;
+					}
+				}
+
+				if(!empty($_GET["product-change-prop"])){
+					ob_start();
+					$APPLICATION->IncludeComponent(
+						"dresscode:catalog.properties.list", 
+						htmlspecialchars($_GET["product-change-prop"]), 
+						array(
+							"PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"],
+							"COUNT_PROPERTIES" => 10
+						),
+						false
+					);
+					$arLastOffer["PRODUCT"]["RESULT_PROPERTIES"] = ob_get_contents();
+					ob_end_clean();
+				}
+
+				//price count
+				$dbPrice = CPrice::GetList(
+			        array(),
+			        array("PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]),
+			        false,
+			        false,
+			        array("ID")
+			    );
+				$arLastOffer["PRODUCT"]["COUNT_PRICES"] = $dbPrice->SelectedRowsCount();
+
+				//Информация о складах
+				$rsStore = CCatalogStoreProduct::GetList(array(), array("PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]), false, false, array("ID", "AMOUNT")); 
+				while($arNextStore = $rsStore->GetNext()){
+					$arLastOffer["PRODUCT"]["STORES"][] = $arNextStore;
+				}
+
+				$arLastOffer["PRODUCT"]["STORES_COUNT"] = count($arLastOffer["PRODUCT"]["STORES"]);
 
 				if(!empty($arProps)){
 					echo jsonMultiEn(
@@ -132,13 +297,32 @@
 		}
 
 		elseif($_GET["act"] == "addCart"){
+					
 			if(!empty($_GET["multi"]) && !empty($_GET['id'])){
+				
 				$error = false;
 				$addElements = explode(";", $_GET["id"]);
+				
 				foreach ($addElements as $x => $nextID) {
-					if(!Add2BasketByProductID(intval($nextID), intval($_GET["q"]), false)){
+					$addBasketQuantity = 1;
+					$rsMeasureRatio = CCatalogMeasureRatio::getList(
+						array(), 
+						array("PRODUCT_ID" => $nextID), 
+						false, 
+						false, 
+						array()
+					);
+					
+					if($arProductMeasureRatio = $rsMeasureRatio->Fetch()){
+						if(!empty($arProductMeasureRatio["RATIO"])){
+							$addBasketQuantity = $arProductMeasureRatio["RATIO"];
+						}
+					}
+
+					if(!Add2BasketByProductID(intval($nextID), $addBasketQuantity, false)){
 						$error = true;
 					}
+
 				}
 
 				if(!$error){
@@ -146,14 +330,112 @@
 				}
 
 			}else{
-				if(Add2BasketByProductID(intval($_GET["id"]), intval($_GET["q"]), false)){
+				
+				//коэффициент еденица измерения
+			
+				$addBasketQuantity = 1;
+				$rsMeasureRatio = CCatalogMeasureRatio::getList(
+					array(), 
+					array("PRODUCT_ID" => intval($_GET["id"])), 
+					false, 
+					false, 
+					array()
+				);
+				
+				if($arProductMeasureRatio = $rsMeasureRatio->Fetch()){
+					if(!empty($arProductMeasureRatio["RATIO"])){
+						$addBasketQuantity = $arProductMeasureRatio["RATIO"];
+					}
+				}
+
+				// Проверка на комплект
+				
+				$arComplectID = array();
+				$arResult["COMPLECT"] = array();
+				
+				$rsComplect = CCatalogProductSet::getList(
+					array("SORT" => "ASC"),
+					array(
+						"TYPE" => 1,
+						"OWNER_ID" => intval($_GET["id"]),
+						"!ITEM_ID" => intval($_GET["id"])
+					),
+					false,
+					false,
+					array("*")
+				);
+
+				while ($arComplectItem = $rsComplect->Fetch()){
+					$arResult["COMPLECT"]["ITEMS"][$arComplectItem["ITEM_ID"]] = $arComplectItem;
+					$arComplectID[$arComplectItem["ITEM_ID"]] = $arComplectItem["ITEM_ID"];
+				}
+
+				if(!empty($arComplectID)){
+			
+					$arResult["COMPLECT"]["WEIGHT"] = 0;
+					$arResult["COMPLECT"]["RESULT_PRICE"] = 0;
+					$arResult["COMPLECT"]["RESULT_BASE_DIFF"] = 0;
+					$arResult["COMPLECT"]["RESULT_BASE_PRICE"] = 0;
+
+					$arSelect = Array("ID", "IBLOCK_ID", "NAME", "DETAIL_PICTURE", "DETAIL_PAGE_URL", "CATALOG_MEASURE", "CATALOG_AVAILABLE", "CATALOG_WEIGHT");
+					$arFilter = Array("ID" => $arComplectID, "ACTIVE_DATE" => "Y", "ACTIVE" => "Y");
+					$rsComplectProducts = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+					while($obComplectProducts = $rsComplectProducts->GetNextElement()){
+						
+						$complectProductFields = $obComplectProducts->GetFields();
+						$complectProductFields["PRICE"] = CCatalogProduct::GetOptimalPrice($complectProductFields["ID"], 1, $USER->GetUserGroupArray());
+						$complectProductFields["PRICE"]["DISCOUNT_PRICE"] = $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+						$complectProductFields["PRICE"]["DISCOUNT_PRICE"] -= $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["DISCOUNT_PERCENT"] / 100;
+						$complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"]  * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+						$complectProductFields["PRICE"]["PRICE_DIFF"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] - $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+						$complectProductFields["PRICE"]["BASE_PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY);
+						$complectProductFields["PRICE"]["PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["DISCOUNT_PRICE"], $OPTION_CURRENCY);
+						
+						$arResult["COMPLECT"]["WEIGHT"] += $complectProductFields["CATALOG_WEIGHT"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+						$arResult["COMPLECT"]["RESULT_PRICE"] += $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+					}
+
+					$rsComplectOwnerProduct = CIBlockElement::GetList(array(), array("ID" => intval($_GET["id"]), "ACTIVE_DATE" => "Y", "ACTIVE" => "Y"), false, false, $arSelect);
+					if($obComplectOwnerProduct = $rsComplectOwnerProduct->GetNextElement()){
+						
+						$complectOwnerProduct = $obComplectOwnerProduct->GetFields();
+						$complectOwnerProduct["PRICE"] = CCatalogProduct::GetOptimalPrice($complectOwnerProduct["ID"], 1, $USER->GetUserGroupArray());
+
+						$arCartFields = array(
+							"PRODUCT_ID" => intval($_GET["id"]),
+							"PRODUCT_PRICE_ID" => $complectOwnerProduct["PRICE"]["PRICE"]["ID"],
+							"PRICE" => $arResult["COMPLECT"]["RESULT_PRICE"],
+							"CURRENCY" => $complectOwnerProduct["PRICE"]["PRICE"]["CURRENCY"],
+							"WEIGHT" => $arResult["COMPLECT"]["WEIGHT"],
+							"PRODUCT_PROVIDER_CLASS" =>  false,
+							"QUANTITY" => $addBasketQuantity,
+							"LID" => $_GET["site_id"],
+							"DELAY" => "N",
+							"CAN_BUY" => $complectOwnerProduct["CATALOG_AVAILABLE"],
+							"NAME" => $complectOwnerProduct["NAME"],
+							"IGNORE_CALLBACK_FUNC" => "Y",
+							"CALLBACK_FUNC" => "", 
+							"MODULE" => "sale",
+							"NOTES" => "",
+							"DETAIL_PAGE_URL" => $complectOwnerProduct["DETAIL_PAGE_URL"],
+							"FUSER_ID" => CSaleBasket::GetBasketUserID()
+						);
+
+						$addCartResult = CSaleBasket::Add($arCartFields);
+
+					}
+
+				}else{
+					$addCartResult = Add2BasketByProductID(intval($_GET["id"]), $addBasketQuantity, false);
+				}
+
+				if($addCartResult){
 					
-					global $USER;
+					GLOBAL $USER;
 					
 					$OPTION_ADD_CART = COption::GetOptionString("catalog", "default_can_buy_zero");
-					$gStr = "";
-					$mStr = "";
-
+					$mStr = $gStr = "";
+					
 					$getList = CIBlockElement::GetList(
 						Array(),
 						array(
@@ -167,17 +449,39 @@
 							"DETAIL_PICTURE",
 							"DETAIL_PAGE_URL",
 							"CATALOG_QUANTITY",
+							"CATALOG_MEASURE"
 						)
 					);
 
 					$obj = $getList->GetNextElement();
 					$arResult = $obj->GetFields();
 					$arResult["PROPERTIES"] = $obj->GetProperties();
+					$arResult["NAME"] = str_replace("&quot;","", $arResult["NAME"]);
+					
+					if(empty($arResult["DETAIL_PICTURE"])){
+						$productSkuInfo = CCatalogSku::GetProductInfo($arResult["ID"]);
+						if (is_array($productSkuInfo)){
+							$getListSkuProductInfo = CIBlockElement::GetList(
+								Array(),
+								array(
+									"ID" => $productSkuInfo["ID"]
+								),
+								false,
+								false,
+								array(
+									"DETAIL_PICTURE",
+								)
+							)->GetNextElement();
+							$arSkuProductResult = $getListSkuProductInfo->GetFields();
+							$arResult["DETAIL_PICTURE"] = $arSkuProductResult["DETAIL_PICTURE"];
+						}			
+					}
+					
 					$arResult["DETAIL_PICTURE"] = CFile::ResizeImageGet($arResult["DETAIL_PICTURE"], array("width" => 280, "height" => 280), BX_RESIZE_IMAGE_PROPORTIONAL, false);
 					$arResult["DETAIL_PICTURE"] = !empty($arResult["DETAIL_PICTURE"]["src"]) ? $arResult["DETAIL_PICTURE"]["src"] : SITE_TEMPLATE_PATH."/images/empty.png";
-					
+
 					foreach ($arResult as $index => $arValues) {
-						$arJsn[] = '"'.$index.'":"'.addslashes(str_replace("'", "", trim($arValues))).'"';
+						$arJsn[] = '"'.$index.'":"'.addslashes(str_replace(array("'", "\r", "\n", "\r\n"), "", trim($arValues))).'"';
 					}
 
 					$dbBasketItems = CSaleBasket::GetList(
@@ -204,20 +508,42 @@
 					$basketQty["DISCOUNT_SUM"] = !empty($basketQty["DISCOUNT_PRICE"]) && $basketQty["DISCOUNT_PRICE"] > 0 ? CCurrencyLang::CurrencyFormat(($basketQty["PRICE"] + $basketQty["DISCOUNT_PRICE"]) * round($basketQty["QUANTITY"]), $basketQty["CURRENCY"], true) : $basketQty["DISCOUNT_PRICE"];
 					$basketQty["OLD_PRICE"] = round($basketQty["~DISCOUNT_PRICE"]) > 0 ? $basketQty["PRICE"] + $basketQty["DISCOUNT_PRICE"] : 0;
 					$arResult["CAN_BUY"] = $OPTION_ADD_CART == "Y" ? true : false;
+					$arResult["MEASURE_SYMBOL_RUS"] = "";
 
+					if(!empty($arResult["CATALOG_MEASURE"])){
+						//коэффициент еденица измерения 
+						$rsMeasure = CCatalogMeasure::getList(
+							array(),
+							array(
+								"ID" => $arResult["CATALOG_MEASURE"]
+							),
+							false,
+							false,
+							false
+						);
+						
+						while($arNextMeasure = $rsMeasure->Fetch()) {
+							$arResult["MEASURE"] = $arNextMeasure;
+						}
+					}
+
+					if(!empty($arResult["MEASURE"])){
+						$arResult["MEASURE_SYMBOL_RUS"] = $arResult["MEASURE"]["SYMBOL_RUS"];
+					}
 
 					$jStr = '
 						"PRODUCT_ID":"'.intval($basketQty["PRODUCT_ID"]).'",
 						"CART_ID":"'.intval($basketQty["ID"]).'",
-						"QUANTITY":"'.round($basketQty["QUANTITY"]).'",
+						"QUANTITY":"'.doubleval($basketQty["QUANTITY"]).'",
 						"~PRICE":"'.round($basketQty["PRICE"]).'",
 						"OLD_PRICE": "'.$basketQty["OLD_PRICE"].'",
-						"SUM":"'.CCurrencyLang::CurrencyFormat(round($basketQty["PRICE"]) * round($basketQty["QUANTITY"]), $basketQty["CURRENCY"], true).'",
-						"PRICE":"'.CCurrencyLang::CurrencyFormat($basketQty["PRICE"], $basketQty["CURRENCY"], true).'",
+						"SUM":"'.addslashes(CCurrencyLang::CurrencyFormat(round($basketQty["PRICE"]) * doubleval($basketQty["QUANTITY"]), $basketQty["CURRENCY"], true)).'",
+						"PRICE":"'.addslashes(CCurrencyLang::CurrencyFormat($basketQty["PRICE"], $basketQty["CURRENCY"], true)).'",
 						"DISCOUNT_PRICE":"'.$basketQty["~DISCOUNT_PRICE"].'",
 						"DISCOUNT_SUM":"'.$basketQty["DISCOUNT_SUM"].'",
-						"CATALOG_QUANTITY":"'.$arResult["CATALOG_QUANTITY"].'",
-						"CAN_BUY":"'.$arResult["CAN_BUY"].'"
+						"CAN_BUY":"'.$arResult["CAN_BUY"].'",
+						"MEASURE_SYMBOL_RUS":"'.$arResult["MEASURE_SYMBOL_RUS"].'",
+						"ADDBASKET_QUANTITY_RATIO":"'.$addBasketQuantity.'"
 					';
 					
 					if(!empty($arResult["PROPERTIES"]["RATING"])){
@@ -244,26 +570,68 @@
 			echo CSaleBasket::Delete(intval($_GET["id"]));
 		}elseif($_GET["act"] == "upd"){
 			
-			$dbBasketItems = CSaleBasket::GetList(
-				false, 
-				array(
-					"FUSER_ID" => CSaleBasket::GetBasketUserID(),
-					"ORDER_ID" => "NULL",
-					"PRODUCT_ID" => intval($_GET["id"])
-				), 
-				false, 
-				false, 
-				array("ID")
-			);
+			$OPTION_QUANTITY_TRACE = COption::GetOptionString("catalog", "default_quantity_trace");
 			
-			$basketRES = $dbBasketItems->Fetch();
-			
-			echo CSaleBasket::Update(
-					$basketRES["ID"],
-					 array(
-					 	"QUANTITY" => intval($_GET["q"])
+			if(!empty($_GET["id"])){
+				$getList = CIBlockElement::GetList(
+					Array(),
+					array(
+						"ID" => intval($_GET['id'])
+					),
+					false,
+					false,
+					array(
+						"ID",
+						"NAME",
+						"DETAIL_PICTURE",
+						"DETAIL_PAGE_URL",
+						"CATALOG_QUANTITY"
 					)
 				);
+
+				$obj = $getList->GetNextElement();
+				$arProduct = $obj->GetFields();
+				if(!empty($arProduct)){
+					$dbBasketItems = CSaleBasket::GetList(
+						false, 
+						array(
+							"FUSER_ID" => CSaleBasket::GetBasketUserID(),
+							"ORDER_ID" => "NULL",
+							"PRODUCT_ID" => intval($_GET["id"])
+						), 
+						false, 
+						false, 
+						array("ID")
+					);
+					
+					$basketRES = $dbBasketItems->Fetch();
+					if(!empty($basketRES)){
+							
+						if($OPTION_QUANTITY_TRACE == "Y"){
+							if($arProduct["CATALOG_QUANTITY"] < doubleval($_GET["q"])){
+								$quantityError = true;
+							}
+						}
+
+						if(!$quantityError){
+							if(CSaleBasket::Update($basketRES["ID"], array("QUANTITY" => doubleval($_GET["q"])))){
+								echo '{"success" : "true"}';
+							}else{
+								echo '{"error" : "basketUpdateError"}';
+							}
+						}else{
+							echo '{"error" : "quantityError", "currentQuantityValue": "'.$arProduct["CATALOG_QUANTITY"].'"}';
+						}
+
+					}else{
+						echo '{"error" : "productCartError"}';
+					}
+				}else{
+					echo '{"error" : "productNotFoundError"}';
+				}
+			}else{
+				echo '{"error" : "empty product id"}';
+			}
 		}
 		elseif($_GET["act"] == "skuADD"){ 
 			if(!empty($_GET["id"]) && !empty($_GET["ibl"])){
@@ -472,20 +840,50 @@
 		   ?>
 		   <ul>
 			   <li class="dl">      
-			       <?$APPLICATION->IncludeComponent(
-						"bitrix:sale.basket.basket.small",
-						"topCart",
-						Array(),
-						false
-					);?>
+<?$APPLICATION->IncludeComponent(
+	"bitrix:sale.basket.basket.line", 
+	"topCart", 
+	array(
+		"HIDE_ON_BASKET_PAGES" => "N",
+		"PATH_TO_BASKET" => SITE_DIR."personal/cart/",
+		"PATH_TO_ORDER" => SITE_DIR."personal/order/make/",
+		"PATH_TO_PERSONAL" => SITE_DIR."personal/",
+		"PATH_TO_PROFILE" => SITE_DIR."personal/",
+		"PATH_TO_REGISTER" => SITE_DIR."login/",
+		"POSITION_FIXED" => "N",
+		"SHOW_AUTHOR" => "Y",
+		"SHOW_EMPTY_VALUES" => "Y",
+		"SHOW_NUM_PRODUCTS" => "Y",
+		"SHOW_PERSONAL_LINK" => "N",
+		"SHOW_PRODUCTS" => "Y",
+		"SHOW_TOTAL_PRICE" => "Y",
+		"COMPONENT_TEMPLATE" => "topCart"
+	),
+	false
+);?>
 				</li>
 				<li class="dl">
-			       <?$APPLICATION->IncludeComponent(
-						"bitrix:sale.basket.basket.small",
-						"bottomCart",
-						Array(),
-						false
-					);?>				
+<?$APPLICATION->IncludeComponent(
+	"bitrix:sale.basket.basket.line", 
+	"bottomCart", 
+	array(
+		"HIDE_ON_BASKET_PAGES" => "N",
+		"PATH_TO_BASKET" => SITE_DIR."personal/cart/",
+		"PATH_TO_ORDER" => SITE_DIR."personal/order/make/",
+		"PATH_TO_PERSONAL" => SITE_DIR."personal/",
+		"PATH_TO_PROFILE" => SITE_DIR."personal/",
+		"PATH_TO_REGISTER" => SITE_DIR."login/",
+		"POSITION_FIXED" => "N",
+		"SHOW_AUTHOR" => "N",
+		"SHOW_EMPTY_VALUES" => "Y",
+		"SHOW_NUM_PRODUCTS" => "Y",
+		"SHOW_PERSONAL_LINK" => "N",
+		"SHOW_PRODUCTS" => "Y",
+		"SHOW_TOTAL_PRICE" => "Y",
+		"COMPONENT_TEMPLATE" => "topCart"
+	),
+	false
+);?>				
 				</li>
 				<li class="dl">
 					<?$APPLICATION->IncludeComponent("dresscode:favorite.line", ".default", Array(
@@ -678,8 +1076,25 @@
 					$arResult["PRODUCT"]["PICTURE"]["src"] = !empty($arResult["PRODUCT"]["PICTURE"]["src"]) ? $arResult["PRODUCT"]["PICTURE"]["src"] : SITE_TEMPLATE_PATH."/images/empty.png";
 					$arResult["PRODUCT"]["PRICE"]["PRICE_FORMATED"] = CurrencyFormat($arTmpPrice["DISCOUNT_PRICE"], $OPTION_CURRENCY);
 
+					if(empty($arResult["PRODUCT"]["DETAIL_PICTURE"])){
+						$skuProductInfo = CCatalogSKU::getProductList($arResult["PRODUCT"]["ID"]);
+						if(!empty($skuProductInfo)){
+							foreach ($skuProductInfo as $itx => $skuProductInfoElement) {
+								$productBySku = CIBlockElement::GetByID($skuProductInfoElement["ID"]);
+								if(!empty($productBySku)){
+									if($arResProductSku = $productBySku->GetNextElement()){
+										$arResProductSkuFields = $arResProductSku->GetFields();
+										if(!empty($arResProductSkuFields["DETAIL_PICTURE"])){
+											$arResult["PRODUCT"]["PICTURE"] = CFile::ResizeImageGet($arResProductSkuFields["DETAIL_PICTURE"], array("width" => 270, "height" => 230), BX_RESIZE_IMAGE_PROPORTIONAL, false, false, false, 80);									
+										}
+									}
+								}
+							}
+						}
+					}
+
 					if($arTmpPrice["RESULT_PRICE"]["BASE_PRICE"] != $arTmpPrice["RESULT_PRICE"]["DISCOUNT_PRICE"]){
-						$arResult["PRODUCT"]["PRICE"]["PRICE_FORMATED"].= '<s class="discount">'.CurrencyFormat($arTmpPrice["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY).'</s>';
+						$arResult["PRODUCT"]["PRICE"]["PRICE_FORMATED"].= ' <s class="discount">'.CurrencyFormat($arTmpPrice["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY).'</s>';
 					}
 
 					if(!empty($arResult["PRODUCT"]["PROPERTIES"]["OFFERS"]["VALUE"])){
@@ -689,6 +1104,71 @@
 						}					   
 
 						$arResult["PRODUCT"]["MARKER"] = $mStr;
+					}
+
+					//комплекты
+					$arResult["COMPLECT"] = array();
+					$arComplectID = array();
+
+					$rsComplect = CCatalogProductSet::getList(
+						array("SORT" => "ASC"),
+						array(
+							"TYPE" => 1,
+							"OWNER_ID" => $arResult["PRODUCT"]["ID"],
+							"!ITEM_ID" => $arResult["PRODUCT"]["ID"]
+						),
+						false,
+						false,
+						array("*")
+					);
+
+					while ($arComplectItem = $rsComplect->Fetch()) {
+						$arResult["COMPLECT"]["ITEMS"][$arComplectItem["ITEM_ID"]] = $arComplectItem;
+						$arComplectID[$arComplectItem["ITEM_ID"]] = $arComplectItem["ITEM_ID"];
+					}
+
+					if(!empty($arComplectID)){
+
+						$arResult["COMPLECT"]["RESULT_PRICE"] = 0;
+						$arResult["COMPLECT"]["RESULT_BASE_DIFF"] = 0;
+						$arResult["COMPLECT"]["RESULT_BASE_PRICE"] = 0;
+
+						$arSelect = Array("ID", "IBLOCK_ID", "NAME", "DETAIL_PICTURE", "DETAIL_PAGE_URL", "CATALOG_MEASURE");
+						$arFilter = Array("ID" => $arComplectID, "ACTIVE_DATE" => "Y", "ACTIVE" => "Y");
+						$rsComplectProducts = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+						while($obComplectProducts = $rsComplectProducts->GetNextElement()){
+							
+							$complectProductFields = $obComplectProducts->GetFields();
+							$complectProductFields["PRICE"] = CCatalogProduct::GetOptimalPrice($complectProductFields["ID"], 1, $USER->GetUserGroupArray());
+							$complectProductFields["PRICE"]["DISCOUNT_PRICE"] = $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+							$complectProductFields["PRICE"]["DISCOUNT_PRICE"] -= $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["DISCOUNT_PERCENT"] / 100;
+							$complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] * $arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+							$complectProductFields["PRICE"]["PRICE_DIFF"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] - $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+							$complectProductFields["PRICE"]["BASE_PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY);
+							$complectProductFields["PRICE"]["PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["DISCOUNT_PRICE"], $OPTION_CURRENCY);
+							$arResult["COMPLECT"]["RESULT_PRICE"] += $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+							$arResult["COMPLECT"]["RESULT_BASE_PRICE"] += $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"];
+							$arResult["COMPLECT"]["RESULT_BASE_DIFF"] += $complectProductFields["PRICE"]["PRICE_DIFF"];
+
+							$complectProductFields = array_merge(
+								$arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]], 
+								$complectProductFields
+							);
+							
+							$arResult["COMPLECT"]["ITEMS"][$complectProductFields["ID"]] = $complectProductFields;
+
+						}
+
+						$arResult["COMPLECT"]["RESULT_PRICE_FORMATED"] = CurrencyFormat($arResult["COMPLECT"]["RESULT_PRICE"], $OPTION_CURRENCY);
+						$arResult["COMPLECT"]["RESULT_BASE_DIFF_FORMATED"] = CurrencyFormat($arResult["COMPLECT"]["RESULT_BASE_DIFF"], $OPTION_CURRENCY);
+						$arResult["COMPLECT"]["RESULT_BASE_PRICE_FORMATED"] = CurrencyFormat($arResult["COMPLECT"]["RESULT_BASE_PRICE"], $OPTION_CURRENCY); 
+
+						//set price
+						$arResult["PRODUCT"]["PRICE"]["PRICE_FORMATED"] = $arResult["COMPLECT"]["RESULT_PRICE_FORMATED"];
+						if(!empty($arResult["COMPLECT"]["RESULT_BASE_DIFF"])){
+							$arResult["PRODUCT"]["PRICE"]["PRICE_FORMATED"].= ' <s class="discount">'.$arResult["COMPLECT"]["RESULT_BASE_PRICE_FORMATED"].'</s>';
+						}
+
 					}
 
 				}
@@ -996,7 +1476,14 @@ function getJnLevel($data, $level = 1, $arJsn = array()){
 	return $arJsn;
 }
 
-function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
+function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency, $enableMorePictures = false){
+	
+	if(!empty($_GET["product_width"]) && !empty($_GET["product_height"])){
+		$arProductImage = array("width" => $_GET["product_width"], "height" => $_GET["product_height"]);
+	}else{
+		$arProductImage = array("width" => 220, "height" => 200);
+	}
+
 	$rsLastOffer = CIBlockElement::GetList(
 		array(),
 		$arLastFilter, false, false,
@@ -1006,39 +1493,98 @@ function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
 			"IBLOCK_ID",
 			"DETAIL_PICTURE",
 			"DETAIL_PAGE_URL",
-			"CATALOG_QUANTITY"
+			"CATALOG_QUANTITY",
+			"CATALOG_AVAILABLE"
 		)
 	);
 	if(!$rsLastOffer->SelectedRowsCount()){
 		$st = array_pop($arLastFilter);
 		$mt = array_pop($arProps);
-		return getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency);
+		return getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency, $enableMorePictures);
 	}else{
 		if($obReturnOffer = $rsLastOffer->GetNextElement()){
+			
 			$productFilelds = $obReturnOffer->GetFields();
+			if($enableMorePictures){
+				$productProperties = $obReturnOffer->GetProperties();
+			}
+
+			$productFilelds["IMAGES"] = array();
+			$rsProductSelect = array("ID", "IBLOCK_ID", "DETAIL_PICTURE");
+
 			if(!empty($productFilelds["DETAIL_PICTURE"])){
-				$arImageInfo = CFile::GetFileArray($productFilelds["DETAIL_PICTURE"]);
-				$arImageResize = CFile::ResizeImageGet($arImageInfo, array('width' => 220, 'height' => 200), BX_RESIZE_IMAGE_PROPORTIONAL, false);
+				
+				$arImageResize = CFile::ResizeImageGet($productFilelds["DETAIL_PICTURE"], $arProductImage, BX_RESIZE_IMAGE_PROPORTIONAL, false);
 				$productFilelds["PICTURE"] = $arImageResize["src"];
-			}else{
-				$rsProduct = CIBlockElement::GetList(
-					array(),
-					array("ID" => $productID), false, false,
-					array("DETAIL_PICTURE")
-				)->GetNext();
-				if(!empty($rsProduct["DETAIL_PICTURE"])){
-					$arImageInfo = CFile::GetFileArray($rsProduct["DETAIL_PICTURE"]);
-					$arImageResize = CFile::ResizeImageGet($arImageInfo, array('width' => 220, 'height' => 200), BX_RESIZE_IMAGE_PROPORTIONAL, false);
-					$productFilelds["PICTURE"] = $arImageResize["src"];
-				}else{
-					$productFilelds["PICTURE"] = SITE_TEMPLATE_PATH."/images/empty.png";
+
+				$productFilelds["IMAGES"][] = array(
+					"SMALL_PICTURE" => CFile::ResizeImageGet($productFilelds["DETAIL_PICTURE"], array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+					"LARGE_PICTURE" => CFile::ResizeImageGet($productFilelds["DETAIL_PICTURE"], array("width" => 300, "height" => 300), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+					"SUPER_LARGE_PICTURE" => CFile::ResizeImageGet($productFilelds["DETAIL_PICTURE"], array("width" => 900, "height" => 900), BX_RESIZE_IMAGE_PROPORTIONAL, false)
+ 				);	
+			}
+
+			if(!empty($productProperties["MORE_PHOTO"]["VALUE"])){
+				foreach ($productProperties["MORE_PHOTO"]["VALUE"] as $irp => $nextPictureID) {
+					$productFilelds["IMAGES"][] = array(
+						"SMALL_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+						"LARGE_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 300, "height" => 300), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+						"SUPER_LARGE_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 900, "height" => 900), BX_RESIZE_IMAGE_PROPORTIONAL, false)
+					);	
+				}				
+			}
+
+			if(empty($productFilelds["DETAIL_PICTURE"]) || empty($productProperties["MORE_PHOTO"]["VALUE"])){
+				if($rsProduct = CIBlockElement::GetList(array(), array("ID" => $productID), false, false, $rsProductSelect)->GetNextElement()){
+					
+					$rsProductFields = $rsProduct->GetFields();
+					if($enableMorePictures){
+						$rsProductProperties = $rsProduct->GetProperties();
+					}
+
+					if(!empty($rsProductFields["DETAIL_PICTURE"]) || !empty($rsProductProperties["MORE_PHOTO"]["VALUE"])){
+						if(!empty($rsProductFields["DETAIL_PICTURE"]) && empty($productFilelds["DETAIL_PICTURE"])){
+							
+							$arImageResize = CFile::ResizeImageGet($rsProductFields["DETAIL_PICTURE"], $arProductImage, BX_RESIZE_IMAGE_PROPORTIONAL, false);
+							$productFilelds["PICTURE"] = $arImageResize["src"];
+							
+							array_unshift($productFilelds["IMAGES"], array(
+								"SMALL_PICTURE" => CFile::ResizeImageGet($rsProductFields["DETAIL_PICTURE"], array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+								"LARGE_PICTURE" => CFile::ResizeImageGet($rsProductFields["DETAIL_PICTURE"], array("width" => 300, "height" => 300), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+								"SUPER_LARGE_PICTURE" => CFile::ResizeImageGet($rsProductFields["DETAIL_PICTURE"], array("width" => 900, "height" => 900), BX_RESIZE_IMAGE_PROPORTIONAL, false)
+							));
+
+						}
+						if(!empty($rsProductProperties["MORE_PHOTO"]["VALUE"]) && empty($productProperties["MORE_PHOTO"]["VALUE"])){
+							foreach ($rsProductProperties["MORE_PHOTO"]["VALUE"] as $irp => $nextPictureID) {
+								if(!empty($nextPictureID)){
+									$productFilelds["IMAGES"][] = array(
+										"SMALL_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+										"LARGE_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 300, "height" => 300), BX_RESIZE_IMAGE_PROPORTIONAL, false),
+										"SUPER_LARGE_PICTURE" => CFile::ResizeImageGet($nextPictureID, array("width" => 900, "height" => 900), BX_RESIZE_IMAGE_PROPORTIONAL, false)
+									);	
+								}
+							}
+						}
+					}else{
+						if(empty($productFilelds["IMAGES"])){
+							$productFilelds["IMAGES"][0]["SMALL_PICTURE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");  
+							$productFilelds["IMAGES"][0]["LARGE_PICTURE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");
+							$productFilelds["IMAGES"][0]["SUPER_LARGE_PICTURE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");   
+						} 
+					}
 				}
+			}
+
+			if(empty($productFilelds["PICTURE"])){
+				$productFilelds["PICTURE"] = SITE_TEMPLATE_PATH."/images/empty.png";
 			}
 
 			global $USER;
 			$productFilelds["PRICE"] = CCatalogProduct::GetOptimalPrice($productFilelds["ID"], 1, $USER->GetUserGroupArray());
 			$productFilelds["PRICE"]["DISCOUNT_PRICE"] = FormatCurrency($productFilelds["PRICE"]["DISCOUNT_PRICE"], $priceCurrency);
 			$productFilelds["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] = FormatCurrency($productFilelds["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $priceCurrency);
+			$productFilelds["CAN_BUY"] = $productFilelds["CATALOG_AVAILABLE"];
 			
 			if(!empty($productFilelds["PRICE"]["DISCOUNT"])){
 				unset($productFilelds["PRICE"]["DISCOUNT"]);

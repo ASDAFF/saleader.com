@@ -5,7 +5,7 @@
 <?
 	if(CModule::IncludeModule("iblock") && CModule::IncludeModule("catalog") && CModule::IncludeModule("sale") && CModule::IncludeModule("search")){
 
-		if(!empty($_GET["q"]) && strlen($_GET["q"]) > 1){
+		if(!empty($_REQUEST["q"]) && strlen($_REQUEST["q"]) > 1){
 
 			global $APPLICATION;
 			global $arrFilter;
@@ -18,11 +18,11 @@
 			}
 
 			if(isset($_REQUEST["ajax"]) && $_REQUEST["ajax"] == "y"){
-				$_GET["q"] = BX_UTF != 1 ? iconv("UTF-8", "windows-1251//ignore", $_GET["q"]) : $_GET["q"];
+				$_REQUEST["q"] = BX_UTF != 1 ? iconv("UTF-8", "windows-1251//ignore", $_REQUEST["q"]) : $_REQUEST["q"];
 			}
 
 			$arResult["ITEMS"] = array();
-			$arResult["QUERY"] = trim($_GET["q"]);
+			$arResult["QUERY"] = $arResult["~QUERY"] = trim($_REQUEST["q"]);
 
 			$arLang = CSearchLanguage::GuessLanguage($arResult["QUERY"]);
 			if(is_array($arLang) && $arLang["from"] != $arLang["to"]){
@@ -54,8 +54,8 @@
 
 			);
 
-			if(!empty($_GET["where"])){
-				$arFilter["SUBSECTION"] = intval($_GET["where"]);
+			if(!empty($_REQUEST["where"])){
+				$arFilter["SUBSECTION"] = intval($_REQUEST["where"]);
 			}
 
 			$rsSec = CIBlockSection::GetList(Array("sort" => "desc"), $arFilter, true);
@@ -72,16 +72,20 @@
 				"ACTIVE" => "Y",
 			);
 
-			if(!empty($_GET["SECTION_ID"])){
-				$arFilter["SECTION_ID"] = intval($_GET["SECTION_ID"]);
+			if($arParams["HIDE_NOT_AVAILABLE"] == "Y"){
+				$arFilter["CATALOG_AVAILABLE"] = "Y";
 			}
 
-			if(empty($_GET["where"])){
+			if(!empty($_REQUEST["SECTION_ID"])){
+				$arFilter["SECTION_ID"] = intval($_REQUEST["SECTION_ID"]);
+			}
+
+			if(empty($_REQUEST["where"])){
 
 				$arFilter[] = array(
 					"LOGIC" => "OR",
 					"?NAME" => htmlspecialcharsbx($arResult["QUERY"]),
-					"PROPERTY_CML2_ARTICLE" => htmlspecialcharsbx($arResult["QUERY"])
+					"PROPERTY_CML2_ARTICLE" => htmlspecialcharsbx($arResult["~QUERY"])
 				);
 
 			}else{
@@ -89,7 +93,7 @@
 				$arFilter[] = array(
 					"LOGIC" => "AND",
 					"?NAME" => htmlspecialcharsbx($arResult["QUERY"]),
-					"SUBSECTION" => intval($_GET["where"])
+					"SUBSECTION" => intval($_REQUEST["where"])
 				);
 
 			}
@@ -108,11 +112,11 @@
 			}
 
 			if(!empty($arSections)){
-				$arFilter = array("ID" => $arSections);
+				$arFilter = array("ID" => $arSections, "CNT_ACTIVE" => "Y", "ELEMENT_SUBSECTIONS" => "Y", "CNT_ALL" => "N");
 				$rsSections = CIBlockSection::GetList(array("SORT" => "DESC"), $arFilter);
 				while ($arSection = $rsSections->Fetch()){
 					$searchParam = "SECTION_ID=".$arSection["ID"];
-					$searchID = intval($_GET["SECTION_ID"]);
+					$searchID = intval($_REQUEST["SECTION_ID"]);
 					$arSection["SELECTED"] = $arSection["ID"] == $searchID ? Y : N;
 					$arSection["FILTER_LINK"] = $APPLICATION->GetCurPageParam($searchParam , array("SECTION_ID"));
 					$arSection["ELEMENTS_COUNT"] = $arSectionCount[$arSection["ID"]];

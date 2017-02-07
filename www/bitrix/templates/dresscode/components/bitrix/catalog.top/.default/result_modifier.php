@@ -64,7 +64,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
 						$arElement["SKU_PRICES"][] = $arSkuPrice["DISCOUNT_PRICE"];
 					}
 
-					$arElement["ADDSKU"] = $OPTION_ADD_CART === "Y" ? true : /*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"];
+					$arElement["ADDSKU"] = $OPTION_ADD_CART === "Y" ? true : $arElement["CATALOG_QUANTITY"] > 0;
 					$arElement["SKU_INFO"] = $SKU_INFO;
 				}
 			}
@@ -191,6 +191,70 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
 
 					}
 				}
+
+			}
+
+			//комплекты
+			$arElement["COMPLECT"] = array();
+			$arComplectID = array();
+
+			$rsComplect = CCatalogProductSet::getList(
+				array("SORT" => "ASC"),
+				array(
+					"TYPE" => 1,
+					"OWNER_ID" => $arElement["ID"],
+					"!ITEM_ID" => $arElement["ID"]
+				),
+				false,
+				false,
+				array("*")
+			);
+
+			while ($arComplectItem = $rsComplect->Fetch()) {
+				$arElement["COMPLECT"]["ITEMS"][$arComplectItem["ITEM_ID"]] = $arComplectItem;
+				$arComplectID[$arComplectItem["ITEM_ID"]] = $arComplectItem["ITEM_ID"];
+			}
+
+			if(!empty($arComplectID)){
+
+				$arElement["COMPLECT"]["RESULT_PRICE"] = 0;
+				$arElement["COMPLECT"]["RESULT_BASE_DIFF"] = 0;
+				$arElement["COMPLECT"]["RESULT_BASE_PRICE"] = 0;
+
+				$arSelect = Array("ID", "IBLOCK_ID", "NAME", "DETAIL_PICTURE", "DETAIL_PAGE_URL", "CATALOG_MEASURE");
+				$arFilter = Array("ID" => $arComplectID, "ACTIVE_DATE" => "Y", "ACTIVE" => "Y");
+				$rsComplectProducts = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+				while($obComplectProducts = $rsComplectProducts->GetNextElement()){
+					
+					$complectProductFields = $obComplectProducts->GetFields();
+					$complectProductFields["PRICE"] = CCatalogProduct::GetOptimalPrice($complectProductFields["ID"], 1, $USER->GetUserGroupArray());
+					$complectProductFields["PRICE"]["DISCOUNT_PRICE"] = $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arElement["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+					$complectProductFields["PRICE"]["DISCOUNT_PRICE"] -= $complectProductFields["PRICE"]["DISCOUNT_PRICE"] * $arElement["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["DISCOUNT_PERCENT"] / 100;
+					$complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] * $arElement["COMPLECT"]["ITEMS"][$complectProductFields["ID"]]["QUANTITY"];
+					$complectProductFields["PRICE"]["PRICE_DIFF"] = $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"] - $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+					$complectProductFields["PRICE"]["BASE_PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY);
+					$complectProductFields["PRICE"]["PRICE_FORMATED"] = CurrencyFormat($complectProductFields["PRICE"]["DISCOUNT_PRICE"], $OPTION_CURRENCY);
+					$arElement["COMPLECT"]["RESULT_PRICE"] += $complectProductFields["PRICE"]["DISCOUNT_PRICE"];
+					$arElement["COMPLECT"]["RESULT_BASE_PRICE"] += $complectProductFields["PRICE"]["RESULT_PRICE"]["BASE_PRICE"];
+					$arElement["COMPLECT"]["RESULT_BASE_DIFF"] += $complectProductFields["PRICE"]["PRICE_DIFF"];
+
+					$complectProductFields = array_merge(
+						$arElement["COMPLECT"]["ITEMS"][$complectProductFields["ID"]], 
+						$complectProductFields
+					);
+					
+					$arElement["COMPLECT"]["ITEMS"][$complectProductFields["ID"]] = $complectProductFields;
+
+				}
+
+				$arElement["COMPLECT"]["RESULT_PRICE_FORMATED"] = CurrencyFormat($arElement["COMPLECT"]["RESULT_PRICE"], $OPTION_CURRENCY);
+				$arElement["COMPLECT"]["RESULT_BASE_DIFF_FORMATED"] = CurrencyFormat($arElement["COMPLECT"]["RESULT_BASE_DIFF"], $OPTION_CURRENCY);
+				$arElement["COMPLECT"]["RESULT_BASE_PRICE_FORMATED"] = CurrencyFormat($arElement["COMPLECT"]["RESULT_BASE_PRICE"], $OPTION_CURRENCY); 
+
+				//set price
+				$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"] = $arElement["COMPLECT"]["RESULT_PRICE_FORMATED"];
+				$arElement["MIN_PRICE"]["PRINT_VALUE"] = $arElement["COMPLECT"]["RESULT_BASE_PRICE_FORMATED"];
+				$arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] = $arElement["COMPLECT"]["RESULT_BASE_DIFF"];
 
 			}
 

@@ -21,6 +21,7 @@
 	background: #f3f3f3;
 	text-align: center;
     padding-left: 0px;
+	cursor: pointer;
 	font-size: 14px;
 	color: #000000;
 }
@@ -631,7 +632,7 @@
     height: 17px;
 	width: 17px;
 	left: 0;
-	top: 1px;
+	top: 0px;
 }
 
 #smartFilter input[type="checkbox"]:not(checked) + label:hover:before,

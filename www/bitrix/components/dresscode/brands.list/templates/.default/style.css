@@ -116,6 +116,7 @@
 
 #brandList .last .showMore:hover{
 	color: #f9a910;
+	opacity: 0.7;
 }
 
 #brandList .last .icon{

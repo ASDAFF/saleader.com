@@ -100,10 +100,6 @@
 	margin: 12px 0;
 }
 
-#popSection .name:hover{
-    color: #f9a910;
-}
-
 #popSection .last{
 	background-color: #f9f9f9;
 	line-height: 170px;
@@ -129,10 +125,6 @@
 	width: 100%;
 }
 
-#popSection .last .showMore:hover{
-	color: #f9a910;
-}
-
 #popSection .last .icon{
 	display: inline-block;
 	margin-bottom: 12px;
@@ -144,10 +136,6 @@
 
 #popSection .last .ps{
 	font-size: 18px;
-}
-
-#popSection .last .ps:hover{
-    color: #f9a910;
 }
 
 #popSection .last .value{

@@ -12,4 +12,5 @@
 	$MESS["FASTBACK_LABEL"] = "Купить в 1 клик";
 	$MESS["WISHLIST_LABEL"] = "В избранное";
 	$MESS["COMPARE_LABEL"] = "К сравнению";
+	$MESS["FAST_VIEW_PRODUCT_LABEL"] = "Быстрый просмотр";
 ?>

@@ -1,6 +1,6 @@
 #personalMenu{
-	border-bottom: 1px solid #e7e8ea;
-	margin-bottom: 24px;
+	border-bottom: 1px solid #f1f1f1;
+	margin: 0px 0px 24px 0px;
 	overflow: hidden;
 	list-style: none;
 	padding: 0;
@@ -20,7 +20,7 @@
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
-	text-transform: uppercase;
+	/*text-transform: uppercase;*/
 	text-decoration: none;
 	font-size: 16px;
 	color: #000000;

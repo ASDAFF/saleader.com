@@ -1,6 +1,27 @@
 var flushTimeout;
 
 	$(function(){
+		var offerID = getUrlVars()["offerID"];
+		if(offerID){
+			$.getJSON(elementAjaxPath + "?act=getOfferByID&id=" + offerID, function(data) {
+				$.each(data[0], function(elementIndex, elementValue){
+					var $searchCurrentProperty = $(".elementSkuPropertyValue[data-name='" + elementIndex + "'][data-value='" + elementValue + "']");
+					$searchCurrentProperty.find(".elementSkuPropertyLink").trigger("click");
+				});
+			});
+		}
+
+		function getUrlVars() {
+		    var vars = {};
+		    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+		        vars[key] = value;
+		    });
+	   		return vars;
+		}
+
+	});
+
+	$(function(){
 		$(document).on("click", ".question", function(e) {
 			e.preventDefault();
 			$("#hint").remove();

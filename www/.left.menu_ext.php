@@ -6,9 +6,9 @@ $aMenuLinksExt = $APPLICATION->IncludeComponent(
 	"", 
 	array(
 		"IBLOCK_TYPE" => "catalog",
-		"IBLOCK_ID" => "9",
+		"IBLOCK_ID" => "25",
 		"DEPTH_LEVEL" => "3",
-		"CACHE_TYPE" => "A",
+		"CACHE_TYPE" => "N",
 		"CACHE_TIME" => "3600000",
 		"IS_SEF" => "N",
 		"ID" => $_REQUEST["ID"],

@@ -8,7 +8,7 @@
 	
 	$arrFilter[] = array(
 		"LOGIC" => "OR",
-		"NAME" => "%".trim($_GET["SEARCH_QUERY"])."%",
+		"?NAME" => trim($_GET["SEARCH_QUERY"]),
 		"PROPERTY_CML2_ARTICLE" => "%".trim($_GET["SEARCH_QUERY"])."%"
 	);
 
@@ -36,7 +36,9 @@
 				"AJAX_MODE" => "N",
 				"AJAX_OPTION_JUMP" => "N",
 				"CACHE_TYPE" => "N",
-				"AJAX_OPTION_HISTORY" => "N"
+				"AJAX_OPTION_HISTORY" => "N",
+				"HIDE_NOT_AVAILABLE" => $_GET["HIDE_NOT_AVAILABLE"],
+				"HIDE_MEASURES" => $_GET["HIDE_MEASURES"],
 			)
 		);
 		?>

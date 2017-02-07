@@ -898,14 +898,14 @@ var closeHint = function(event) {
 
 var showAllParams = function(e) {
 	var $this = $(this);
-	var $elements = $this.parent().siblings("li");
+	var $elements = $this.parents("li").siblings("li");
 
 	if ($elements.filter(".off").length > 0) {
 		$elements.removeClass("off");
 		$this.html(SMART_FILTER_LANG["HIDE_ALL"] + " " + ($elements.length - 5));
 	} else {
 		$elements.slice(5).addClass("off");
-		$this.html(SMART_FILTER_LANG["SHOW_ALL"] + " " + $elements.length);
+		$this.html(SMART_FILTER_LANG["SHOW_ALL"] + " " + ($elements.length - 5));
 	}
 
 	e.preventDefault();

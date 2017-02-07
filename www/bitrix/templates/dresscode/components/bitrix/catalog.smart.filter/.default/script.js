@@ -1,3 +1,4 @@
+var getSmartFilterParamsCast;
 function JCSmartFilter(ajaxURL, viewMode, params)
 {
 	this.ajaxURL = ajaxURL;
@@ -15,6 +16,9 @@ function JCSmartFilter(ajaxURL, viewMode, params)
 	{
 		this.bindUrlToButton('del_filter', params.SEF_DEL_FILTER_URL);
 	}
+	
+	getSmartFilterParamsCast = params;
+
 }
 
 JCSmartFilter.prototype.keyup = function(input)
@@ -23,13 +27,6 @@ JCSmartFilter.prototype.keyup = function(input)
 	{
 		clearTimeout(this.timer);
 	}
-	$inputElement=$(input);
-	if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
-		$inputElement.prop("disabled", true);
-	} else {
-		$inputElement.prop("disabled", false);
-	}
-
 	this.timer = setTimeout(BX.delegate(function(){
 		this.reload(input);
 	}, this), 500);
@@ -69,10 +66,7 @@ JCSmartFilter.prototype.reload = function(input)
 	{
 		var values = [];
 		values[0] = {name: 'ajax', value: 'y'};
-		this.gatherInputsValues(values, BX.findChildren(this.form, function(el) {
-			//debugger;
-			return (el.tagName == 'INPUT' || el.tagName =='SELECT') && $(el).prop('disabled')!=true;
-		}, true));
+		this.gatherInputsValues(values, BX.findChildren(this.form, {'tag': new RegExp('^(input|select)$', 'i')}, true));
 
 		for (var i = 0; i < values.length; i++)
 			this.cacheKey += values[i].name + ':' + values[i].value + '|';
@@ -193,7 +187,7 @@ JCSmartFilter.prototype.postHandler = function (result, fromCache)
 		{
 			modef_num.innerHTML = result.ELEMENT_COUNT;
 			set_filter_num.innerHTML = "(" + result.ELEMENT_COUNT + ")";
-			hrefFILTER = BX.findChildren(modef, {tag: 'A'}, true);
+			hrefFILTER = BX.findChildren(modef, {class: 'modef_send_link'}, true);
 
 			if (result.FILTER_URL && hrefFILTER)
 			{
@@ -907,20 +901,34 @@ var closeHint = function(event) {
 
 var showAllParams = function(e) {
 	var $this = $(this);
-	var $elements = $this.parent().siblings("li");
+	var $elements = $this.parents("li").siblings("li");
 
 	if ($elements.filter(".off").length > 0) {
 		$elements.removeClass("off");
 		$this.html(SMART_FILTER_LANG["HIDE_ALL"] + " " + ($elements.length - 5));
 	} else {
 		$elements.slice(5).addClass("off");
-		$this.html(SMART_FILTER_LANG["SHOW_ALL"] + " " + $elements.length);
+		$this.html(SMART_FILTER_LANG["SHOW_ALL"] + " " + ($elements.length - 5));
 	}
 
 	e.preventDefault();
 }
 
 $(window).on("load", function() {
+	var freezeFilter = function(){
+		$(".rangeSlider").each(function(i, el) {
+			var $inputs = $(el).find("input");
+
+			$inputs.each(function(x, inp){
+				var $inputElement = $(inp);
+
+				if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
+					$inputElement.prop("disabled", true);
+				}
+			});			
+		});
+	};
+
 	var $filterEl = $("#smartFilter input");
 	var $filter = $("#smartFilterForm");
 	var $modef = $("#modef");
@@ -931,41 +939,26 @@ $(window).on("load", function() {
 
 		$modef.css("top", (_itemOffset - $("#smartFilter").offset().top));
 	});
-	$(".rangeSlider").each(function(i, el) {
-		var $inputs = $(el).find("input");
 
-		$inputs.each(function(x, inp){
-			var $inputElement = $(inp);
-			if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
-				$inputElement.prop("disabled", true);
-			} else {
-				$inputElement.prop("disabled", true);
-			}
-
-		});
+	$("#set_filter").on("click", function(e) {
+		freezeFilter();
+		e.preventDefault();		
+		//$filter.attr("action", getSmartFilterParamsCast.SEF_SET_FILTER_URL);
+		$filter.append('<input type="hidden" name="set_filter" value="Y">').submit()		
 	});
-	$("#set_filter, #modef_send").on("click", function(e) {
-		e.preventDefault();
-		$(".rangeSlider").each(function(i, el) {
-			var $inputs = $(el).find("input");
 
-			$inputs.each(function(x, inp){
-				var $inputElement = $(inp);
-
-				if(parseInt($inputElement.data("val")) == parseInt($inputElement.val())){
-					$inputElement.prop("disabled", true);
-				}
-			});
-		});
-
-		$filter.append('<input type="hidden" name="set_filter" value="Y">');
-		window.location=$('#modef .close').attr('href');
-
-
+	$("#modef_send").on("click", function(e) {
+		freezeFilter();
+		//$filter.attr("action", getSmartFilterParamsCast.SEF_SET_FILTER_URL);
+		//$filter.append('<input type="hidden" name="set_filter" value="Y">').submit();
 	});
+
 
 	$("#del_filter").on("click", function(e) {
-		$filter.append('<input type="hidden" name="del_filter" value="Y">').submit();
+		//$filter.attr("action", getSmartFilterParamsCast.SEF_DEL_FILTER_URL);
+		if(getSmartFilterParamsCast.SEF_DEL_FILTER_URL == undefined){
+			$filter.append('<input type="hidden" name="del_filter" value="Y">').submit();
+		}
 		e.preventDefault();
 	});
 

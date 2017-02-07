@@ -729,6 +729,7 @@ class CBitrixCatalogSmartFilter extends CBitrixComponent
 
 	function makeFilter($FILTER_NAME, $SEARCH_QUERY)
 	{
+
 		$bOffersIBlockExist = false;
 		if (self::$catalogIncluded === null)
 			self::$catalogIncluded = Loader::includeModule('catalog');
@@ -742,6 +743,7 @@ class CBitrixCatalogSmartFilter extends CBitrixComponent
 		}
 
 		$gFilter = $GLOBALS[$FILTER_NAME];
+
 		$arFilter = array(
 			"IBLOCK_ID" => $this->IBLOCK_ID,
 			"IBLOCK_LID" => SITE_ID,
@@ -751,9 +753,8 @@ class CBitrixCatalogSmartFilter extends CBitrixComponent
 			"CHECK_PERMISSIONS" => "Y",
 			"MIN_PERMISSION" => "R",
 			"INCLUDE_SUBSECTIONS" => Y,
-			"NAME" => "%".$SEARCH_QUERY."%"
+			"?NAME" => $SEARCH_QUERY
 		);
-
 
 		if($this->SECTION_ID > 0){
 			$arFilter["SUBSECTION"] = $this->SECTION_ID;

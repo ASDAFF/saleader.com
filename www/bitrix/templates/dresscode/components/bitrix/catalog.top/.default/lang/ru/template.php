@@ -23,4 +23,5 @@ $MESS["CT_BCT_CATALOG_MESS_COMPARE_UNKNOWN_ERROR"] = "При добавлени�
 $MESS["CT_BCT_CATALOG_BTN_MESSAGE_COMPARE_REDIRECT"] = "Перейти в список сравнения";
 $MESS["CT_BCT_TPL_MESS_BTN_COMPARE"] = "Сравнить";
 $MESS["TOP_PRODUCT_HEADER"] = "Самые продаваемые товары";
+$MESS["FAST_VIEW_PRODUCT_LABEL"] = "Быстрый просмотр";
 ?>

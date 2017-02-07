@@ -56,7 +56,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 }elseif(!empty($_COOKIE["CATALOG_SORT_FIELD"]) && !empty($arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]])){ // COOKIE
 	
 	$arParams["ELEMENT_SORT_FIELD"] = $arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["CODE"];
-	$arParams["ELEMENT_SORT_ORDER"] = $arSortFields[$_COOKIE["ORDER"]];
+	$arParams["ELEMENT_SORT_ORDER"] = $arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["ORDER"];
 	
 	$arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["SELECTED"] = "Y";
 }
@@ -146,7 +146,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 		reset($arTemplates);
 		global $arrFilter;
 		$arrFilter["PROPERTY_COLLECTION"] = $ELEMENT_ID;
-	?>
+	?> 
 	<?$APPLICATION->IncludeComponent(
 		"bitrix:catalog.section",
 		 !empty($arParams["CATALOG_TEMPLATE"]) ? strtolower($arParams["CATALOG_TEMPLATE"]) : strtolower(key($arTemplates)),
@@ -158,10 +158,12 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
 			"INCLUDE_SUBSECTIONS" => "Y",
 			"FILTER_NAME" => $arParams["PRODUCT_FILTER_NAME"],
 			"PRICE_CODE" => $arParams["PRODUCT_PRICE_CODE"],
-			"PRODUCT_PROPERTIES" => $arParams["PRODUCT_PRODUCT_PROPERTIES"],
+			"PROPERTY_CODE" => $arParams["PRODUCT_PROPERTY_CODE"],
 			"PAGER_TEMPLATE" => $arParams["PAGER_TEMPLATE"],
 			'CONVERT_CURRENCY' => $arParams['PRODUCT_CONVERT_CURRENCY'],
 			'CURRENCY_ID' => $arParams['PRODUCT_CURRENCY_ID'],
+			"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+			"HIDE_MEASURES" => $arParams["HIDE_MEASURES"],
 			"SHOW_ALL_WO_SECTION" => "Y",
 			"ADD_SECTIONS_CHAIN" => "N",
 			"AJAX_MODE" => "Y"

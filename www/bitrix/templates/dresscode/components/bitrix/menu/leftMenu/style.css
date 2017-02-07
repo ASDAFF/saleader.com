@@ -31,6 +31,10 @@
 	background: #ffffff;
 }
 
+#leftMenu > li:hover > a{
+	background: #f5f5f5;
+}
+
 #leftMenu li:hover .menuLink,
 #leftMenu .activeDrop .menuLink{
 	color: #000000;
@@ -153,6 +157,16 @@
 	color: #999;
 }
 
+#leftMenu .menuItems a img{
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+#leftMenu .menuItems a:hover img{
+	opacity: 0.8;
+}
+
 #leftMenu .menuSlider{
 
 	background: #ffffff; /* Old browsers */
@@ -168,7 +182,7 @@
 	display: table-cell;
 	position: relative;
 	overflow: hidden;
-	width: 280px;
+	width: 295px;
 }
 
 #leftMenu .menuSlider > ul{
@@ -226,4 +240,8 @@
 	height: auto !important;
 	position: static !important;
 	background: transparent !important;
+}
+
+#leftMenu .product:hover .tabloid{
+	box-shadow: none;
 }

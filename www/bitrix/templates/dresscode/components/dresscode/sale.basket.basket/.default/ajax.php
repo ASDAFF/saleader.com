@@ -97,7 +97,7 @@
 			"BASKET_ITEMS" => $arResult["ITEMS"],
 			"PERSON_TYPE_ID" => $_GET["PERSON_TYPE_ID"],
 			"PAY_SYSTEM_ID" => $_GET["PAY_SYSTEM_ID"],
-			"DELIVERY_ID" => $_GET["DELIVERY_ID"]
+			// "DELIVERY_ID" => $_GET["DELIVERY_ID"]
 	   );
 	   
 	   $arOptions = array(
@@ -240,18 +240,8 @@
 				)
 			);
 
-			$bFirst = true;
-			$bFound = false;
-
-			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false){
-				$arUserResult["DELIVERY_ID"] = "";
-				$arResult["DELIVERY_PRICE"] = 0;
-				$arResult["DELIVERY_PRICE_FORMATED"] = "";
-			}
-
-			//select delivery to paysystem
-			$arUserResult["PERSON_TYPE_ID"] = $_GET["PERSON_TYPE"];
-			$arUserResult["PAY_SYSTEM_ID"] = IntVal($_GET["PAYSYSTEM_ID"]);
+			$arUserResult["PAY_SYSTEM_ID"] = IntVal($arUserResult["PAY_SYSTEM_ID"]);
+			$arUserResult["DELIVERY_ID"] = trim($arUserResult["DELIVERY_ID"]);
 			$bShowDefaultSelected = True;
 			$arD2P = array();
 			$arP2D = array();
@@ -259,56 +249,322 @@
 			$bSelected = false;
 
 			$dbRes = CSaleDelivery::GetDelivery2PaySystem(array());
-			while ($arRes = $dbRes->Fetch()){
-				if($arRes["PAYSYSTEM_ID"] == $_GET["PAYSYSTEM_ID"]){
-					$arRes["DELIVERY_ID"] = $arRes["DELIVERY_ID"];
+			while ($arRes = $dbRes->Fetch())
+			{
+				$arD2P[$arRes["DELIVERY_ID"]][$arRes["PAYSYSTEM_ID"]] = $arRes["PAYSYSTEM_ID"];
+				$arP2D[$arRes["PAYSYSTEM_ID"]][$arRes["DELIVERY_ID"]] = $arRes["DELIVERY_ID"];
+				$bShowDefaultSelected = False;
+			}
 
-					if(!empty($arRes["DELIVERY_PROFILE_ID"])){
-						$arRes["DELIVERY_ID"] = $arRes["DELIVERY_ID"].":".$arRes["DELIVERY_PROFILE_ID"];
+			if ($arParams["DELIVERY_TO_PAYSYSTEM"] == "d2p")
+				$arP2D = array();
+
+			if ($arParams["DELIVERY_TO_PAYSYSTEM"] == "p2d")
+			{
+				if(IntVal($arUserResult["PAY_SYSTEM_ID"]) <= 0)
+				{
+					$bFirst = True;
+					$arFilter = array(
+						"ACTIVE" => "Y",
+						"PERSON_TYPE_ID" => $arUserResult["PERSON_TYPE_ID"],
+						"PSA_HAVE_PAYMENT" => "Y"
+					);
+					$dbPaySystem = CSalePaySystem::GetList(
+								array("SORT" => "ASC", "PSA_NAME" => "ASC"),
+								$arFilter
+						);
+					while ($arPaySystem = $dbPaySystem->Fetch())
+					{
+						if (IntVal($arUserResult["PAY_SYSTEM_ID"]) <= 0 && $bFirst)
+						{
+							$arPaySystem["CHECKED"] = "Y";
+							$arUserResult["PAY_SYSTEM_ID"] = $arPaySystem["ID"];
+						}
+						$bFirst = false;
 					}
-
-					$arD2P[$arRes["DELIVERY_ID"]][$arRes["PAYSYSTEM_ID"]] = $arRes["PAYSYSTEM_ID"];
-					$arP2D[$arRes["PAYSYSTEM_ID"]][$arRes["DELIVERY_ID"]] = $arRes["DELIVERY_ID"];
-					$bShowDefaultSelected = False;
 				}
 			}
 
 			$bFirst = True;
 			$bFound = false;
-			$bSelected = false;
+			$_SESSION["SALE_DELIVERY_EXTRA_PARAMS"] = array(); // here we will store params for params dialog
 
-			$shipment = CSaleDelivery::convertOrderOldToNew(array(
-				"SITE_ID" => $SITE_ID,
-				"WEIGHT" => $ORDER_WEIGHT,
-				"PRICE" =>  $ORDER_PRICE,
-				"LOCATION_TO" => isset($arUserResult["DELIVERY_LOCATION_BCODE"]) ? $arUserResult["DELIVERY_LOCATION_BCODE"] : $arUserResult["DELIVERY_LOCATION"],
-				"LOCATION_ZIP" => $arLocs["ZIP"],
-				"ITEMS" =>  $arResult["BASKET_ITEMS"],
-				"CURRENCY" => $OPTION_CURRENCY
-			));
+			//select calc delivery
+			foreach($arDeliveryServiceAll as $arDeliveryService)
+			{
+				foreach ($arDeliveryService["PROFILES"] as $profile_id => $arDeliveryProfile)
+				{
+					if ($arDeliveryProfile["ACTIVE"] == "Y"
+							&& (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0
+							|| in_array($arDeliveryService["SID"], $arP2D[$arUserResult["PAY_SYSTEM_ID"]])
+							|| empty($arD2P[$arDeliveryService["SID"]])
+							))
+					{
+						$delivery_id = $arDeliveryService["SID"];
+						$arProfile = array(
+							"SID" => $profile_id,
+							"TITLE" => $arDeliveryProfile["TITLE"],
+							"DESCRIPTION" => $arDeliveryProfile["DESCRIPTION"],
+							"FIELD_NAME" => "DELIVERY_ID",
+						);
 
 
-			$arResult["TMP_DELIVERY"] = CSaleDelivery::DoLoadDelivery(isset($arUserResult["DELIVERY_LOCATION_BCODE"]) ? $arUserResult["DELIVERY_LOCATION_BCODE"] : $arUserResult["DELIVERY_LOCATION"], $arLocs["ZIP"], $arResult["ORDER_WEIGHT"], $arResult["SUM"], $arResult["BASE_LANG_CURRENCY"], $_GET["SITE_ID"]);
-			if(!empty($arResult["TMP_DELIVERY"])){
-				foreach ($arResult["TMP_DELIVERY"] as $did => $arNextDelivery) {
-					$arResult["DELIVERY_PERSON_ARRAY_ID"][$arPersonType["ID"]][$arNextDelivery["ID"]] = true;
-					$arNextDelivery["PRICE_FORMATED"] = str_replace("-", ".", CCurrencyLang::CurrencyFormat($arNextDelivery["PRICE"], $arNextDelivery["CURRENCY"]));
-					$arResult["DELIVERY"][$arNextDelivery["ID"]] = $arNextDelivery;
+						if((strlen($arUserResult["DELIVERY_ID"]) > 0 && $arUserResult["DELIVERY_ID"] == $delivery_id.":".$profile_id))
+						{
+							$arProfile["CHECKED"] = "Y";
+							$arUserResult["DELIVERY_ID"] = $delivery_id.":".$profile_id;
+							$bSelected = true;
+
+							$arOrderTmpDel = array(
+								"PRICE" => $arResult["ORDER_PRICE"],
+								"WEIGHT" => $arResult["ORDER_WEIGHT"],
+								"DIMENSIONS" => $arResult["ORDER_DIMENSIONS"],
+								"LOCATION_FROM" => COption::GetOptionString('sale', 'location'),
+								"LOCATION_TO" => $arUserResult["DELIVERY_LOCATION"],
+								"LOCATION_ZIP" => $arUserResult["DELIVERY_LOCATION_ZIP"],
+								"ITEMS" => $arResult["BASKET_ITEMS"],
+								"EXTRA_PARAMS" => $arResult["DELIVERY_EXTRA"]
+							);
+
+							$arDeliveryPrice = CSaleDeliveryHandler::CalculateFull($delivery_id, $profile_id, $arOrderTmpDel, $arResult["BASE_LANG_CURRENCY"]);
+
+							if ($arDeliveryPrice["RESULT"] == "ERROR")
+							{
+								$arResult["ERROR"][] = $arDeliveryPrice["TEXT"];
+							}
+							else
+							{
+								$arResult["DELIVERY_PRICE"] = roundEx($arDeliveryPrice["VALUE"], SALE_VALUE_PRECISION);
+								$arResult["PACKS_COUNT"] = $arDeliveryPrice["PACKS_COUNT"];
+							}
+						}
+
+						if (empty($arResult["DELIVERY"][$delivery_id]))
+						{
+							$arResult["DELIVERY"][$delivery_id] = array(
+								"SID" => $delivery_id,
+								"SORT" => $arDeliveryService["SORT"],
+								"TITLE" => $arDeliveryService["NAME"],
+								"DESCRIPTION" => $arDeliveryService["DESCRIPTION"],
+								"PROFILES" => array(),
+							);
+						}
+
+						$arDeliveryExtraParams = CSaleDeliveryHandler::GetHandlerExtraParams($delivery_id, $profile_id, $arOrderTmpDel, SITE_ID);
+
+						if(!empty($arDeliveryExtraParams))
+						{
+							$_SESSION["SALE_DELIVERY_EXTRA_PARAMS"][$delivery_id.":".$profile_id] = $arDeliveryExtraParams;
+							$arResult["DELIVERY"][$delivery_id]["ISNEEDEXTRAINFO"] = "Y";
+						}
+						else
+						{
+							$arResult["DELIVERY"][$delivery_id]["ISNEEDEXTRAINFO"] = "N";
+						}
+
+						if(!empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false)
+						{
+							if($arUserResult["DELIVERY_ID"] == $delivery_id.":".$profile_id)
+								$bFound = true;
+						}
+
+						$arResult["DELIVERY"][$delivery_id]["LOGOTIP"] = $arDeliveryService["LOGOTIP"];
+						$arResult["DELIVERY"][$delivery_id]["PROFILES"][$profile_id] = $arProfile;
+						$bFirst = false;
+					}
+				}
+			}
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false)
+				$arUserResult["DELIVERY_ID"] = "";
+
+			/*Old Delivery*/
+			$arStoreId = array();
+			$arDeliveryAll = array();
+			$bFound = false;
+			$bFirst = true;
+
+			$dbDelivery = CSaleDelivery::GetList(
+				array("SORT"=>"ASC", "NAME"=>"ASC"),
+				array(
+					"LID" => SITE_ID,
+					"+<=WEIGHT_FROM" => $arResult["ORDER_WEIGHT"],
+					"+>=WEIGHT_TO" => $arResult["ORDER_WEIGHT"],
+					"+<=ORDER_PRICE_FROM" => $arResult["ORDER_PRICE"],
+					"+>=ORDER_PRICE_TO" => $arResult["ORDER_PRICE"],
+					"ACTIVE" => "Y",
+					"LOCATION" => $arUserResult["DELIVERY_LOCATION"],
+				)
+			);
+			while ($arDelivery = $dbDelivery->Fetch())
+			{
+				$arStore = array();
+				if (strlen($arDelivery["STORE"]) > 0)
+				{
+					$arStore = unserialize($arDelivery["STORE"]);
+					foreach ($arStore as $val)
+						$arStoreId[$val] = $val;
+				}
+
+				$arDelivery["STORE"] = $arStore;
+
+				if (isset($_POST["BUYER_STORE"]) && in_array($_POST["BUYER_STORE"], $arStore))
+				{
+					$arUserResult['DELIVERY_STORE'] = $arDelivery["ID"];
+				}
+
+				$arDeliveryDescription = CSaleDelivery::GetByID($arDelivery["ID"]);
+				$arDelivery["DESCRIPTION"] = htmlspecialcharsbx($arDeliveryDescription["DESCRIPTION"]);
+
+				$arDeliveryAll[] = $arDelivery;
+
+				if(!empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+				{
+					if(IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"]))
+						$bFound = true;
+				}
+				if(IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"]))
+				{
+					$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+				}
+			}
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+			{
+				$arUserResult["DELIVERY_ID"] = "";
+			}
+
+			$arStore = array();
+			$dbList = CCatalogStore::GetList(
+				array("SORT" => "DESC", "ID" => "DESC"),
+				array("ACTIVE" => "Y", "ID" => $arStoreId, "ISSUING_CENTER" => "Y", "+SITE_ID" => SITE_ID),
+				false,
+				false,
+				array("ID", "TITLE", "ADDRESS", "DESCRIPTION", "IMAGE_ID", "PHONE", "SCHEDULE", "GPS_N", "GPS_S", "ISSUING_CENTER", "SITE_ID")
+			);
+			while ($arStoreTmp = $dbList->Fetch())
+			{
+				if ($arStoreTmp["IMAGE_ID"] > 0)
+					$arStoreTmp["IMAGE_ID"] = CFile::GetFileArray($arStoreTmp["IMAGE_ID"]);
+
+				$arStore[$arStoreTmp["ID"]] = $arStoreTmp;
+			}
+
+			$arResult["STORE_LIST"] = $arStore;
+
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+				$arUserResult["DELIVERY_ID"] = "";
+
+			foreach($arDeliveryAll as $arDelivery)
+			{
+				if (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0 || in_array($arDelivery["ID"], $arP2D[$arUserResult["PAY_SYSTEM_ID"]]))
+				{
+					$arDelivery["FIELD_NAME"] = "DELIVERY_ID";
+					if ((IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"])))
+					{
+						$arDelivery["CHECKED"] = "Y";
+						$arUserResult["DELIVERY_ID"] = $arDelivery["ID"];
+						$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+						$bSelected = true;
+					}
+					if (IntVal($arDelivery["PERIOD_FROM"]) > 0 || IntVal($arDelivery["PERIOD_TO"]) > 0)
+					{
+						$arDelivery["PERIOD_TEXT"] = GetMessage("SALE_DELIV_PERIOD");
+						if (IntVal($arDelivery["PERIOD_FROM"]) > 0)
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_FROM")." ".IntVal($arDelivery["PERIOD_FROM"]);
+						if (IntVal($arDelivery["PERIOD_TO"]) > 0)
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_TO")." ".IntVal($arDelivery["PERIOD_TO"]);
+						if ($arDelivery["PERIOD_TYPE"] == "H")
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_HOUR")." ";
+						elseif ($arDelivery["PERIOD_TYPE"]=="M")
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_MONTH")." ";
+						else
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_DAY")." ";
+					}
+
+					if (intval($arDelivery["LOGOTIP"]) > 0)
+						$arDelivery["LOGOTIP"] = CFile::GetFileArray($arDelivery["LOGOTIP"]);
+
+					$arDelivery["PRICE_FORMATED"] = SaleFormatCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"]);
+					$arResult["DELIVERY"][$arDelivery["ID"]] = $arDelivery;
+					$bFirst = false;
+				}
+			}
+
+			uasort($arResult["DELIVERY"], array('CSaleBasketHelper', 'cmpBySort')); // resort delivery arrays according to SORT value
+
+			if(!$bSelected && !empty($arResult["DELIVERY"]))
+			{
+				$bf = true;
+				foreach($arResult["DELIVERY"] as $k => $v)
+				{
+					if($bf)
+					{
+						if(IntVal($k) > 0)
+						{
+							$arResult["DELIVERY"][$k]["CHECKED"] = "Y";
+							$arUserResult["DELIVERY_ID"] = $k;
+							$bf = false;
+
+							$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arResult["DELIVERY"][$k]["PRICE"], $arResult["DELIVERY"][$k]["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+						}
+						else
+						{
+							foreach($v["PROFILES"] as $kk => $vv)
+							{
+								if($bf)
+								{
+									$arResult["DELIVERY"][$k]["PROFILES"][$kk]["CHECKED"] = "Y";
+									$arUserResult["DELIVERY_ID"] = $k.":".$kk;
+									$bf = false;
+
+									$arOrderTmpDel = array(
+										"PRICE" => $arResult["ORDER_PRICE"],
+										"WEIGHT" => $arResult["ORDER_WEIGHT"],
+										"DIMENSIONS" => $arResult["ORDER_DIMENSIONS"],
+										"LOCATION_FROM" => COption::GetOptionString('sale', 'location'),
+										"LOCATION_TO" => $arUserResult["DELIVERY_LOCATION"],
+										"LOCATION_ZIP" => $arUserResult["DELIVERY_LOCATION_ZIP"],
+										"ITEMS" => $arResult["BASKET_ITEMS"],
+										"EXTRA_PARAMS" => $arResult["DELIVERY_EXTRA"]
+									);
+
+									$arDeliveryPrice = CSaleDeliveryHandler::CalculateFull($k, $kk, $arOrderTmpDel, $arResult["BASE_LANG_CURRENCY"]);
+
+									if ($arDeliveryPrice["RESULT"] == "ERROR")
+									{
+										$arResult["ERROR"][] = $arDeliveryPrice["TEXT"];
+									}
+									else
+									{
+										$arResult["DELIVERY_PRICE"] = roundEx($arDeliveryPrice["VALUE"], SALE_VALUE_PRECISION);
+										$arResult["PACKS_COUNT"] = $arDeliveryPrice["PACKS_COUNT"];
+									}
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 
 			if ($arUserResult["PAY_SYSTEM_ID"] > 0 || strlen($arUserResult["DELIVERY_ID"]) > 0)
+			{
 				if (strlen($arUserResult["DELIVERY_ID"]) > 0 && $arParams["DELIVERY_TO_PAYSYSTEM"] == "d2p")
-					$delivery = intval($arUserResult["DELIVERY_ID"]);
+				{
+					if (strpos($arUserResult["DELIVERY_ID"], ":"))
+					{
+						$tmp = explode(":", $arUserResult["DELIVERY_ID"]);
+						$delivery = trim($tmp[0]);
+					}
+					else
+						$delivery = intval($arUserResult["DELIVERY_ID"]);
+				}
+			}
 
 			if(DoubleVal($arResult["DELIVERY_PRICE"]) > 0)
-				$arResult["DELIVERY_PRICE_FORMATED"] = SaleFormatCurrency($arResult["DELIVERY_PRICE"], $OPTION_CURRENCY);
-			
-			if(!empty($_GET["DELISYSTEM_ID"]) && !empty($arResult["DELIVERY"][intval($_GET["DELISYSTEM_ID"])])){
-				$arDumpActiveDeli = $arResult["DELIVERY"][intval($_GET["DELISYSTEM_ID"])];
-				unset($arResult["DELIVERY"][intval($_GET["DELISYSTEM_ID"])]);
-				array_unshift($arResult["DELIVERY"], $arDumpActiveDeli);
-			}
+				$arResult["DELIVERY_PRICE_FORMATED"] = SaleFormatCurrency($arResult["DELIVERY_PRICE"], $arResult["BASE_LANG_CURRENCY"]);
+
+			foreach(GetModuleEvents("sale", "OnSaleComponentOrderOneStepDelivery", true) as $arEvent)
+				ExecuteModuleEventEx($arEvent, array(&$arResult, &$arUserResult, &$arParams));
 
 			echo jsonMultiEn($arResult["DELIVERY"]);
 
@@ -366,7 +622,7 @@
 		$OPTION_CURRENCY  = CCurrency::GetBaseCurrency();
 		$SITE_ID = $_GET["SITE_ID"];
 		$DELIVERY_ID = intval($_GET["DEVIVERY_TYPE"]);
-		$DELIVERY_CODE = !empty($_GET["DEVIVERY_TYPE"]) ? \Bitrix\Sale\Delivery\Services\Table::getCodeById($_GET["DEVIVERY_TYPE"]) : null;
+		$DELIVERY_CODE = !empty($_GET["DEVIVERY_TYPE"]) ? $_GET["DEVIVERY_TYPE"] : null;
 		$SAVE_FIELDS = TRUE;
 		
 		if(!empty($_GET["USER_NAME"])){
@@ -564,7 +820,7 @@
 				"BASKET_ITEMS" => $arResult["ITEMS"],
 				"PERSON_TYPE_ID" => intval($_GET["PERSON_TYPE"]),
 				"PAY_SYSTEM_ID" => intval($_GET["PAY_TYPE"]),
-				"DELIVERY_ID" => $DELIVERY_ID
+				//"DELIVERY_ID" => $DELIVERY_ID
 			);
 
 			$arOptions = array(
@@ -630,19 +886,8 @@
 				)
 			);
 
-			$bFirst = true;
-			$bFound = false;
-
-			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false){
-				$arUserResult["DELIVERY_ID"] = "";
-				$arResult["DELIVERY_PRICE"] = 0;
-				$arResult["DELIVERY_PRICE_FORMATED"] = "";
-			}
-
-			//select delivery to paysystem
-			$arUserResult["PERSON_TYPE_ID"] = $_GET["PERSON_TYPE"];
-			$arUserResult["PAY_SYSTEM_ID"] = IntVal($_GET["PAY_TYPE"]);
-			$arUserResult["DELIVERY_ID"] = $DELIVERY_ID;
+						$arUserResult["PAY_SYSTEM_ID"] = IntVal($arUserResult["PAY_SYSTEM_ID"]);
+			$arUserResult["DELIVERY_ID"] = trim($arUserResult["DELIVERY_ID"]);
 			$bShowDefaultSelected = True;
 			$arD2P = array();
 			$arP2D = array();
@@ -650,70 +895,322 @@
 			$bSelected = false;
 
 			$dbRes = CSaleDelivery::GetDelivery2PaySystem(array());
-			while ($arRes = $dbRes->Fetch()){
-				
-				if(!empty($arRes["DELIVERY_PROFILE_ID"])){
-					$arRes["DELIVERY_ID"] = $arRes["DELIVERY_ID"].":".$arRes["DELIVERY_PROFILE_ID"];
-				}
-
+			while ($arRes = $dbRes->Fetch())
+			{
 				$arD2P[$arRes["DELIVERY_ID"]][$arRes["PAYSYSTEM_ID"]] = $arRes["PAYSYSTEM_ID"];
 				$arP2D[$arRes["PAYSYSTEM_ID"]][$arRes["DELIVERY_ID"]] = $arRes["DELIVERY_ID"];
 				$bShowDefaultSelected = False;
 			}
 
-			$bFirst = True;
-			$bFound = false;
-			$bSelected = false;
+			if ($arParams["DELIVERY_TO_PAYSYSTEM"] == "d2p")
+				$arP2D = array();
 
-			$shipment = CSaleDelivery::convertOrderOldToNew(array(
-				"SITE_ID" => $SITE_ID,
-				"WEIGHT" => $ORDER_WEIGHT,
-				"PRICE" =>  $ORDER_PRICE,
-				"LOCATION_TO" => $arUserResult["DELIVERY_LOCATION"],
-				"LOCATION_ZIP" => $arLocs["ZIP"],
-				"ITEMS" =>  $arResult["BASKET_ITEMS"],
-				"CURRENCY" => $OPTION_CURRENCY
-			));
-
-			$arResult["TMP_DELIVERY"] = CSaleDelivery::DoLoadDelivery(isset($arUserResult["DELIVERY_LOCATION_BCODE"]) ? $arUserResult["DELIVERY_LOCATION_BCODE"] : $arUserResult["DELIVERY_LOCATION"], $arLocs["ZIP"], $arResult["ORDER_WEIGHT"], $arResult["SUM"], $arResult["BASE_LANG_CURRENCY"], $_GET["SITE_ID"]);
-			if(!empty($arResult["TMP_DELIVERY"])){
-				foreach ($arResult["TMP_DELIVERY"] as $did => $arNextDelivery) {
-					$arResult["DELIVERY_PERSON_ARRAY_ID"][$arPersonType["ID"]][$arNextDelivery["ID"]] = true;
-					$arNextDelivery["PRICE_FORMATED"] = str_replace("-", ".", CCurrencyLang::CurrencyFormat($arNextDelivery["PRICE"], $OPTION_CURRENCY));
-					$arResult["DELIVERY"][$arNextDelivery["ID"]] = $arNextDelivery;
+			if ($arParams["DELIVERY_TO_PAYSYSTEM"] == "p2d")
+			{
+				if(IntVal($arUserResult["PAY_SYSTEM_ID"]) <= 0)
+				{
+					$bFirst = True;
+					$arFilter = array(
+						"ACTIVE" => "Y",
+						"PERSON_TYPE_ID" => $arUserResult["PERSON_TYPE_ID"],
+						"PSA_HAVE_PAYMENT" => "Y"
+					);
+					$dbPaySystem = CSalePaySystem::GetList(
+								array("SORT" => "ASC", "PSA_NAME" => "ASC"),
+								$arFilter
+						);
+					while ($arPaySystem = $dbPaySystem->Fetch())
+					{
+						if (IntVal($arUserResult["PAY_SYSTEM_ID"]) <= 0 && $bFirst)
+						{
+							$arPaySystem["CHECKED"] = "Y";
+							$arUserResult["PAY_SYSTEM_ID"] = $arPaySystem["ID"];
+						}
+						$bFirst = false;
+					}
 				}
 			}
-			
-			//uasort($arResult["DELIVERY"], array('CSaleBasketHelper', 'cmpBySort')); // resort delivery arrays according to SORT value
 
-			//If none delivery service was selected let's select the first one.
+			$bFirst = True;
+			$bFound = false;
+			$_SESSION["SALE_DELIVERY_EXTRA_PARAMS"] = array(); // here we will store params for params dialog
+
+			//select calc delivery
+			foreach($arDeliveryServiceAll as $arDeliveryService)
+			{
+				foreach ($arDeliveryService["PROFILES"] as $profile_id => $arDeliveryProfile)
+				{
+					if ($arDeliveryProfile["ACTIVE"] == "Y"
+							&& (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0
+							|| in_array($arDeliveryService["SID"], $arP2D[$arUserResult["PAY_SYSTEM_ID"]])
+							|| empty($arD2P[$arDeliveryService["SID"]])
+							))
+					{
+						$delivery_id = $arDeliveryService["SID"];
+						$arProfile = array(
+							"SID" => $profile_id,
+							"TITLE" => $arDeliveryProfile["TITLE"],
+							"DESCRIPTION" => $arDeliveryProfile["DESCRIPTION"],
+							"FIELD_NAME" => "DELIVERY_ID",
+						);
+
+
+						if((strlen($arUserResult["DELIVERY_ID"]) > 0 && $arUserResult["DELIVERY_ID"] == $delivery_id.":".$profile_id))
+						{
+							$arProfile["CHECKED"] = "Y";
+							$arUserResult["DELIVERY_ID"] = $delivery_id.":".$profile_id;
+							$bSelected = true;
+
+							$arOrderTmpDel = array(
+								"PRICE" => $arResult["ORDER_PRICE"],
+								"WEIGHT" => $arResult["ORDER_WEIGHT"],
+								"DIMENSIONS" => $arResult["ORDER_DIMENSIONS"],
+								"LOCATION_FROM" => COption::GetOptionString('sale', 'location'),
+								"LOCATION_TO" => $arUserResult["DELIVERY_LOCATION"],
+								"LOCATION_ZIP" => $arUserResult["DELIVERY_LOCATION_ZIP"],
+								"ITEMS" => $arResult["BASKET_ITEMS"],
+								"EXTRA_PARAMS" => $arResult["DELIVERY_EXTRA"]
+							);
+
+							$arDeliveryPrice = CSaleDeliveryHandler::CalculateFull($delivery_id, $profile_id, $arOrderTmpDel, $arResult["BASE_LANG_CURRENCY"]);
+
+							if ($arDeliveryPrice["RESULT"] == "ERROR")
+							{
+								$arResult["ERROR"][] = $arDeliveryPrice["TEXT"];
+							}
+							else
+							{
+								$arResult["DELIVERY_PRICE"] = roundEx($arDeliveryPrice["VALUE"], SALE_VALUE_PRECISION);
+								$arResult["PACKS_COUNT"] = $arDeliveryPrice["PACKS_COUNT"];
+							}
+						}
+
+						if (empty($arResult["DELIVERY"][$delivery_id]))
+						{
+							$arResult["DELIVERY"][$delivery_id] = array(
+								"SID" => $delivery_id,
+								"SORT" => $arDeliveryService["SORT"],
+								"TITLE" => $arDeliveryService["NAME"],
+								"DESCRIPTION" => $arDeliveryService["DESCRIPTION"],
+								"PROFILES" => array(),
+							);
+						}
+
+						$arDeliveryExtraParams = CSaleDeliveryHandler::GetHandlerExtraParams($delivery_id, $profile_id, $arOrderTmpDel, SITE_ID);
+
+						if(!empty($arDeliveryExtraParams))
+						{
+							$_SESSION["SALE_DELIVERY_EXTRA_PARAMS"][$delivery_id.":".$profile_id] = $arDeliveryExtraParams;
+							$arResult["DELIVERY"][$delivery_id]["ISNEEDEXTRAINFO"] = "Y";
+						}
+						else
+						{
+							$arResult["DELIVERY"][$delivery_id]["ISNEEDEXTRAINFO"] = "N";
+						}
+
+						if(!empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false)
+						{
+							if($arUserResult["DELIVERY_ID"] == $delivery_id.":".$profile_id)
+								$bFound = true;
+						}
+
+						$arResult["DELIVERY"][$delivery_id]["LOGOTIP"] = $arDeliveryService["LOGOTIP"];
+						$arResult["DELIVERY"][$delivery_id]["PROFILES"][$profile_id] = $arProfile;
+						$bFirst = false;
+					}
+				}
+			}
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") !== false)
+				$arUserResult["DELIVERY_ID"] = "";
+
+			/*Old Delivery*/
+			$arStoreId = array();
+			$arDeliveryAll = array();
+			$bFound = false;
+			$bFirst = true;
+
+			$dbDelivery = CSaleDelivery::GetList(
+				array("SORT"=>"ASC", "NAME"=>"ASC"),
+				array(
+					"LID" => SITE_ID,
+					"+<=WEIGHT_FROM" => $arResult["ORDER_WEIGHT"],
+					"+>=WEIGHT_TO" => $arResult["ORDER_WEIGHT"],
+					"+<=ORDER_PRICE_FROM" => $arResult["ORDER_PRICE"],
+					"+>=ORDER_PRICE_TO" => $arResult["ORDER_PRICE"],
+					"ACTIVE" => "Y",
+					"LOCATION" => $arUserResult["DELIVERY_LOCATION"],
+				)
+			);
+			while ($arDelivery = $dbDelivery->Fetch())
+			{
+				$arStore = array();
+				if (strlen($arDelivery["STORE"]) > 0)
+				{
+					$arStore = unserialize($arDelivery["STORE"]);
+					foreach ($arStore as $val)
+						$arStoreId[$val] = $val;
+				}
+
+				$arDelivery["STORE"] = $arStore;
+
+				if (isset($_POST["BUYER_STORE"]) && in_array($_POST["BUYER_STORE"], $arStore))
+				{
+					$arUserResult['DELIVERY_STORE'] = $arDelivery["ID"];
+				}
+
+				$arDeliveryDescription = CSaleDelivery::GetByID($arDelivery["ID"]);
+				$arDelivery["DESCRIPTION"] = htmlspecialcharsbx($arDeliveryDescription["DESCRIPTION"]);
+
+				$arDeliveryAll[] = $arDelivery;
+
+				if(!empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+				{
+					if(IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"]))
+						$bFound = true;
+				}
+				if(IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"]))
+				{
+					$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+				}
+			}
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+			{
+				$arUserResult["DELIVERY_ID"] = "";
+			}
+
+			$arStore = array();
+			$dbList = CCatalogStore::GetList(
+				array("SORT" => "DESC", "ID" => "DESC"),
+				array("ACTIVE" => "Y", "ID" => $arStoreId, "ISSUING_CENTER" => "Y", "+SITE_ID" => SITE_ID),
+				false,
+				false,
+				array("ID", "TITLE", "ADDRESS", "DESCRIPTION", "IMAGE_ID", "PHONE", "SCHEDULE", "GPS_N", "GPS_S", "ISSUING_CENTER", "SITE_ID")
+			);
+			while ($arStoreTmp = $dbList->Fetch())
+			{
+				if ($arStoreTmp["IMAGE_ID"] > 0)
+					$arStoreTmp["IMAGE_ID"] = CFile::GetFileArray($arStoreTmp["IMAGE_ID"]);
+
+				$arStore[$arStoreTmp["ID"]] = $arStoreTmp;
+			}
+
+			$arResult["STORE_LIST"] = $arStore;
+
+			if(!$bFound && !empty($arUserResult["DELIVERY_ID"]) && strpos($arUserResult["DELIVERY_ID"], ":") === false)
+				$arUserResult["DELIVERY_ID"] = "";
+
+			foreach($arDeliveryAll as $arDelivery)
+			{
+				if (count($arP2D[$arUserResult["PAY_SYSTEM_ID"]]) <= 0 || in_array($arDelivery["ID"], $arP2D[$arUserResult["PAY_SYSTEM_ID"]]))
+				{
+					$arDelivery["FIELD_NAME"] = "DELIVERY_ID";
+					if ((IntVal($arUserResult["DELIVERY_ID"]) == IntVal($arDelivery["ID"])))
+					{
+						$arDelivery["CHECKED"] = "Y";
+						$arUserResult["DELIVERY_ID"] = $arDelivery["ID"];
+						$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+						$bSelected = true;
+					}
+					if (IntVal($arDelivery["PERIOD_FROM"]) > 0 || IntVal($arDelivery["PERIOD_TO"]) > 0)
+					{
+						$arDelivery["PERIOD_TEXT"] = GetMessage("SALE_DELIV_PERIOD");
+						if (IntVal($arDelivery["PERIOD_FROM"]) > 0)
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_FROM")." ".IntVal($arDelivery["PERIOD_FROM"]);
+						if (IntVal($arDelivery["PERIOD_TO"]) > 0)
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_TO")." ".IntVal($arDelivery["PERIOD_TO"]);
+						if ($arDelivery["PERIOD_TYPE"] == "H")
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_HOUR")." ";
+						elseif ($arDelivery["PERIOD_TYPE"]=="M")
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_MONTH")." ";
+						else
+							$arDelivery["PERIOD_TEXT"] .= " ".GetMessage("SOA_DAY")." ";
+					}
+
+					if (intval($arDelivery["LOGOTIP"]) > 0)
+						$arDelivery["LOGOTIP"] = CFile::GetFileArray($arDelivery["LOGOTIP"]);
+
+					$arDelivery["PRICE_FORMATED"] = SaleFormatCurrency($arDelivery["PRICE"], $arDelivery["CURRENCY"]);
+					$arResult["DELIVERY"][$arDelivery["ID"]] = $arDelivery;
+					$bFirst = false;
+				}
+			}
+
+			uasort($arResult["DELIVERY"], array('CSaleBasketHelper', 'cmpBySort')); // resort delivery arrays according to SORT value
+
 			if(!$bSelected && !empty($arResult["DELIVERY"]))
 			{
-				reset($arResult["DELIVERY"]);
-				$key = key($arResult["DELIVERY"]);
-				$arResult["DELIVERY"][$key]["CHECKED"] = "Y";
-
-				if(!isset($arResult["DELIVERY"][$key]["PRICE"]))
+				$bf = true;
+				foreach($arResult["DELIVERY"] as $k => $v)
 				{
-					$deliveryObj = $arDeliveryServiceAll[$arResult["DELIVERY"][$key]["ID"]];
-					$calcResult = $deliveryObj->calculate($shipment);
-					$arResult["DELIVERY"][$key]["PRICE_FORMATED"] = SaleFormatCurrency($calcResult->getPrice(), $OPTION_CURRENCY);
-					$arResult["DELIVERY"][$key]["CURRENCY"] = $OPTION_CURRENCY;
-					$arResult["DELIVERY"][$key]["PRICE"] = $calcResult->getPrice();
+					if($bf)
+					{
+						if(IntVal($k) > 0)
+						{
+							$arResult["DELIVERY"][$k]["CHECKED"] = "Y";
+							$arUserResult["DELIVERY_ID"] = $k;
+							$bf = false;
 
-					if(strlen($calcResult->getPeriodDescription()) > 0)
-						$arResult["DELIVERY"][$key]["PERIOD_TEXT"] = $calcResult->getPeriodDescription();
+							$arResult["DELIVERY_PRICE"] = roundEx(CCurrencyRates::ConvertCurrency($arResult["DELIVERY"][$k]["PRICE"], $arResult["DELIVERY"][$k]["CURRENCY"], $arResult["BASE_LANG_CURRENCY"]), SALE_VALUE_PRECISION);
+						}
+						else
+						{
+							foreach($v["PROFILES"] as $kk => $vv)
+							{
+								if($bf)
+								{
+									$arResult["DELIVERY"][$k]["PROFILES"][$kk]["CHECKED"] = "Y";
+									$arUserResult["DELIVERY_ID"] = $k.":".$kk;
+									$bf = false;
 
-					$arResult["DELIVERY_PRICE"] = roundEx($calcResult->getPrice(), SALE_VALUE_PRECISION);
+									$arOrderTmpDel = array(
+										"PRICE" => $arResult["ORDER_PRICE"],
+										"WEIGHT" => $arResult["ORDER_WEIGHT"],
+										"DIMENSIONS" => $arResult["ORDER_DIMENSIONS"],
+										"LOCATION_FROM" => COption::GetOptionString('sale', 'location'),
+										"LOCATION_TO" => $arUserResult["DELIVERY_LOCATION"],
+										"LOCATION_ZIP" => $arUserResult["DELIVERY_LOCATION_ZIP"],
+										"ITEMS" => $arResult["BASKET_ITEMS"],
+										"EXTRA_PARAMS" => $arResult["DELIVERY_EXTRA"]
+									);
+
+									$arDeliveryPrice = CSaleDeliveryHandler::CalculateFull($k, $kk, $arOrderTmpDel, $arResult["BASE_LANG_CURRENCY"]);
+
+									if ($arDeliveryPrice["RESULT"] == "ERROR")
+									{
+										$arResult["ERROR"][] = $arDeliveryPrice["TEXT"];
+									}
+									else
+									{
+										$arResult["DELIVERY_PRICE"] = roundEx($arDeliveryPrice["VALUE"], SALE_VALUE_PRECISION);
+										$arResult["PACKS_COUNT"] = $arDeliveryPrice["PACKS_COUNT"];
+									}
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 
 			if ($arUserResult["PAY_SYSTEM_ID"] > 0 || strlen($arUserResult["DELIVERY_ID"]) > 0)
+			{
 				if (strlen($arUserResult["DELIVERY_ID"]) > 0 && $arParams["DELIVERY_TO_PAYSYSTEM"] == "d2p")
-					$delivery = intval($arUserResult["DELIVERY_ID"]);
+				{
+					if (strpos($arUserResult["DELIVERY_ID"], ":"))
+					{
+						$tmp = explode(":", $arUserResult["DELIVERY_ID"]);
+						$delivery = trim($tmp[0]);
+					}
+					else
+						$delivery = intval($arUserResult["DELIVERY_ID"]);
+				}
+			}
 
 			if(DoubleVal($arResult["DELIVERY_PRICE"]) > 0)
-				$arResult["DELIVERY_PRICE_FORMATED"] = SaleFormatCurrency($arResult["DELIVERY_PRICE"], $OPTION_CURRENCY);
+				$arResult["DELIVERY_PRICE_FORMATED"] = SaleFormatCurrency($arResult["DELIVERY_PRICE"], $arResult["BASE_LANG_CURRENCY"]);
+
+			foreach(GetModuleEvents("sale", "OnSaleComponentOrderOneStepDelivery", true) as $arEvent)
+				ExecuteModuleEventEx($arEvent, array(&$arResult, &$arUserResult, &$arParams));
 
 		}else{
 			exit(

@@ -23,11 +23,11 @@ if(!function_exists('priceFormat')){
 <div id="flushTopCart">
 	<div class="wrap">
 		<?$frame = $this->createFrame()->begin();?>
-			<a rel="nofollow" <?if($allQuantity):?> href="<?=SITE_DIR?>personal/cart/"<?endif;?> class="icon<?if($allQuantity):?> active<?endif;?>"></a>
+			<a<?if($allQuantity):?> href="<?=SITE_DIR?>personal/cart/"<?endif;?> class="icon<?if($allQuantity):?> active<?endif;?>"></a>
 			<div class="nf">
 				<a<?if($allQuantity):?> href="<?=SITE_DIR?>personal/cart/"<?endif;?> class="heading"><?=GetMessage("CART")?><ins<?if($allQuantity):?> class="active"<?endif;?>><?=$allQuantity?></ins></a>
 				<?if($allQuantity):?>
-					<a rel="nofollow" href="<?=SITE_DIR?>personal/cart/#order" class="link"><?=GetMessage("ORDER");?></a>
+					<a href="<?=SITE_DIR?>personal/cart/#order" class="link"><?=GetMessage("ORDER");?></a>
 				<?else:?>
 					<span class="text"><?=GetMessage("EMPTY")?></span>
 				<?endif;?>

@@ -20,6 +20,12 @@ if(CModule::IncludeModule("iblock")){
 		         "NAME" => GetMessage("BASKET_PICTURE_HEIGHT"),
 		         "TYPE" => "STRING"
 			),
+			"HIDE_MEASURES" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_MEASURES"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
+			),
 			"CACHE_TIME" => Array("DEFAULT" => "360000"),
 		)
 	);

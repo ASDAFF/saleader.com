@@ -31,25 +31,37 @@ class MysqlConnection extends MysqlCommonConnection
 	 */
 	protected function connectInternal()
 	{
-		if ($this->isConnected)
+		if($this->isConnected)
+		{
 			return;
+		}
 
-		if (($this->options & self::PERSISTENT) != 0)
+		if(($this->options & self::PERSISTENT) != 0)
+		{
 			$connection = mysql_pconnect($this->host, $this->login, $this->password);
+		}
 		else
+		{
 			$connection = mysql_connect($this->host, $this->login, $this->password, true);
+		}
 
-		if (!$connection)
+		if(!$connection)
+		{
 			throw new ConnectionException('Mysql connect error ['.$this->host.', '.gethostbyname($this->host).']', mysql_error());
+		}
 
-		if (!mysql_select_db($this->database, $connection))
-			throw new ConnectionException('Mysql select db error ['.$this->database.']', mysql_error($connection));
+		if($this->database !== null)
+		{
+			if(!mysql_select_db($this->database, $connection))
+			{
+				throw new ConnectionException('Mysql select db error ['.$this->database.']', mysql_error($connection));
+			}
+		}
 
 		$this->resource = $connection;
 		$this->isConnected = true;
 
-		if ($fn = \Bitrix\Main\Loader::getPersonal("php_interface/after_connect_d7.php"))
-			include($fn);
+		$this->afterConnected();
 	}
 
 	/**
@@ -189,5 +201,16 @@ class MysqlConnection extends MysqlCommonConnection
 	protected function getErrorMessage()
 	{
 		return sprintf("[%s] %s", mysql_errno($this->resource), mysql_error($this->resource));
+	}
+
+	/**
+	 * Selects the default database for database queries.
+	 *
+	 * @param string $database Database name.
+	 * @return bool
+	 */
+	public function selectDatabase($database)
+	{
+		return mysql_select_db($database, $this->resource);
 	}
 }

@@ -321,4 +321,12 @@ abstract class MysqlCommonConnection extends Connection
 			$this->query("SET storage_engine = '".$this->engine."'");
 		}
 	}
+
+	/**
+	 * Selects the default database for database queries.
+	 *
+	 * @param string $database Database name.
+	 * @return bool
+	 */
+	abstract public function selectDatabase($database);
 }

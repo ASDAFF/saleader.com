@@ -170,6 +170,15 @@
 	width: 30%;
 }
 
+#reviews .reviewTable .reviewColumn .reviewDate{
+	color: #888888;
+}
+
+#reviews .reviewTable .reviewColumn .reviewName,
+#reviews .reviewTable .reviewColumn .reviewName .label{
+	font-size: 16px;
+}
+
 #catalogElement #reviews .controls {
 	background: #f4f4f4;
 	text-align: center;
@@ -362,9 +371,10 @@
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	padding-left: 4px;
-	padding-top: 4px;
 	border: 1px solid #E4E4E4;
+	font-family: "roboto_ltregular";
+	padding-left: 12px;
+	padding-top: 12px;
 	background: #fff;
 	resize: none;
 	height: 90px;
@@ -383,13 +393,14 @@
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;	
+	font-family: "roboto_ltregular";
 	border: 1px solid #E4E4E4;
 	display: inline-block;
 	margin-bottom: 12px;
 	vertical-align: top;
 	background: #fff;
-	padding-left: 4px;
-	height: 35px;
+	padding-left: 12px;
+	height: 50px;
 	width: 74%;
 }
 
@@ -405,10 +416,10 @@
 	display: inline-block;
 	text-decoration: none;
 	text-align: center;
-	line-height: 35px;
+	line-height: 50px;
 	margin-left: 3%;
 	color: #ffffff;
-	height: 35px;
+	height: 50px;
 	width: 23%;
 }
 

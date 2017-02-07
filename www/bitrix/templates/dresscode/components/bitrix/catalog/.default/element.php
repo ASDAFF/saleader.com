@@ -1,5 +1,4 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-//test_dump($arParams["DETAIL_SET_CANONICAL_URL"]);
 $this->setFrameMode(true);?>
 <?
 	$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();
@@ -7,16 +6,27 @@ $this->setFrameMode(true);?>
 ?>
 
 <?
-if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("iblock")){
-	$arSelect = Array("ID", "IBLOCK_ID", "NAME");
-	$arFilter = Array("IBLOCK_ID" => IntVal($arParams["IBLOCK_ID"]), "ACTIVE"=>"Y", "CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"]);
-	$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
-	if($ob = $res->GetNextElement()){
-		$arElementFields = $ob->getFields();
-		$ipropValues = new \Bitrix\Iblock\InheritedProperty\ElementValues($arElementFields["IBLOCK_ID"], $arElementFields["ID"]);
-		$arResult["IPROPERTY_VALUES"] = $ipropValues->getValues();
+	$cacheId = "cpElement".$arResult["VARIABLES"]["ELEMENT_CODE"]."v1";
+	$obCache = new CPHPCache();
+
+	if($obCache->InitCache($arParams["CACHE_TIME"], $cacheId)){
+	   $arResult["IPROPERTY_VALUES"] = $obCache->GetVars();
 	}
-}
+
+	elseif($obCache->StartDataCache()){
+		if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("iblock")){
+			$arSelect = Array("ID", "IBLOCK_ID", "NAME");
+			$arFilter = Array("IBLOCK_ID" => IntVal($arParams["IBLOCK_ID"]), "ACTIVE" => "Y", "CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"]);
+			$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+			if($ob = $res->GetNextElement()){
+				$arElementFields = $ob->getFields();
+				$ipropValues = new \Bitrix\Iblock\InheritedProperty\ElementValues($arElementFields["IBLOCK_ID"], $arElementFields["ID"]);
+				$arResult["IPROPERTY_VALUES"] = $ipropValues->getValues();
+			}
+		}
+		$obCache->EndDataCache($arResult["IPROPERTY_VALUES"]);
+	}
+
 ?>
 
 
@@ -60,7 +70,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 		"LINK_IBLOCK_ID" => $arParams["LINK_IBLOCK_ID"],
 		"LINK_PROPERTY_SID" => $arParams["LINK_PROPERTY_SID"],
 		"LINK_ELEMENTS_URL" => $arParams["LINK_ELEMENTS_URL"],
-
+		"HIDE_AVAILABLE_TAB" => $arParams["HIDE_AVAILABLE_TAB"],
 		"OFFERS_CART_PROPERTIES" => $arParams["OFFERS_CART_PROPERTIES"],
 		"OFFERS_FIELD_CODE" => $arParams["DETAIL_OFFERS_FIELD_CODE"],
 		"OFFERS_PROPERTY_CODE" => $arParams["DETAIL_OFFERS_PROPERTY_CODE"],
@@ -68,7 +78,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 		"OFFERS_SORT_ORDER" => $arParams["OFFERS_SORT_ORDER"],
 		"OFFERS_SORT_FIELD2" => $arParams["OFFERS_SORT_FIELD2"],
 		"OFFERS_SORT_ORDER2" => $arParams["OFFERS_SORT_ORDER2"],
-
+		"SET_CANONICAL_URL" => $arParams["DETAIL_SET_CANONICAL_URL"],
 		"ELEMENT_ID" => $arResult["VARIABLES"]["ELEMENT_ID"],
 		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
 		"SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
@@ -112,7 +122,7 @@ if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"]) && CModule::IncludeModule("ibl
 		"DISPLAY_PREVIEW_TEXT_MODE" => (isset($arParams['DETAIL_DISPLAY_PREVIEW_TEXT_MODE']) ? $arParams['DETAIL_DISPLAY_PREVIEW_TEXT_MODE'] : ''),
 		"DETAIL_PICTURE_MODE" => (isset($arParams['DETAIL_DETAIL_PICTURE_MODE']) ? $arParams['DETAIL_DETAIL_PICTURE_MODE'] : ''),
 		"USE_SKU" => $arParams["USE_SKU"],
-		"SET_CANONICAL_URL"=>$arParams["DETAIL_SET_CANONICAL_URL"]
+		"HIDE_MEASURES" => $arParams["HIDE_MEASURES"]
 	),
 	$component
 );?><div><div><div><div><?if($_SESSION["SESS_INCLUDE_AREAS"]):?><div><?endif;?>

@@ -268,7 +268,7 @@
 }
 
 #scrollTable > ul > li {
-	width: 300px;
+	width: 299px;
 	display: block;
 	float: left;
 	border: 1px solid #eee;
@@ -306,7 +306,7 @@
 	text-decoration: none;
 	position: absolute;
 	cursor: pointer;
-	z-index: 999;
+	z-index: 12;
 	height: 18px;
 	width: 18px;
 	right: 12px;
@@ -372,6 +372,7 @@
 	padding: 0 12px;
 	margin-top: 12px;
 	height: 34px;
+    line-height: 34px;
 	overflow: hidden;
 }
 

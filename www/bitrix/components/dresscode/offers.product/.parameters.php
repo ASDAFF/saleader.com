@@ -47,9 +47,9 @@ if(CModule::IncludeModule("iblock") && CModule::IncludeModule("sale") && CModule
 	
 	}
 
-	$res = CIBlockPropertyEnum::GetList(Array("DEF"=>"DESC", "SORT"=>"ASC"), Array("IBLOCK_ID" => $arCurrentValues["IBLOCK_ID"], "CODE" => $arCurrentValues["PROP_NAME"]));
+	$res = CIBlockPropertyEnum::GetList(Array("SORT" => "ASC"), Array("IBLOCK_ID" => $arCurrentValues["IBLOCK_ID"], "CODE" => $arCurrentValues["PROP_NAME"]));
 	while($arRes = $res->GetNext()){
-		$PROP_VALUES[$arRes["ID"]] = $arRes["VALUE"];
+		$PROP_VALUES["_".$arRes["ID"]] = $arRes["VALUE"]; // disable bitrix standart component sort
 	}
 
 	$arComponentParameters = array(
@@ -81,6 +81,18 @@ if(CModule::IncludeModule("iblock") && CModule::IncludeModule("sale") && CModule
 		         "TYPE" => "LIST",
 		          "VALUES" => $IBLOCKS,
 		          "REFRESH" => "Y"
+			),
+			"HIDE_NOT_AVAILABLE" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_NOT_AVAILABLE"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
+			),
+			"HIDE_MEASURES" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_MEASURES"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
 			),
 			"PROP_NAME" => array(
 			     "PARENT" => "FILTER",

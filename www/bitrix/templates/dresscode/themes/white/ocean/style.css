@@ -1,6 +1,6 @@
 /*
 Base color: #27bfc1
-Base color hover: #ffa800;
+Base color hover: #079fa1;
 Base color focus: #079fa1;
 */
 body.index{
@@ -26,7 +26,7 @@ body.index{
 }
 
 #topService li:hover a:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #topService li a:focus{
@@ -34,7 +34,7 @@ body.index{
 }
 
 #topService .selected{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #subHeader{
@@ -68,7 +68,7 @@ body.index{
 }
 
 #headerTools .tools .link:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #headerTools .tools li{
@@ -137,7 +137,7 @@ body.index{
 }
 
 #headerTools .cart ins.active{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #changeYouCity{
@@ -145,7 +145,7 @@ body.index{
 }
 
 #changeYouCity .heading{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #changeYouCity .list li a{
@@ -153,7 +153,7 @@ body.index{
 }
 
 #changeYouCity .list li a:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #changeYouCity #cityClose{
@@ -163,7 +163,7 @@ body.index{
 }
 
 #changeYouCity #cityClose:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #changeYouCity #cityClose ins{
@@ -225,7 +225,7 @@ body.index{
 }
 
 #brandSearch td:hover a{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #brandSearch a{
@@ -268,7 +268,7 @@ body.index{
 }
 
 #popCats li a:hover {
-	background-color: #ffa800;
+	background-color: #079fa1;
 	border-color: #27bfc1;
 	color: #fff;
 }
@@ -290,7 +290,7 @@ body.index{
 }
 
 #collectionList .goTo:hover {
-	background-color: #ffa800;
+	background-color: #079fa1;
 	border-color: #27bfc1;
 	color: #ffffff;
 }
@@ -375,7 +375,7 @@ body.index{
 }
 
 #rightFooter .showMap:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #footerBottom{
@@ -492,7 +492,7 @@ body.index{
 }
 
 #appBasket .lower .tools .goToBasket:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #appBasket .lower .tools .continue:hover{
@@ -529,11 +529,11 @@ body.index{
 }
 
 #appFastBuyContainer #fastBuyFormSubmit:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #appFastBuyContainer #fastBuyFormSubmit.loading{
-	background: url(images/loading.gif) 24px 50% no-repeat #ffa800 !important;
+	background: url(images/loading.gif) 24px 50% no-repeat #079fa1 !important;
 }
 
 #fastBuyResult #fastBuyResultClose{
@@ -542,7 +542,7 @@ body.index{
 }
 
 #fastBuyResult #fastBuyResultClose:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #appFastBuyContainer .marker {
@@ -565,6 +565,33 @@ body.index{
 
 #appFastBuyContainer .price .discount{
 	color: #888888;
+}
+
+#appFastView .appFastViewExit, 
+#fastViewStores .fastViewStoresExit{
+	background: url(images/exit.png) 0 0 no-repeat transparent;
+}
+
+#appFastView .appFastViewExit:hover,
+#fastViewStores .fastViewStoresExit:hover{
+	background-position: 0 -21px ;
+}
+
+#appFastView .appFastViewExit:active,
+#fastViewStores .fastViewStoresExit:active{
+	background-position: 0 -42px ;
+}
+
+#appProductPriceVariant .appPriceVariantExit{
+	background: url(images/exit2.png) 0 0 no-repeat transparent;
+}
+
+#appProductPriceVariant .appPriceVariantExit:hover{
+	background-position: 0 -21px ;
+}
+
+#appProductPriceVariant .appPriceVariantExit:active{
+	background-position: 0 -42px ;
 }
 
 #footerTabsCaption{
@@ -633,7 +660,7 @@ body.index{
 }
 
 #footerLine .item .callback:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #footerLine .callback:hover .icon{
@@ -680,7 +707,7 @@ body.index{
 #footerLine .item .compare.active:hover .mark,
 #footerLine .item .wishlist.active:hover .mark,
 #footerLine .item .cart.active:hover .mark{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #footerLine .item a{
@@ -737,7 +764,7 @@ body.index{
 }
 
 #empty .back:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 .product{
@@ -791,7 +818,7 @@ body.index{
 }
 
 .product .addCart:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 .product .label{
@@ -877,7 +904,7 @@ body.index{
 }
 
 .mfeedback input[type="submit"]:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 .bx-auth .alert{
@@ -924,7 +951,7 @@ body.index{
 
 .bx-auth .submit:hover, 
 .popup-window .btn:hover {
-	background: #ffa800;
+	background: #079fa1;
 }
 
 .bx-auth .clear{
@@ -1139,7 +1166,7 @@ div[id^="wait_comp_"]{
 }
 
 #ORDER_CONFIRM_BUTTON{
-    background: #ffa800 !important;
+    background: #079fa1 !important;
 }
 
 .addCart.disabled{
@@ -1155,7 +1182,7 @@ div[id^="wait_comp_"]{
 
 .sale_order_full_table input[name="BuyButton"]:hover,
 .sale_order_full_table input[type="submit"]:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 /* components colors */
@@ -1228,7 +1255,7 @@ div[id^="wait_comp_"]{
 }
 
 #sectionList .tabloid .name:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #sectionList .tabloid .marker {
@@ -1242,7 +1269,7 @@ div[id^="wait_comp_"]{
 }
 
 #sectionList .element .name:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 /*end section.list.cast*/
@@ -1269,7 +1296,7 @@ div[id^="wait_comp_"]{
 
 #nextSection li a:hover,
 #nextSection li .selected{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #nextSection li .cnt{
@@ -1297,7 +1324,7 @@ div[id^="wait_comp_"]{
 
 #elementTools .addCart:hover,
 #smallElementTools .addCart:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #elementContainer .elementSkuProperty .selected .elementSkuPropertyLink{
@@ -1334,7 +1361,7 @@ div[id^="wait_comp_"]{
 }
 
 #catalogElement #newReview .submit:hover {
-	background: #ffa800;
+	background: #079fa1;
 }
 /*set*/
 #set .setTools .addCart{
@@ -1342,7 +1369,7 @@ div[id^="wait_comp_"]{
 }
 
 #set .setTools .addCart:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #set .setElement .name:hover{
@@ -1354,7 +1381,7 @@ div[id^="wait_comp_"]{
 }
 
 #setWindowPrice .addCart:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 /*end.catalog.element*/
 
@@ -1368,7 +1395,7 @@ div[id^="wait_comp_"]{
 }
 
 #catalogLineList .addCart:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #catalogLineList .skuProperty .selected .skuPropertyLink{
@@ -1382,7 +1409,7 @@ div[id^="wait_comp_"]{
 /* table */
 
 #catalogTableList .name:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #catalogTableList .addCart,
@@ -1392,7 +1419,7 @@ div[id^="wait_comp_"]{
 
 #catalogTableList .addCart:hover,
 #catalogTableList .more:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 /* end.catalog.section
@@ -1403,7 +1430,7 @@ div[id^="wait_comp_"]{
 }
 
 #smartFilter .showALL:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #smartFilter .radio label:hover,
@@ -1413,7 +1440,7 @@ div[id^="wait_comp_"]{
 
 #smartFilter .dropdownList .selected,
 #smartFilter .dropdownList .item:hover {
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #smartFilter .handler {
@@ -1425,7 +1452,7 @@ div[id^="wait_comp_"]{
 }
 
 #set_filter:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 
@@ -1443,7 +1470,7 @@ div[id^="wait_comp_"]{
 }
 
 #smartFilter .hintValue .close:hover {
-	color: #ffa800;
+	color: #079fa1;
 }
 
 
@@ -1456,7 +1483,7 @@ div[id^="wait_comp_"]{
 
 #smartFilter input[type="submit"]:hover,
 #smartFilter button:hover {
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #modef {
@@ -1467,11 +1494,11 @@ div[id^="wait_comp_"]{
 
 /* menu */
 #topMenu li a:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #topMenu li .selected{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #topMenu .bar > a{
@@ -1483,7 +1510,7 @@ div[id^="wait_comp_"]{
 }
 
 #topMenu .sub li:hover a{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #personalMenu li a:hover{
@@ -1491,7 +1518,7 @@ div[id^="wait_comp_"]{
 }
 
 #subLeftMenu .selected a{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #leftMenu{
@@ -1537,7 +1564,7 @@ div[id^="wait_comp_"]{
 }
 
 #newsDetail .more:hover{
-    background-color: #ffa800;
+    background-color: #079fa1;
 }
 
 #newsContainer .column .item .title a:hover{
@@ -1549,7 +1576,7 @@ div[id^="wait_comp_"]{
 }
 
 #newsContainer .column .item .more:hover{
-    background-color: #ffa800;
+    background-color: #079fa1;
 }
 
 #newsContainer .column .item .title a:hover{
@@ -1561,7 +1588,7 @@ div[id^="wait_comp_"]{
 }
 
 #newsContainer .column .item .more:hover{
-    background-color: #ffa800;
+    background-color: #079fa1;
 }
 
 .backToList:hover{
@@ -1569,7 +1596,7 @@ div[id^="wait_comp_"]{
 }
 
 #brandList .name:hover{
-    color: #ffa800;
+    color: #079fa1;
 }
 
 #newsContainer .column .item .title a:hover{
@@ -1581,15 +1608,15 @@ div[id^="wait_comp_"]{
 }
 
 #newsContainer .column .item .more:hover{
-    background-color: #ffa800;
+    background-color: #079fa1;
 }
 
 #collectionBlock .name:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #collectionBlock .link{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #newsBlock .newsTitle:hover {
@@ -1597,11 +1624,11 @@ div[id^="wait_comp_"]{
 }
 
 #serviceBlock .name:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #serviceBlock .link{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 /* end news */
@@ -1617,10 +1644,10 @@ div[id^="wait_comp_"]{
 }
 
 .bx_my_order_cancel  input[type="submit"]:hover 	{
-	background: #ffa800;
+	background: #079fa1;
 }
 .bx_my_order_cancel  input[type="submit"]:active {
-	background: #ffa800;
+	background: #079fa1;
 }
 
 input[name="BuyButton"]{
@@ -1642,15 +1669,15 @@ input[name="BuyButton"]{
 }
 
 #subscribeEdit .submit:hover {
-	background: #ffa800;
+	background: #079fa1;
 }
 
 #subscribe .submit{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #subscribe .submit:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 /* end #subscribe */
@@ -1665,15 +1692,15 @@ input[name="BuyButton"]{
 /* end navigation */
 
 #brandList .name:hover{
-    color: #ffa800;
+    color: #079fa1;
 }
 
 #brandList .last .showMore:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #brandList .last .ps:hover{
-    color: #ffa800;
+    color: #079fa1;
 }
 
 #homeCatalog .caption.selected{
@@ -1689,7 +1716,7 @@ input[name="BuyButton"]{
 }
 
 #mainProfile .profileSettings .submit:hover {
-	background: #ffa800;
+	background: #079fa1;
 }
 
 #main input[name="BuyButton"],
@@ -1699,7 +1726,7 @@ input[name="BuyButton"]{
 
 #main input[name="BuyButton"]:hover,
 #main input[type="submit"]:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #newOrder{
@@ -1707,7 +1734,7 @@ input[name="BuyButton"]{
 }
 
 #newOrder:hover{
-	background-color: #ffa800;
+	background-color: #079fa1;
 }
 
 #orderSuccess a{
@@ -1715,7 +1742,7 @@ input[name="BuyButton"]{
 }
 
 #orderSuccess a:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #personalCart #basketView .item a{
@@ -1743,7 +1770,7 @@ input[name="BuyButton"]{
 }
 
 #orderMake:hover{
-	background-color: #ffa800;
+	background-color: #27bfc1;
 }
 
 .orderLoad {
@@ -1751,7 +1778,7 @@ input[name="BuyButton"]{
 }
 
 #wishlist .prop a:hover{
-	color: #ffa800;
+	color: #079fa1;
 }
 
 #popSection .name:hover{
@@ -1765,6 +1792,108 @@ input[name="BuyButton"]{
 #popSection .last .ps:hover{
     color: #27bfc1;
 }
+
+#storesList .storesListTableLink,
+#storeDetail .storesMoreLink{
+	color: #27bfc1;
+}
+
+#storeDetail .showByMapLink{
+	color: #000000;
+}
+
+#storesList .storesListTableLink:hover,
+#storesList .storesListTableMailLink:hover,
+#storeDetail .storesMoreLink:hover,
+#storeDetail .showByMapLink:hover{
+	color: #27bfc1;
+}
+
+#complect .complectListItemLink{
+	color: #000000;
+}
+
+#complect .complectListItemLink:hover{
+	color: #27bfc1;
+}
+
+#complect .complectResultEconomyValue{
+	color: #ff305c;
+}
+
+#appFastView .addCart,
+#geo-location-window .geo-location-window-button{
+	background: #27bfc1;
+}
+
+#geo-location-window .geo-location-window-list-item .selected span{
+	border-bottom: 1px dashed #27bfc1;
+	color: #27bfc1;
+}
+
+#appFastView .addCart:hover,
+#geo-location-window .geo-location-window-button:hover{
+	background-color: #27bfc1;
+}
+
+#geo-location-window .geo-location-window-list-item a:hover{
+	color: #27bfc1;
+}
+
+.information-feedback,
+.shop-review-top-new-button{
+	border: 1px solid #27bfc1;
+	color: #27bfc1;
+}
+
+.information-feedback:hover,
+.shop-review-top-new-button:hover{
+	border: 1px solid #27bfc1;
+	color: #27bfc1;
+}
+
+.webFormTools input[type="submit"] {
+    background-color: #27bfc1;
+}
+
+.webFormTools input[type="submit"]:hover {
+    background-color: #27bfc1;
+}
+
+#bx-soa-order-form .bx-blue .btn.btn-default {
+	background-color: #27bfc1;
+	border: 1px solid #27bfc1;
+	color: #ffffff;
+}
+
+#bx-soa-order-form textarea{
+	outline: none;
+}
+
+#bx-soa-order-form a{
+	color: #27bfc1;
+}
+
+#bx-soa-order-form a:hover{
+	color: #27bfc1;
+}
+
+#bx-soa-order-form .bx-blue .btn.btn-default:hover{
+	background-color: #27bfc1;
+}
+
+#bx-soa-order-form .bx-sls .quick-location-tag, .bx-slst .quick-location-tag{
+	color: #23527c;
+}
+
+#appProductPriceVariant .linkMore{
+	background: #27bfc1;
+}
+
+#appProductPriceVariant .linkMore:hover{
+	background-color: #27bfc1;
+}
+
 
 /*end*/
 

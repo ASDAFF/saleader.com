@@ -141,6 +141,7 @@
 			'CONVERT_CURRENCY' => $arParams['CONVERT_CURRENCY'],
 			'CURRENCY_ID' => $arParams['CURRENCY_ID'],
 			"FILTER_NAME" => $arParams["FILTER_NAME"],
+			"HIDE_MEASURES" => $arParams["HIDE_MEASURES"],
 			"ADD_SECTIONS_CHAIN" => "N",
 			"SHOW_ALL_WO_SECTION" => "Y"
 		),

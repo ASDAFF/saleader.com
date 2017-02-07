@@ -1,6 +1,8 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 	$this->setFrameMode(true);
-?>	<?if(!empty($arResult["ITEMS"])):?>
+?>
+<?if ($arParams["DISPLAY_TOP_PAGER"]){?><? echo $arResult["NAV_STRING"];?><?}?>
+<?if(!empty($arResult["ITEMS"])):?>
 		<div id="brandList">
 			<div class="items">
 				<?foreach($arResult["ITEMS"] as $arElement):?>
@@ -55,3 +57,5 @@
 			);?>
 		</div>
 	<?endif;?>
+	<br />
+<?if ($arParams["DISPLAY_BOTTOM_PAGER"]){?><? echo $arResult["NAV_STRING"];?><?}?>

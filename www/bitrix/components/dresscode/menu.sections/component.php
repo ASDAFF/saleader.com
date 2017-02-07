@@ -2,7 +2,7 @@
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 
 if(!isset($arParams["CACHE_TIME"]))
-	$arParams["CACHE_TIME"] = 36000000;
+	$arParams["CACHE_TIME"] = 360000000;
 
 CModule::IncludeModule("iblock");
 
@@ -18,7 +18,7 @@ $arResult["ELEMENT_LINKS"] = array();
 
 $obCache = new CPHPCache; 
 
-if ($obCache->InitCache($arParams["CACHE_TIME"], false, "/")) {
+if ($obCache->InitCache($arParams["CACHE_TIME"], SITE_ID, "/")) {
    $aMenuLinksNew= $obCache->GetVars(); 
 } 
 elseif ($obCache->StartDataCache()) {

@@ -20,8 +20,8 @@
 				</li>
 			<?endforeach;?>
 		</ul>
-		<a href="#" class="sliderBtnLeft"></a>
-		<a href="#" class="sliderBtnRight"></a>
+		<a href="#" class="middleSliderBtnLeft"></a>
+		<a href="#" class="middleSliderBtnRight"></a>
 	</div>
 
 <?endif;?>

@@ -52,7 +52,7 @@
 									<div class="scrollElement" id="<?=$this->GetEditAreaId($arElement['ID']);?>">
 										<ins data-id="<?=$arElement["ID"]?>"></ins>
 										<div class="imgBlock"><a href="<?=$arElement["DETAIL_PAGE_URL"]?>"><img src="<?=!empty($arElement["PICTURE"]["src"]) ? $arElement["PICTURE"]["src"] : SITE_TEMPLATE_PATH."/images/empty.png" ?>" alt="<?=$arElement["NAME"]?>"></a></div>
-										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><?=$arElement["NAME"]?></a>
+										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a>
 										<span class="price"><?if(!empty($arElement["SKU_SHOW_FROM"])): echo GetMessage("FROM"); endif;?><?=$arElement["PRICE"];?></span>
 										<a href="#" class="addCart<?if(!$arElement["ADDCART"]):?> disabled<?endif;?>" data-ibl="<?=$arElement["IBLOCK_ID"]?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=!empty($arElement["SKU"]) ? GetMessage("ADDSKU") : GetMessage("ADDCART")?></a>
 									</div>	

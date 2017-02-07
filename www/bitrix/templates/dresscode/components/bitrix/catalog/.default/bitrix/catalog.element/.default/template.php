@@ -7,7 +7,7 @@ $morePhotoCounter = 0;
 $countPropertyElements = 7;
 global $USER;
 global $similarFilter;
-$similarFilter=$arResult['SIMILAR_FILTER'];
+$similarFilter = $arResult['SIMILAR_FILTER'];
 
 ?>
 <?
@@ -106,7 +106,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                            alt="<?= $arResult["BRAND"]["NAME"] ?>"></a>
                             <? endif; ?>
                             <? if (!empty($arResult["PREVIEW_TEXT"])): ?>
-                                <meta itemprop="description" content="<?= $arResult["~PREVIEW_TEXT"] ?>" />
+                                <meta itemprop="description" content="<?= $arResult["~PREVIEW_TEXT"] ?>"/>
                                 <div class="description">
                                     <div class="heading"><?= GetMessage("CATALOG_ELEMENT_PREVIEW_TEXT_LABEL") ?></div>
                                     <div class="changeShortDescription"
@@ -114,6 +114,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                 </div>
                             <? endif; ?>
                             <? if (!empty($arResult["SKU_PRODUCT"])): ?>
+
                                 <? if (!empty($arResult["SKU_PROPERTIES"]) && $level = 1): ?>
                                     <div class="elementSkuVariantLabel"><?= GetMessage("SKU_VARIANT_LABEL") ?></div>
                                     <? foreach ($arResult["SKU_PROPERTIES"] as $propName => $arNextProp): ?>
@@ -588,7 +589,8 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                 "PAGER_BASE_LINK_ENABLE" => "N",
                                 "SET_STATUS_404" => "N",
                                 "SHOW_404" => "N",
-                                "MESSAGE_404" => ""
+                                "MESSAGE_404" => "",
+                                "HIDE_MEASURES"=>$arParams["HIDE_MEASURES"]
                             ),
                             $component
                         ); ?>
@@ -710,10 +712,11 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
 
 <script type="text/javascript">
 
-    var CATALOG_LANG = {
-        REVIEWS_HIDE: "<?=GetMessage("REVIEWS_HIDE")?>",
-        REVIEWS_SHOW: "<?=GetMessage("REVIEWS_SHOW")?>"
-    };
+	var CATALOG_LANG = {
+		REVIEWS_HIDE: "<?=GetMessage("REVIEWS_HIDE")?>",
+		REVIEWS_SHOW: "<?=GetMessage("REVIEWS_SHOW")?>",
+		OLD_PRICE_LABEL: "<?=GetMessage("OLD_PRICE_LABEL")?>",
+	};
 
     var elementAjaxPath = "<?=$templateFolder . "/ajax.php"?>";
 

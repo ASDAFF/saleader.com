@@ -85,6 +85,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 		          "VALUES" => $IBLOCKS,
 		          "REFRESH" => "Y",
 			),
+			"HIDE_NOT_AVAILABLE" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_NOT_AVAILABLE"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
+			),
 			"PRICE_CODE" => array(
 		         "PARENT" => "PRICES",
 		         "NAME" => GetMessage("PRICE_CODE"),
@@ -100,6 +106,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 				"MULTIPLE" => "Y",
 				"VALUES" => $arProperty,
 				"ADDITIONAL_VALUES" => "Y",
+			),
+			"HIDE_MEASURES" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_MEASURES"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
 			),
 			"CACHE_TIME" => Array("DEFAULT" => "3600000")
 		)

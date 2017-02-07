@@ -12,7 +12,7 @@ $this->setFrameMode(true);
 							<img src="<?=$arResult["ELEMENT"]["DETAIL_PICTURE"]["src"]?>" alt="<?=$arResult["ELEMENT"]["NAME"]?>">
 						</a>
 						<a href="<?=$arResult["ELEMENT"]["DETAIL_PAGE_URL"]?>" class="name changeName" target="_blank"><span class="middle"><?=$arResult["ELEMENT"]["NAME"]?></span></a>
-						<span class="price changePrice"><?=$arResult["ELEMENT"]["PRICE_PRINT_DISCOUNT_VALUE"]?><?if(!empty($arResult["ELEMENT"]["PRICE_DISCOUNT_DIFFERENCE_VALUE"])):?><s class="discount"><?=$arResult["ELEMENT"]["PRICE_PRINT_VALUE"]?></s><?endif;?></span>
+						<span class="price changePriceSet"><?=$arResult["ELEMENT"]["PRICE_PRINT_DISCOUNT_VALUE"]?><?if(!empty($arResult["ELEMENT"]["PRICE_DISCOUNT_DIFFERENCE_VALUE"])):?><s class="discount"><?=$arResult["ELEMENT"]["PRICE_PRINT_VALUE"]?></s><?endif;?></span>
 					</div>
 				</div>
 				<?foreach ($arResult["SET_ITEMS"]["DEFAULT"] as $i => $arElement):?>
@@ -61,7 +61,7 @@ $this->setFrameMode(true);
 											<img src="<?=$arResult["ELEMENT"]["DETAIL_PICTURE"]["src"]?>" alt="<?=$arResult["ELEMENT"]["NAME"]?>">
 										</a>
 										<a href="<?=$arResult["ELEMENT"]["DETAIL_PAGE_URL"]?>" class="name changeName" target="_blank"><span class="middle"><?=$arResult["ELEMENT"]["NAME"]?></span></a>
-										<span class="price changePrice"><?=$arResult["ELEMENT"]["PRICE_PRINT_DISCOUNT_VALUE"]?><?if(!empty($arResult["ELEMENT"]["PRICE_DISCOUNT_DIFFERENCE_VALUE"])):?><s class="discount"><?=$arResult["ELEMENT"]["PRICE_PRINT_VALUE"]?></s><?endif;?></span>
+										<span class="price changePriceSet"><?=$arResult["ELEMENT"]["PRICE_PRINT_DISCOUNT_VALUE"]?><?if(!empty($arResult["ELEMENT"]["PRICE_DISCOUNT_DIFFERENCE_VALUE"])):?><s class="discount"><?=$arResult["ELEMENT"]["PRICE_PRINT_VALUE"]?></s><?endif;?></span>
 									</div>
 								</td>
 								<td class="wList">

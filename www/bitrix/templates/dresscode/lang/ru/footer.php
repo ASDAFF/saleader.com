@@ -12,4 +12,6 @@
 	$MESS["CATALOG_NO_AVAILABLE"] = "Недоступно";
 	$MESS["COLOR_SWITCHER"] = "Цветовая схема:";
 	$MESS["COLOR_SWITCHER_CLOSE"] = "Закрыть";
+	$MESS["BACKGROUND_SWITCHER"] = "Цвет фона";
+	$MESS["FAST_VIEW_PRODUCT_LABEL"] = "Быстрый просмотр";
 ?>

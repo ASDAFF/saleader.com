@@ -100,26 +100,43 @@ class ConnectionPool
 	protected function getConnectionParameters($name)
 	{
 		if (!is_string($name))
-			throw new Main\ArgumentTypeException("name", "string");
-
-		if ($name === "")
-			throw new Main\ArgumentNullException("name");
-
-		if (isset($this->connectionParameters[$name]) && !empty($this->connectionParameters[$name]))
-			return $this->connectionParameters[$name];
-
-		$params = Config\Configuration::getValue('connections');
-		if (isset($params[$name]) && !empty($params[$name]))
-			return $params[$name];
-
-		if ($name === static::DEFAULT_CONNECTION_NAME)
 		{
-			$params = $this->getDbConnConnectionParameters();
-			if (!empty($params))
-				return $params;
+			throw new Main\ArgumentTypeException("name", "string");
 		}
 
-		return null;
+		if ($name === "")
+		{
+			throw new Main\ArgumentNullException("name");
+		}
+
+		$params = null;
+		if (isset($this->connectionParameters[$name]) && !empty($this->connectionParameters[$name]))
+		{
+			$params = $this->connectionParameters[$name];
+		}
+		else
+		{
+			$configParams = Config\Configuration::getValue('connections');
+			if (isset($configParams[$name]) && !empty($configParams[$name]))
+			{
+				$params = $configParams[$name];
+			}
+			elseif ($name === static::DEFAULT_CONNECTION_NAME)
+			{
+				$dbconnParams = $this->getDbConnConnectionParameters();
+				if (!empty($dbconnParams))
+				{
+					$params = $dbconnParams;
+				}
+			}
+		}
+
+		if ($params !== null && $name === static::DEFAULT_CONNECTION_NAME && !isset($params["include_after_connected"]))
+		{
+			$params["include_after_connected"] = \Bitrix\Main\Loader::getPersonal("php_interface/after_connect_d7.php");
+		}
+
+		return $params;
 	}
 
 	/**
@@ -132,6 +149,11 @@ class ConnectionPool
 	public function setConnectionParameters($name, $parameters)
 	{
 		$this->connectionParameters[$name] = $parameters;
+
+		if(isset($this->connections[$name]))
+		{
+			unset($this->connections[$name]);
+		}
 	}
 
 	/**
@@ -163,7 +185,7 @@ class ConnectionPool
 	{
 		/* Old kernel code for compatibility */
 
-		global $DBType, $DBDebug, $DBDebugToFile, $DBHost, $DBName, $DBLogin, $DBPassword, $DBSQLServerType;
+		global $DBType, $DBDebug, $DBDebugToFile, $DBHost, $DBName, $DBLogin, $DBPassword;
 
 		require_once(
 			Main\Application::getDocumentRoot().
@@ -171,13 +193,20 @@ class ConnectionPool
 			"/php_interface/dbconn.php"
 		);
 
-		$DBType = strtolower($DBType);
-		if ($DBType == 'mysql')
+		$className = null;
+		$type = strtolower($DBType);
+		if($type == 'mysql')
+		{
 			$className = "\\Bitrix\\Main\\DB\\MysqlConnection";
-		elseif ($DBType == 'mssql')
+		}
+		elseif($type == 'mssql')
+		{
 			$className = "\\Bitrix\\Main\\DB\\MssqlConnection";
-		else
+		}
+		elseif($type == 'oracle')
+		{
 			$className = "\\Bitrix\\Main\\DB\\OracleConnection";
+		}
 
 		return array(
 			'className' => $className,
@@ -248,7 +277,7 @@ class ConnectionPool
 	/**
 	 * In the ignore DML mode a data modification command will not stop next queries going to a slave.
 	 *
-	 * @param bool $mode Whenever to ignore subsequent DML or not.
+	 * @param bool $mode Ignore subsequent DML or not.
 	 * @return void
 	 */
 	public function ignoreDml($mode)

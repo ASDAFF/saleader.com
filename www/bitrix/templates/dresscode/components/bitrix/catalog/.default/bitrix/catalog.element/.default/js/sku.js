@@ -1,8 +1,16 @@
 $(function(){
+
+	var skuLoading = false;
+
 	var elementSelectSku = function(event){
+
+		if(skuLoading == true){
+			return false;
+		}
 
 		var _params = "";
 		var _props = "";
+		var _highload= "";
 
 		var $_this = $(this);
 
@@ -20,6 +28,8 @@ $(function(){
 		$_this.parents(".elementSkuPropertyList").find("li").removeClass("selected");
 		$_clickedProp.addClass("selected loading");
 
+		skuLoading = true; //block
+
 		$_propList.each(function(i, prop){
 
 			var $_nextProp  = $(prop);
@@ -27,6 +37,10 @@ $(function(){
 
 			var propName = $_nextProp.data("name");
 			var _used = false;
+
+			if($_nextProp.data("highload") == "Y"){
+				_highload = _highload + propName + ";"
+			}
 
 			$_nextPropList.each(function(io, obj){
 				var $_currentObj = $(obj);
@@ -43,7 +57,7 @@ $(function(){
 
 		});
 
-		$.getJSON(elementAjaxPath + "?act=selectSku&props=" + encodeURI(_props) + "&params=" + encodeURI(_params) + "&level=" + _level + "&iblock_id=" + $_mProduct.data("iblock-id") + "&prop_id=" + $_mProduct.data("prop-id") + "&product_id=" + $_mProduct.data("product-id"))
+		$.getJSON(elementAjaxPath + "?act=selectSku&props=" + encodeURI(_props) + "&params=" + encodeURI(_params) + "&level=" + _level + "&iblock_id=" + $_mProduct.data("iblock-id") + "&prop_id=" + $_mProduct.data("prop-id") + "&product_id=" + $_mProduct.data("product-id") + "&highload=" + encodeURI(_highload))
 		  .done(function(http){
 	  		$_propList.each(function(pI, pV){
 	  			var $_sf = $(pV);
@@ -64,10 +78,11 @@ $(function(){
 			});
 			
 			$(".changeName").html(http[0]["PRODUCT"]["NAME"]);
-			
+
 			$_mProduct.find(".changeID").data("id", http[0]["PRODUCT"]["ID"]);
-			$_mProduct.find(".changePrice").html(http[0]["PRODUCT"]["PRICE"]["DISCOUNT_PRICE"]);
 			$_mProduct.find(".changePicture").html($("<img/>").attr("src", http[0]["PRODUCT"]["IMAGES"][0]["MEDIUM_IMAGE"]["SRC"]));
+			$_mProduct.find(".changePropertiesNoGroup").html(http[0]["PRODUCT"]["RESULT_PROPERTIES_NO_GROUP"]);
+			$_mProduct.find(".changePropertiesGroup").html(http[0]["PRODUCT"]["RESULT_PROPERTIES_GROUP"]);
 
 			var $changeCart = $_mProduct.find(".changeCart");
 			
@@ -81,18 +96,27 @@ $(function(){
 			
 			var $changeAvailable = $_mProduct.find(".changeAvailable");
 
+			$changeAvailable.removeClass("getStoresWindow");
 			$changeAvailable.removeClass("outOfStock");
 			$changeAvailable.removeClass("onOrder");
 			$changeAvailable.removeClass("inStock");
+			$changeAvailable.removeAttr("href");
 
 
 			if(http[0]["PRODUCT"]["CATALOG_QUANTITY"] > 0){
-				$changeAvailable.html(LANG["CATALOG_AVAILABLE"]).addClass("inStock");
-				$changeAvailable.prepend(
-					$("<img/>").addClass("icon").attr("src", TEMPLATE_PATH + "/images/inStock.png")
-				);
+				if(http[0]["PRODUCT"]["STORES_COUNT"] > 1){
+					$changeAvailable.html($("<span/>").html(LANG["CATALOG_AVAILABLE"])).addClass("inStock").attr("href", "#").addClass("getStoresWindow").data("id", http[0]["PRODUCT"]["ID"]);
+					$changeAvailable.prepend(
+						$("<img/>").addClass("icon").attr("src", TEMPLATE_PATH + "/images/inStock.png")
+					);
+				}else{
+					$changeAvailable.html(LANG["CATALOG_AVAILABLE"]).addClass("inStock");
+					$changeAvailable.prepend(
+						$("<img/>").addClass("icon").attr("src", TEMPLATE_PATH + "/images/inStock.png")
+					);
+				}
 			}else{
-				if(http[0]["PRODUCT"]["CAN_BUY"] != true){
+				if(http[0]["PRODUCT"]["CAN_BUY"] != "Y"){
 					$changeAvailable.html(LANG["CATALOG_NO_AVAILABLE"]).addClass("outOfStock");
 					$changeCart.addClass("disabled");
 					$changeAvailable.prepend(
@@ -105,15 +129,29 @@ $(function(){
 					);				
 				}
 			}
+
+			var $productChangePrice = $_mProduct.find(".changePrice").empty().removeClass("getPricesWindow").removeAttr("href");
+			$productChangePrice.html(http[0]["PRODUCT"]["PRICE"]["DISCOUNT_PRICE"]);
+			
+			if(http[0]["PRODUCT"]["COUNT_PRICES"] > 1){
+				$productChangePrice.prepend($("<span/>", {class: "priceIcon"})).addClass("getPricesWindow").attr("href", "#");
+			}
+			
 			// pictures
+			var countImages = 0;
 
 			if(http[0]["PRODUCT"]["IMAGES"]){
+
+				for(var i in http[0]["PRODUCT"]["IMAGES"]) {
+					countImages = i;
+				}
 
 				// big slider vars
 				var $pictureSlider = $("#pictureContainer .pictureSlider").empty();
 				
 				// small pictures slider
-				var $moreImagesCarouselSlideBox = $("#moreImagesCarousel .slideBox");
+				var $moreImagesCarousel = $("#moreImagesCarousel").removeClass("hide");
+				var $moreImagesCarouselSlideBox = $moreImagesCarousel.find(".slideBox");
 				$moreImagesCarouselSlideBox.find(".item").remove();
 
 				$.each(http[0]["PRODUCT"]["IMAGES"], function(i, nextElement){
@@ -121,27 +159,30 @@ $(function(){
 					//big slider
 					$pictureSlider.append(
 						$("<div />", {class: "item"}).append(
-							$("<a/>", {class: "zoom", href: nextElement["LARGE_IMAGE"]["SRC"]}).data("large-picture", nextElement["LARGE_IMAGE"]["SRC"]).append(
+							$("<a/>", {class: "zoom", href: nextElement["LARGE_IMAGE"]["SRC"]}).data("large-picture", nextElement["LARGE_IMAGE"]["SRC"]).data("small-picture", nextElement["SMALL_IMAGE"]["SRC"]).append(
 								$("<img />", {src: nextElement["MEDIUM_IMAGE"]["SRC"]})
 							)
 						)
 					)
-
-					//small slider
-					$moreImagesCarouselSlideBox.append(
-						$("<div />", {class: "item"}).append(
-							$("<a/>", {class: "zoom", href: nextElement["LARGE_IMAGE"]["SRC"]}).data("large-picture", nextElement["LARGE_IMAGE"]["SRC"]).append(
-								$("<img />", {src: nextElement["SMALL_IMAGE"]["SRC"]})
+			
+					if(countImages > 0){
+						//small slider
+						$moreImagesCarouselSlideBox.append(
+							$("<div />", {class: "item"}).append(
+								$("<a/>", {class: "zoom", href: nextElement["LARGE_IMAGE"]["SRC"]}).data("large-picture", nextElement["LARGE_IMAGE"]["SRC"]).append(
+									$("<img />", {src: nextElement["SMALL_IMAGE"]["SRC"]})
+								)
 							)
-						)
-					)
-				
+						);
+					}else{
+						$moreImagesCarousel.addClass("hide");
+					}
 				});
 
 				startPictureElementSlider();
 				startMorePicturesElementCarousel();
 				createZoomer();
-
+			
 			}
 
 			//short description
@@ -166,27 +207,43 @@ $(function(){
 
 			//article
 
-			if(http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]){
-				$_mProduct.find(".changeArticle").html(http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]);
-			}else{
-				if($_mProduct.find(".changeArticle").data("first-value")){
-					$_mProduct.find(".changeArticle").html($_mProduct.find(".changeArticle").data("first-value"));
+			if(typeof(http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]) != "undefined"){
+				if(typeof(http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]) != "undefined" && http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]["VALUE"] !=""){
+					$_mProduct.find(".changeArticle").html(http[0]["PRODUCT"]["PROPERTIES"]["CML2_ARTICLE"]["VALUE"]).parents(".article").removeClass("hidden");
+				}else{
+					if($_mProduct.find(".changeArticle").data("first-value")){
+						$_mProduct.find(".changeArticle").html($_mProduct.find(".changeArticle").data("first-value"));
+					}else{
+						$_mProduct.find(".changeArticle").parents(".article").addClass("hidden");
+					}
 				}
+			}
+
+			if($_mProduct.data("hide-measure") != "Y" && http[0]["PRODUCT"]["MEASURE"] != undefined && http[0]["PRODUCT"]["MEASURE"]["SYMBOL_RUS"] != ""){
+				$_mProduct.find(".changePrice").append(
+					$("<span/>").addClass("measure").html(
+						" / " + http[0]["PRODUCT"]["MEASURE"]["SYMBOL_RUS"] + " "
+					)
+				);
 			}
 
 			if(http[0]["PRODUCT"]["PRICE"]["RESULT_PRICE"]["DISCOUNT"] > 0){
 				$_mProduct.find(".changePrice").append(
-					$("<s/>").addClass("discount").html(
-						http[0]["PRODUCT"]["PRICE"]["RESULT_PRICE"]["BASE_PRICE"]
+					$("<span/>").addClass("oldPriceLabel").html(CATALOG_LANG["OLD_PRICE_LABEL"]).append(
+						$("<s/>").addClass("discount").html(
+							http[0]["PRODUCT"]["PRICE"]["RESULT_PRICE"]["BASE_PRICE"]
+						)
 					)
 				);
 			}
 
 			$_clickedProp.removeClass("loading");
+			skuLoading = false;
 			
 		  }).fail(function(jqxhr, textStatus, error){
 		  	$_clickedProp.removeClass("loading");
-		    alert("Request Failed: " + textStatus + ", " + error);
+		  	skuLoading = false;
+		    console.error("Request Failed: " + textStatus + ", " + error);
 		});
 
 		event.preventDefault();

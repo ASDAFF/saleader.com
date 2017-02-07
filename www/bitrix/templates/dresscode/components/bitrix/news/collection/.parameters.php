@@ -131,7 +131,12 @@ $arAscDesc = array(
 
 
 $arTemplateParameters = array(
-
+	"HIDE_NOT_AVAILABLE" => array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("HIDE_NOT_AVAILABLE"),
+		"TYPE" => "CHECKBOX",
+		"REFRESH" => "Y"
+	),
 	"PRODUCT_IBLOCK_TYPE" => array(
 		"PARENT" => "BASE",
 		"NAME" => GetMessage("IBLOCK_TYPE"),
@@ -168,6 +173,12 @@ $arTemplateParameters = array(
 		"MULTIPLE" => "Y",
 		"VALUES" => $arPrice,
 	),
+	"HIDE_MEASURES" => array(
+		"PARENT" => "BASE",
+		"NAME" => GetMessage("HIDE_MEASURES"),
+		"TYPE" => "CHECKBOX",
+		"REFRESH" => "Y"
+	),	
 );
 
 if ($catalogIncluded)

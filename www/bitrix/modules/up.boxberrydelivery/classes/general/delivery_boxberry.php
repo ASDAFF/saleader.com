@@ -13,7 +13,7 @@ class CDeliveryBoxberry
     {
         ?>
         <script type="text/javascript"
-                src="https://saleader.com/bitrix/templates/dresscode/js/boxberry/boxberry.js"></script>
+                src="https://ipvi.store/bitrix/templates/dresscode/js/boxberry/boxberry.js"></script>
         <script>
             function setBXBCookie(key, value) {
                 var expires = new Date();

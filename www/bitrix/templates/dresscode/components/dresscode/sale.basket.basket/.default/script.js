@@ -3,6 +3,17 @@ var $main ="";
 var flushTimeout = "";
 var locTimeout = "";
 
+var $elementError = $("#elementError");
+
+var cartShowError = function(type){
+	
+	if(type == "max-quantity"){
+		$elementError.find(".message").html(personalCartLANG["max-quantity"]);
+	}
+
+	return $elementError.show();
+
+};
 
 $(window).bind('load', function(){ 
 	$main = $("#personalCart");
@@ -14,7 +25,7 @@ $(window).resize(function(){
 });
 
 $(document).on("click", "#allClear", function(e){ // clear
-	$.get(ajaxDir + "/ajax.php?act=emp", function(data){
+	$.get(ajaxDir + "/ajax.php?act=emp&SITE_ID=" + SITE_ID, function(data){
 		data == 1 ? document.location.reload() : alert("error" + data);
 	});
     e.preventDefault();
@@ -30,14 +41,15 @@ $(document).on("click", "#scrollToOrder", function(event){
 $(document).on("click", ".basketQty .minus", function(e){
 	
 	var $this = $(this);
-	var $qtyBox = $this.siblings(".qty");
+	var $qtyBox = $this.siblings(".qty").removeClass("error");
 	var $sum = $this.closest(".parent").find(".sum");
 	var sumStr = $sum.html().replace(/\d\.\d/g, '').replace(/[0-9]/g, '');
+	var qtyRatio = Number($qtyBox.data("ratio"));
 	var sumCalc;
 
-	if(parseInt($qtyBox.val()) - 1 > 0){
-		$qtyBox.val(parseFloat($qtyBox.val()) -1);
-		sumCalc = parseFloat(parseFloat($qtyBox.val()) * parseFloat($sum.data("price"))).toFixed(2).replace("\.00", '');
+	if(Number($qtyBox.val()) - qtyRatio > 0){
+		$qtyBox.val((Number($qtyBox.val()) * 10 - qtyRatio * 10) / 10);
+		sumCalc = Number(Number($qtyBox.val()) * Number($sum.data("price"))).toFixed(2).replace("\.00", '');
 		$sum.html(formatPrice(sumCalc) + sumStr);
 		clearTimeout(flushTimeout); 
 		flushTimeout = setTimeout(function(){
@@ -53,22 +65,31 @@ $(document).on("click", ".basketQty .minus", function(e){
 $(document).on("click", ".basketQty .plus", function(e){
 	
 	var $this = $(this);
-	var $qtyBox = $this.siblings(".qty");
+	var $qtyBox = $this.siblings(".qty").removeClass("error");
 	var $sum = $this.closest(".parent").find(".sum");
 	var sumStr = $sum.html().replace(/\d\.\d/g, '').replace(/[0-9]/g, '');
+	var qtyRatio = Number($qtyBox.data("ratio"));
 	var sumCalc;
 	
 	if(!parseFloat($qtyBox.val())){
 		$qtyBox.val(0);
 	}
-	
-	$qtyBox.val(parseInt($qtyBox.val()) + 1);
-	sumCalc = parseFloat(parseFloat($qtyBox.val()) * parseFloat($sum.data("price"))).toFixed(2).replace("\.00", '');
+
+	if($qtyBox.data("max-quantity")){
+		if($qtyBox.data("max-quantity") < Number($qtyBox.val()) + qtyRatio){
+			cartShowError("max-quantity");
+			$qtyBox.addClass("error");
+			return false;
+		}
+	}
+
+	$qtyBox.val((Number($qtyBox.val()) * 10 + qtyRatio * 10) / 10);
+	sumCalc = Number(Number($qtyBox.val()) * Number($sum.data("price"))).toFixed(2).replace("\.00", '');
 	$sum.html(formatPrice(sumCalc) + sumStr);
 	
 	clearTimeout(flushTimeout);
 	flushTimeout = setTimeout(function(){
-		updateCart($this.data("id"), parseFloat($qtyBox.val()))
+		updateCart($this.data("id"), Number($qtyBox.val()))
 	}, 500);
 	
 	flushParams();
@@ -104,18 +125,31 @@ $(function(){
 		var $this = $(this);
 		var $sum = $this.closest(".parent").find(".sum");
 		var sumStr = $sum.html().replace(/\d\.\d/g, '').replace(/[0-9]/g, '');
+		var qtyRatio = Number($this.data("ratio"));
 		var value = "";
 		var sumCalc;
 		
 		if($this.val().replace(/[^\d]/gi, '') != $this.val()){
 			value = 1;
-		}else if(parseFloat($this.val()) > 0){
-			value = parseFloat($this.val()); 
+		}else if(Number($this.val()) > 0){
+			value = Number($this.val()); 
+		}else{
+			value = qtyRatio;
+		}
+
+		value = Math.ceil(value / qtyRatio) * qtyRatio;
+
+		if($this.data("max-quantity")){
+			if($this.data("max-quantity") < value){
+				cartShowError("max-quantity");
+				$this.addClass("error");
+				value = $this.data("max-quantity");
+			}
 		}
 
 		if(value){
 			$this.val(value);
-			sumCalc = parseFloat(value * parseFloat($sum.data("price"))).toFixed(2).replace("\.00", '');
+			sumCalc = Number(value * Number($sum.data("price"))).toFixed(2).replace("\.00", '');
 			$sum.html(formatPrice(sumCalc) + sumStr);
 			clearTimeout(flushTimeout);
 			flushTimeout = setTimeout(function(){
@@ -129,13 +163,13 @@ $(function(){
 var updateCart = function(id, q){
 	if(q){
 		$.get(ajaxDir + "/ajax.php?act=upd&id=" + id + "&q=" + q, function(data){
-			data == 0 ?	alert("error") : cartReload(reCalcDelivery(getProductPricesInfo()));
+			data != true ?	console.error(data) : cartReload(reCalcDelivery(getProductPricesInfo()));
 		});
 	}
 }
 
 var flushParams = function(){
-	var $mainQty     = $("#personalCart").find(".qty");
+	var $mainQty     = $("#personalCart").find(".qty").removeClass("error");
 	var $allSum      = $("#allSum, #allOrderSum");
 	var $itemsCount  = $("#countItems, #countOrderItems");
 	var $sum         = $main.find(".sum");
@@ -231,7 +265,7 @@ var deliChange = function(event){
 	$(".deliProps").hide().find("input, textarea").prop("disabled", true);
 	$('[data-id="deli_' + $selected.val() +'"]').show().find("input, textarea").prop("disabled", false);
 
-	flushParams(getProductPricesInfo());
+	getProductPricesInfo(flushParams());
 
 };
 
@@ -272,7 +306,16 @@ var orderMake = function(event){
 		}
 
 		if($nextElement.data("location") != undefined){
-			deliveryLoc = $nextElement.data("location");
+			if($nextElement.data("location") != false){
+				deliveryLoc = $nextElement.data("location");
+			}else{
+
+				if($firstError === ""){
+					$firstError = $nextElement;
+				}
+
+				$nextElement.addClass("error");
+			}
 		}
 
 	});
@@ -369,15 +412,18 @@ var beforeCalcDelivery = function(){
 	){
 		
 		$orderContainer.addClass("wait");
-		
-		var getParamsObj = getForCalcDelivery({
-			act: "reCalcDelivery",
-			SITE_ID: SITE_ID,
-			DELISYSTEM_ID: gDeliSelectValue, 
-			PAYSYSTEM_ID: gPaySelectValue,
-			LOCATION_ID: gLocationValue,
-			PERSON_TYPE: gPersonSelectValue
-		}, gPersonActiveIndex); // always false
+		clearTimeout(getForCalcDeliveryTimeout);
+
+		var getForCalcDeliveryTimeout = setTimeout(function(){
+			getForCalcDelivery({
+				act: "reCalcDelivery",
+				SITE_ID: SITE_ID,
+				DELISYSTEM_ID: gDeliSelectValue, 
+				PAYSYSTEM_ID: gPaySelectValue,
+				LOCATION_ID: gLocationValue,
+				PERSON_TYPE: gPersonSelectValue
+			}, gPersonActiveIndex); // always false
+		}, 25);
 
 	}else{
 		console.error("CHECK PAYSYSTEM_ID or LOCATION_ID or PERSON_TYPE_ID");
@@ -444,7 +490,7 @@ var deliveryJsonResultHandle = function(jsonData, activeIndex){
 
 var getProductPricesInfo = function(){
 	
-	$productTable = $(".productTable");
+	$productTable = $("#basketProductList").addClass("wait");
 	$personSelect = $("#personSelect");
 
 	var $personOptionSelected = $personSelect.find("option:selected");
@@ -463,17 +509,32 @@ var getProductPricesInfo = function(){
 	$.getJSON(ajaxDir + "/ajax.php", gObj, function(jsonData){
 		$.each(jsonData, function(i, nextElement){
 			
-			var $nextElement = $productTable.find('[data-id="' + nextElement["ID"] + '"]');
-			var priceResult = nextElement["PRICE"];
-			
-			if(nextElement["PRICE"] != nextElement["BASE_PRICE"]){
-				priceResult = priceResult + "<s>" + nextElement["BASE_PRICE"] + "</s>";
+			var $nextElement = $productTable.find('[data-cart-id="' + nextElement["ID"] + '"]');
+			var priceResult = nextElement["PRICE_FORMATED"];
+
+			if(nextElement["MEASURE_SYMBOL_RUS"] != undefined && nextElement["MEASURE_SYMBOL_RUS"] !=""){
+				priceResult = priceResult + " <span class=\"measure\"> / " + nextElement["MEASURE_SYMBOL_RUS"] + "</span>";
 			}
 
-			$nextElement.find(".price").html(priceResult);
+			if(nextElement["~DISCOUNT_PRICE"] > 0 || nextElement["~BASE_PRICE"] != nextElement["~PRICE"]){
+				priceResult = priceResult + " <s class=\"discount\">" + nextElement["BASE_PRICE"] + "</s>";
+			}
+
+			var $nextElementPrice = $nextElement.find(".price");
+
+			$nextElementPrice.html(priceResult);
 			$nextElement.find(".sum").data("price", nextElement["~PRICE"]).html(nextElement["SUM"]);
+			
+			if($nextElementPrice.hasClass("getPricesWindow")){
+				$nextElementPrice.prepend($("<span/>", {class: "priceIcon"}));
+			}
+
+			flushParams();
 
 		});
+	
+		$productTable.removeClass("wait");
+
 	});
 
 };

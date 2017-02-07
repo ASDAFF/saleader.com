@@ -555,6 +555,33 @@ body.index{
 	color: #888888;
 }
 
+#appFastView .appFastViewExit, 
+#fastViewStores .fastViewStoresExit{
+	background: url(images/exit.png) 0 0 no-repeat transparent;
+}
+
+#appFastView .appFastViewExit:hover,
+#fastViewStores .fastViewStoresExit:hover{
+	background-position: 0 -21px ;
+}
+
+#appFastView .appFastViewExit:active,
+#fastViewStores .fastViewStoresExit:active{
+	background-position: 0 -42px ;
+}
+
+#appProductPriceVariant .appPriceVariantExit{
+	background: url(images/exit2.png) 0 0 no-repeat transparent;
+}
+
+#appProductPriceVariant .appPriceVariantExit:hover{
+	background-position: 0 -21px ;
+}
+
+#appProductPriceVariant .appPriceVariantExit:active{
+	background-position: 0 -42px ;
+}
+
 #footerTabsCaption{
 	border-top: 1px solid #e7e8ea;
 	background-color: #f9f9f9;
@@ -1720,6 +1747,107 @@ input[name="BuyButton"]{
 
 #popSection .last .ps:hover{
     color: #c881ce;
+}
+
+#storesList .storesListTableLink,
+#storeDetail .storesMoreLink{
+	color: #c881ce;
+}
+
+#storeDetail .showByMapLink{
+	color: #000000;
+}
+
+#storesList .storesListTableLink:hover,
+#storesList .storesListTableMailLink:hover,
+#storeDetail .storesMoreLink:hover,
+#storeDetail .showByMapLink:hover{
+	color: #ce77d5;
+}
+
+#complect .complectListItemLink{
+	color: #000000;
+}
+
+#complect .complectListItemLink:hover{
+	color: #ce77d5;
+}
+
+#complect .complectResultEconomyValue{
+	color: #ff305c;
+}
+
+#appFastView .addCart,
+#geo-location-window .geo-location-window-button{
+	background: #c881ce;
+}
+
+#geo-location-window .geo-location-window-list-item .selected span{
+	border-bottom: 1px dashed #c881ce;
+	color: #c881ce;
+}
+
+#appFastView .addCart:hover,
+#geo-location-window .geo-location-window-button:hover{
+	background-color: #ce77d5;
+}
+
+#geo-location-window .geo-location-window-list-item a:hover{
+	color: #ce77d5;
+}
+
+.information-feedback,
+.shop-review-top-new-button{
+	border: 1px solid #c881ce;
+	color: #c881ce;
+}
+
+.information-feedback:hover,
+.shop-review-top-new-button:hover{
+	border: 1px solid #ce77d5;
+	color: #ce77d5;
+}
+
+.webFormTools input[type="submit"] {
+    background-color: #c881ce;
+}
+
+.webFormTools input[type="submit"]:hover {
+    background-color: #ce77d5;
+}
+
+#bx-soa-order-form .bx-blue .btn.btn-default {
+	background-color: #c881ce;
+	border: 1px solid #c881ce;
+	color: #ffffff;
+}
+
+#bx-soa-order-form textarea{
+	outline: none;
+}
+
+#bx-soa-order-form a{
+	color: #c881ce;
+}
+
+#bx-soa-order-form a:hover{
+	color: #ce77d5;
+}
+
+#bx-soa-order-form .bx-blue .btn.btn-default:hover{
+	background-color: #ce77d5;
+}
+
+#bx-soa-order-form .bx-sls .quick-location-tag, .bx-slst .quick-location-tag{
+	color: #23527c;
+}
+
+#appProductPriceVariant .linkMore{
+	background: #c881ce;
+}
+
+#appProductPriceVariant .linkMore:hover{
+	background-color: #ce77d5;
 }
 
 /*end*/

@@ -78,8 +78,7 @@ class MysqliConnection extends MysqlCommonConnection
 			mysqlnd_memcache_set($this->resource, $memcached->getResource());
 		}
 
-		if ($fn = \Bitrix\Main\Loader::getPersonal("php_interface/after_connect_d7.php"))
-			include($fn);
+		$this->afterConnected();
 	}
 
 	/**
@@ -230,5 +229,18 @@ class MysqliConnection extends MysqlCommonConnection
 
 		/** @var $con \mysqli */
 		return sprintf("(%s) %s", $con->errno, $con->error);
+	}
+
+	/**
+	 * Selects the default database for database queries.
+	 *
+	 * @param string $database Database name.
+	 * @return bool
+	 */
+	public function selectDatabase($database)
+	{
+		/** @var $con \mysqli */
+		$con = $this->resource;
+		return $con->select_db($database);
 	}
 }

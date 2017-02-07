@@ -8,5 +8,6 @@
 	$MESS["CATALOG_VIEW_LABEL"] = "Вид каталога:";
 	$MESS["BACK_TO_LIST_PAGE"] = "Возврат к списку";
 	$MESS["CATALOG_TITLE"] = "Товары ";
+	$MESS["SELECT_CATEGORY"] = "Уточните категорию:";
 
 ?>

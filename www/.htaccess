@@ -1,4 +1,4 @@
-Options -Indexes 
+Options -Indexes
 ErrorDocument 404 /404.php
 
 <IfModule mod_php5.c>
@@ -11,6 +11,10 @@ ErrorDocument 404 /404.php
   Options +FollowSymLinks
   RewriteEngine On
 
+  RewriteCond %{HTTP_HOST} ^saleader\.com
+  RewriteRule ^(.*)$ https://ipvi.store/$1 [R=301,L]
+  RewriteCond %{HTTP_HOST} ^www.saleader\.com
+  RewriteRule ^(.*)$ https://ipvi.store/$1 [R=301,L]
     # Removes index.php from ExpressionEngine URLs
       RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
       RewriteCond %{REQUEST_URI} !/system/.* [NC]

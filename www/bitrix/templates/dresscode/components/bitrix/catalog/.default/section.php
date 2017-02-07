@@ -1,8 +1,8 @@
-<? if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-$this->setFrameMode(true); ?>
+<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+$this->setFrameMode(true);?>
 <?
-$this->SetViewTarget("menuRollClass"); ?> menuRolled<? $this->EndViewTarget();
-$this->SetViewTarget("hiddenZoneClass"); ?>hiddenZone<? $this->EndViewTarget();
+$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();
+$this->SetViewTarget("hiddenZoneClass");?>hiddenZone<?$this->EndViewTarget();
 $this->SetViewTarget("smartFilter");
 $arTemplates = array(
     "SQUARES" => array(
@@ -24,28 +24,30 @@ $arView = array(
 );
 
 if (CModule::IncludeModule("iblock")){
-$arFilter = array(
-    "ACTIVE" => "Y",
-    "GLOBAL_ACTIVE" => "Y",
-    "IBLOCK_ID" => $arParams["IBLOCK_ID"],
-);
-if (strlen($arResult["VARIABLES"]["SECTION_CODE"]) > 0) {
-    $arFilter["=CODE"] = $arResult["VARIABLES"]["SECTION_CODE"];
-} elseif ($arResult["VARIABLES"]["SECTION_ID"] > 0) {
-    $arFilter["ID"] = $arResult["VARIABLES"]["SECTION_ID"];
-}
+    $arFilter = array(
+        "ACTIVE" => "Y",
+        "GLOBAL_ACTIVE" => "Y",
+        "IBLOCK_ID" => $arParams["IBLOCK_ID"],
+    );
+    if(strlen($arResult["VARIABLES"]["SECTION_CODE"])>0){
+        $arFilter["=CODE"] = $arResult["VARIABLES"]["SECTION_CODE"];
+    }
+    elseif($arResult["VARIABLES"]["SECTION_ID"]>0){
+        $arFilter["ID"] = $arResult["VARIABLES"]["SECTION_ID"];
+    }
 
-$obCache = new CPHPCache;
-if ($obCache->InitCache(3600000, serialize($arFilter), "/iblock/catalog")) {
-    $arCurSection = $obCache->GetVars();
-} else {
-    $arCurSection = array();
-    $dbRes = CIBlockSection::GetList(array(), $arFilter, false, array("ID", "IBLOCK_ID", "UF_VIEW","IBLOCK_SECTION_ID"));
-    $dbRes = new CIBlockResult($dbRes);
+    $obCache = new CPHPCache;
+    if($obCache->InitCache(3600000, serialize($arFilter), "/iblock/catalog")){
+        $arCurSection = $obCache->GetVars();
+    }
+    else{
+        $arCurSection = array();
+        $dbRes = CIBlockSection::GetList(array(), $arFilter, false, array("ID", "IBLOCK_ID", "UF_VIEW","IBLOCK_SECTION_ID"));
+        $dbRes = new CIBlockResult($dbRes);
 
-    if (defined("BX_COMP_MANAGED_CACHE")) {
-        global $CACHE_MANAGER;
-        $CACHE_MANAGER->StartTagCache("/iblock/catalog");
+        if(defined("BX_COMP_MANAGED_CACHE")){
+            global $CACHE_MANAGER;
+            $CACHE_MANAGER->StartTagCache("/iblock/catalog");
 
         if ($arCurSection = $dbRes->GetNext()) {
             $CACHE_MANAGER->RegisterTag("iblock_id_" . $arParams["IBLOCK_ID"]);
@@ -57,7 +59,6 @@ if ($obCache->InitCache(3600000, serialize($arFilter), "/iblock/catalog")) {
     }
     $ufView=$arCurSection['UF_VIEW'];
     $section=$arCurSection;
-
     while(!is_set($ufView)&& is_set($section['IBLOCK_SECTION_ID'])) {
         $dbRes = CIBlockSection::GetList(array(), array("ID"=>$section['IBLOCK_SECTION_ID'],"IBLOCK_ID"=>9), false, array("ID", "IBLOCK_ID", "UF_VIEW","IBLOCK_SECTION_ID"));
         $dbRes = new CIBlockResult($dbRes);
@@ -65,15 +66,43 @@ if ($obCache->InitCache(3600000, serialize($arFilter), "/iblock/catalog")) {
         $ufView=$section["UF_VIEW"];
     }
 
-    $obCache->EndDataCache($arCurSection);
-}
+        $obCache->EndDataCache($arCurSection);
+    }
 
-$OPTION_CURRENCY = CCurrency::GetBaseCurrency();
-$ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arCurSection["IBLOCK_ID"], $arCurSection["ID"]);
-$arResult["IPROPERTY_VALUES"] = $ipropValues->getValues();
+    $OPTION_CURRENCY  = CCurrency::GetBaseCurrency();
+    $ipropValues = new \Bitrix\Iblock\InheritedProperty\SectionValues($arCurSection["IBLOCK_ID"], $arCurSection["ID"]);
+    $arResult["IPROPERTY_VALUES"] = $ipropValues->getValues();
 
 if (is_set($ufView))
+
     $arParams["CATALOG_TEMPLATE"] = $arView[$ufView];
+?>
+<?
+// get section banner
+if(empty($arParams["SHOW_SECTION_BANNER"]) || !empty($arParams["SHOW_SECTION_BANNER"]) && $arParams["SHOW_SECTION_BANNER"] == "Y"){
+    if(!empty($arResult["VARIABLES"]["SECTION_ID"])){
+        $arResult["SECTION_BANNERS"] = array();
+        $arSectionID = array();
+        $navChain = CIBlockSection::GetNavChain($arParams["IBLOCK_ID"], $arResult["VARIABLES"]["SECTION_ID"]);
+        while($arNextSection = $navChain->GetNext()){
+            $arSectionID[$arNextSection["ID"]] = $arNextSection["ID"];
+        }
+        if(!empty($arSectionID)){
+            $rsSection = CIBlockSection::GetList(array("DEPTH_LEVEL" => "DESC"), array("IBLOCK_ID" => $arParams["IBLOCK_ID"], "ID" => $arSectionID, "ACTIVE" => "Y", "GLOBAL_ACTIVE" => "Y"), false, array("ID", "IBLOCK_ID", "UF_BANNER", "UF_BANNER_LINK"));
+            while($arSection = $rsSection->GetNext()){
+                if(!empty($arSection["UF_BANNER"])){
+                    foreach ($arSection["UF_BANNER"] as $ib => $bannerID){
+                        $arResult["SECTION_BANNERS"][$ib]["IMAGE"] = CFile::ResizeImageGet($bannerID, array("width" => 2560, "height" => 1440), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+                        if(!empty($arSection["UF_BANNER_LINK"][$ib])){
+                            $arResult["SECTION_BANNERS"][$ib]["LINK"] = $arSection["UF_BANNER_LINK"][$ib];
+                        }
+                    }
+                    break(1);
+                }
+            }
+        }
+    }
+}
 ?>
 <? $APPLICATION->IncludeComponent(
     "bitrix:catalog.section.list",
@@ -99,31 +128,35 @@ if (is_set($ufView))
 <noindex>
     <? $APPLICATION->IncludeComponent(
         "bitrix:catalog.smart.filter",
-        ".default",
+        "seocontext_dresscode",
         array(
             "IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
             "IBLOCK_ID" => $arParams["IBLOCK_ID"],
             "SECTION_ID" => $arCurSection["ID"],
-            "FILTER_NAME" => "arrFilter",
+            "FILTER_NAME" => $arParams["FILTER_NAME"],
+            "PRICE_CODE" => $arParams["FILTER_PRICE_CODE"],
             "CACHE_TYPE" => "A",
-            "CACHE_TIME" => "36000000",
-            "CACHE_GROUPS" => "Y",
+            "CACHE_TIME" => $arParams["CACHE_TIME"],
+            "CACHE_GROUPS" => "N",
             "SAVE_IN_SESSION" => "N",
             "INSTANT_RELOAD" => "Y",
             "PRICE_CODE" => $arParams["FILTER_PRICE_CODE"],
             "HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
             "XML_EXPORT" => "N",
-            "SECTION_TITLE" => "-",
-            "SECTION_DESCRIPTION" => "-",
-            "TEMPLATE_THEME" => "blue",
+            "SECTION_TITLE" => "NAME",
+            "SECTION_DESCRIPTION" => "DESCRIPTION",
+            "HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+            "TEMPLATE_THEME" => $arParams["TEMPLATE_THEME"],
             "CONVERT_CURRENCY" => $arParams["CONVERT_CURRENCY"],
             "CURRENCY_ID" => $arParams["CURRENCY_ID"],
-            "COMPONENT_TEMPLATE" => ".default",
+            "COMPONENT_TEMPLATE" => "seocontext-dresscode",
             "SEF_MODE" => $arParams["SEF_MODE"],
             "SEF_RULE" => $arResult["FOLDER"] . $arResult["URL_TEMPLATES"]["smart_filter"],
             "SMART_FILTER_PATH" => $arResult["VARIABLES"]["SMART_FILTER_PATH"],
+            "PAGER_PARAMS_NAME" => $arParams["PAGER_PARAMS_NAME"],
             "SECTION_CODE" => "",
             "SECTION_CODE_PATH" => "",
+            "FILTER_VIEW_MODE" => $arParams["FILTER_VIEW_MODE"]
         ),
         $component
     ); ?>
@@ -221,6 +254,50 @@ if (is_set($ufView))
     ); ?>
     <div id="catalog">
         <noindex>
+            <?if(!empty($arResult["SECTION_BANNERS"])):?>
+                <div id="catalog-section-banners">
+                    <ul class="slideBox">
+                        <?foreach ($arResult["SECTION_BANNERS"] as $isc => $arNextBanner):?>
+                            <?if(!empty($arNextBanner["IMAGE"])):?>
+                                <li><a<?if(!empty($arNextBanner["LINK"]) && filter_var($arNextBanner["LINK"], FILTER_VALIDATE_URL)):?> href="<?=$arNextBanner["LINK"]?>"<?endif;?>><img src="<?=$arNextBanner["IMAGE"]["src"]?>"></a></li>
+                            <?endif;?>
+                        <?endforeach;?>
+                    </ul>
+                    <a href="#" class="catalog-section-banners-btn-left"></a>
+                    <a href="#" class="catalog-section-banners-btn-right"></a>
+                    <script>
+                        $(function() {
+                            $("#catalog-section-banners").dwSlider({
+                                rightButton: ".catalog-section-banners-btn-right",
+                                leftButton: ".catalog-section-banners-btn-left",
+                                delay: 6000,
+                                speed: 1000
+                            });
+                        });
+                    </script>
+                </div>
+            <?endif;?>
+            <?$APPLICATION->IncludeComponent(
+                "bitrix:catalog.section.list",
+                "catalog-pictures",
+                array(
+                    "IBLOCK_TYPE" => $arParams["IBLOCK_TYPE"],
+                    "IBLOCK_ID" => $arParams["IBLOCK_ID"],
+                    "SECTION_ID" => $arResult["VARIABLES"]["SECTION_ID"],
+                    "SECTION_CODE" => $arResult["VARIABLES"]["SECTION_CODE"],
+                    "CACHE_TYPE" => $arParams["CACHE_TYPE"],
+                    "CACHE_TIME" => $arParams["CACHE_TIME"],
+                    "CACHE_GROUPS" => $arParams["CACHE_GROUPS"],
+                    "COUNT_ELEMENTS" => $arParams["SECTION_COUNT_ELEMENTS"],
+                    "TOP_DEPTH" => 1,
+                    "SECTION_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["section"],
+                    "VIEW_MODE" => $arParams["SECTIONS_VIEW_MODE"],
+                    "SHOW_PARENT_NAME" => $arParams["SECTIONS_SHOW_PARENT_NAME"],
+                    "HIDE_SECTION_NAME" => (isset($arParams["SECTIONS_HIDE_SECTION_NAME"]) ? $arParams["SECTIONS_HIDE_SECTION_NAME"] : "N"),
+                    "ADD_SECTIONS_CHAIN" => "N"
+                ),
+                $component
+            );?>
             <div id="catalogLine">
                 <? if (!empty($arSortFields)): ?>
                     <div class="column">
@@ -300,6 +377,8 @@ if (is_set($ufView))
                 "PRICE_CODE" => $arParams["PRICE_CODE"],
                 "USE_PRICE_COUNT" => $arParams["USE_PRICE_COUNT"],
                 "SHOW_PRICE_COUNT" => $arParams["SHOW_PRICE_COUNT"],
+                "HIDE_MEASURES" => $arParams["HIDE_MEASURES"],
+                "SHOW_SECTION_BANNER" => !empty($arParams["SHOW_SECTION_BANNER"]) ? $arParams["SHOW_SECTION_BANNER"] : "Y",
 
                 "PRICE_VAT_INCLUDE" => $arParams["PRICE_VAT_INCLUDE"],
                 "USE_PRODUCT_QUANTITY" => $arParams['USE_PRODUCT_QUANTITY'],

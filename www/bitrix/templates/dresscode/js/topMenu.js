@@ -96,8 +96,8 @@ $(function(){
 	};
 
 	$(window).on("ready resize", {
-		reducedWidth: 800,
-		maxMenuWidth: 550
+		reducedWidth: 1250,
+		maxMenuWidth: 800
 	}, createMenu);
 	
 	$(document).on("click", "#topMenu ." + __menuBarClass, function(event){event.stopImmediatePropagation();});

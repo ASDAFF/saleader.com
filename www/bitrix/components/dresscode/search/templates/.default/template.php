@@ -37,7 +37,8 @@
 				"IBLOCK_ID" => $arParams["IBLOCK_ID"],
 				"SECTION_ID" => $_REQUEST["SECTION_ID"],
 				"FILTER_NAME" => "arrFilter",
-				"HIDE_NOT_AVAILABLE" => "N",
+				"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+				"SHOW_ALL_WO_SECTION" => "Y",
 				"CACHE_TYPE" => "N",
 				"CACHE_TIME" => "36000000",
 				"CACHE_GROUPS" => "Y",
@@ -47,7 +48,7 @@
 				"XML_EXPORT" => "N",
 				"SECTION_TITLE" => "-",
 				"SECTION_DESCRIPTION" => "-",
-				"CONVERT_CURRENCY" => "Y",
+				"CONVERT_CURRENCY" => "N",
 				"CURRENCY_ID" => $OPTION_CURRENCY
 			),
 			false
@@ -220,7 +221,9 @@
 				"FILTER_NAME" => $arParams["FILTER_NAME"],
 				"ADD_SECTIONS_CHAIN" => "N",
 				"SHOW_ALL_WO_SECTION" => "Y",
-				"SECTION_ID" => $_REQUEST["SECTION_ID"]
+				"SECTION_ID" => $_REQUEST["SECTION_ID"],
+				"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+				"HIDE_MEASURES" => $arParams["HIDE_MEASURES"]
 			),
 			false
 		);?>

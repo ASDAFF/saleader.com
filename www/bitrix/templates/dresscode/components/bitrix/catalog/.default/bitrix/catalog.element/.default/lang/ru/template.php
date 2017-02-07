@@ -13,6 +13,7 @@
 	$MESS["CATALOG_ELEMENT_BACK"] = "Вернуться в раздел";
 	$MESS["CATALOG_ELEMENT_OVERVIEW"] = "Обзор товара";
 	$MESS["CATALOG_ELEMENT_SET"] = "Набор";
+	$MESS["CATALOG_ELEMENT_COMPLECT"] = "Комплект";
 	$MESS["CATALOG_ELEMENT_REVIEW"] = "Отзывы";
 	$MESS["CATALOG_ELEMENT_ACCEESSORIES"] = "Аксессуары";
 	$MESS["CATALOG_ELEMENT_SIMILAR"] = "Похожие товары";
@@ -25,12 +26,15 @@
 	$MESS["CATALOG_ELEMENT_MORE_PROPERTIES"] = "Все характеристики";
 	$MESS["CATALOG_ELEMENT_PREVIEW_TEXT_LABEL"] = "Описание товара: ";
 	$MESS["CATALOG_ELEMENT_DETAIL_TEXT_HEADING"] = "Описание товара";
+	$MESS["CATALOG_ELEMENT_ZOOM"] = "Увеличить";
 	$MESS["SKU_VARIANT_LABEL"] = "Другие варианты товара: ";
-
+	$MESS["OLD_PRICE_LABEL"] = "Старая цена:";
 	$MESS["SPECS"] = "Характеристики:";
 	$MESS["OTHERITEMS"] = "Другие товары";
 	$MESS["CHARACTERISTICS"] = "Прочие";
-
+	$MESS["ELEMENT_COMPLECT_HEADING"] = "Состав комплекта";
+	$MESS["CATALOG_ELEMENT_COMPLECT_PRICE_RESULT"] = "Стоимость комплекта:";
+	$MESS["CATALOG_ELEMENT_COMPLECT_ECONOMY"] = "Ваша экономия:";
 	$MESS["READ_MORE"] = "Читать полностью";
 	$MESS["USERRATINGS"] = "Оценка пользователя:";
 	$MESS["DIGNIFIED"] = "Достоинства:";

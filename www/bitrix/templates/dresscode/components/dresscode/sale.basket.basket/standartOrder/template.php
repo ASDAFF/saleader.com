@@ -28,7 +28,7 @@
 ?>
 
 <script>
-	var ajaxDir = "<?=$this->GetFolder();?>";
+	var ajaxDir = "<?=$componentPath?>";
 </script>
 
 <?if(!empty($arResult["ITEMS"])):?>
@@ -131,7 +131,17 @@
 													$arProperty["DEFAULT_VALUE"] = trim($arResult["USER"]["NAME"]." ".$arResult["USER"]["LAST_NAME"]." ".$arResult["USER"]["SECOND_NAME"]);
 												}
 												elseif($arProperty["TYPE"] == "LOCATION" ){
-													$arProperty["DEFAULT_VALUE"] = !empty($arResult["LOCATION"]) ? $arResult["LOCATION"]["COUNTRY_NAME"].", ".$arResult["LOCATION"]["REGION_NAME"].$arResult["LOCATION"]["CITY_NAME"] : false;
+													if(!empty($arResult["LOCATION"])){
+														$arProperty["DEFAULT_VALUE"] = $arResult["LOCATION"]["COUNTRY_NAME"];
+														if(!empty($arResult["LOCATION"]["REGION_NAME"])){
+															$arProperty["DEFAULT_VALUE"].=", ".$arResult["LOCATION"]["REGION_NAME"];
+														}
+														if(!empty($arResult["LOCATION"]["CITY_NAME"])){
+															$arProperty["DEFAULT_VALUE"].=", ".$arResult["LOCATION"]["CITY_NAME"];
+														}
+													}else{
+														$arProperty["DEFAULT_VALUE"] = false;
+													}
 													$arProperty["LOCATION_ID"] = !empty($arResult["LOCATION"]) ? $arResult["LOCATION"]["ID"] : false;
 
 												}?>
@@ -212,83 +222,83 @@
 					</tr>
 					<?endif;?>
 					<?if(!empty($arResult["DELIVERY"])):?>
-						<tr>
-							<td>
-								<span><?=GetMessage("ORDER_DELIVERY")?></span>
-							</td>
-							<td>
-								<span class="label"><?=GetMessage("ORDER_DELIVERY")?></span>
-								<select class="deliSelect" name="DEVIVERY_TYPE">
-									<?foreach ($arResult["DELIVERY"] as $arDevivery):?>
-										<?if($arResult["DELIVERY_PERSON_ARRAY_ID"][$arPersonType["ID"]][$arDevivery["ID"]] == true):?>
-											<?if(empty($arResult["DELIVERY"]["FIRST"])){
-												$arResult["FIRST_DELIVERY_PRICE"] = $arDevivery["PRICE"];
-												$arResult["DELIVERY"]["FIRST"] = $arDevivery["ID"];
+							<tr>
+								<td>
+									<span><?=GetMessage("ORDER_DELIVERY")?></span>
+								</td>
+								<td>
+									<span class="label"><?=GetMessage("ORDER_DELIVERY")?></span>
+									<select class="deliSelect" name="DEVIVERY_TYPE">
+										<?foreach ($arResult["DELIVERY"][$arPersonType["ID"]] as $arDevivery):?>
+											<?if(empty($arResult["DELIVERY"][$arPersonType["ID"]]["FIRST"])){
+												$arResult["DELIVERY"][$arPersonType["ID"]]["FIRST"] = $arDevivery["ID"];
 											}?>
+											<?if(!isset($arResult["FIRST_DELIVERY_PRICE"])):?>
+												<?$arResult["FIRST_DELIVERY_PRICE"] = $arDevivery["PRICE"];?>
+											<?endif;?>
 											<option data-price="<?=intval($arDevivery["PRICE"])?>" value="<?=$arDevivery["ID"]?>"><?=$arDevivery["NAME"]?> <?=str_replace("-", ".", CurrencyFormat($arDevivery["PRICE"], $arDevivery["CURRENCY"]))?></option>
-										<?endif;?>
-									<?endforeach;?>
-								</select>
-								<?if(!empty($arResult["DELIVERY_PROPS"])):?>
-									<ul class="userProp">
-										<?foreach ($arResult["DELIVERY_PROPS"] as $i => $arProperty):?>
-											<?$visibile = $arResult["DELIVERY"]["FIRST"] == $arProperty["DELIVERY_ID"] ?  "" : "disabled" ?>
-											<li data-id="deli_<?=$arProperty["DELIVERY_ID"]?>" class="deliProps<?if(!empty($visibile)):?> hidden<?endif;?>">
-												<?if($arProperty["TYPE"] != "CHECKBOX"):?>
-													<span class="label"><?=$arProperty["NAME"]?><?if($arProperty["REQUIED"] === "Y"):?>*<?endif;?></span>
-													<label><?=$arProperty["DESCRIPTION"]?></label>
-												<?endif;?>
-												<?if($arProperty["TYPE"] == "TEXT"):?>
-													<input type="text" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?=$visibile?>>
-												<?elseif($arProperty["TYPE"] == "TEXTAREA"):?>
-													<textarea name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?if($arProperty["IS_ADDRESS"] === "Y"):?> data-address="Y"<?endif;?> <?=$visibile?>><?if($arProperty["IS_ADDRESS"] === "Y"):?><?=$arResult["USER"]["PERSONAL_STREET"]?><?endif;?></textarea>
-												<?elseif($arProperty["TYPE"] == "LOCATION"):?>
-													<input type="text" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" class="location"<?if(!empty($arProperty["LOCATION_ID"])):?> autocomplete="off" data-location="<?=$arProperty["LOCATION_ID"]?>"<?endif;?>>
-												<?elseif($arProperty["TYPE"] == "SELECT"):?>
-											        <select name="ORDER_PROP_<?=$arProperty["ID"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>">
-											        <?
-											        $db_vars = CSaleOrderPropsVariant::GetList(
-										                array("SORT" => "ASC", "NAME" => "ASC"),
-										                array("ORDER_PROPS_ID" => $arProperty["ID"])
-											        );
-											        while ($vars = $db_vars->Fetch()):?>
-											            <option value="<?=$vars["VALUE"]?>"<?=(($vars["VALUE"] == $arProperty["DEFAULT_VALUE"]) ? " selected" : "")?>><?=htmlspecialchars($vars["NAME"])?></option>
-											        <?endwhile;?>
-											        ?>
-											        </select>
-												<?elseif($arProperty["TYPE"] == "RADIO"):?>
-													<?$db_vars = CSaleOrderPropsVariant::GetList(
-														array("SORT" => "ASC", "NAME" => "ASC"),
-														array("ORDER_PROPS_ID" => $arProperty["ID"])
-													);?>
-													<?while($vars = $db_vars->Fetch()):?>
-														<input type="radio" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$vars["VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?=(($vars["VALUE"] == $arProperty["DEFAULT_VALUE"]) ? " checked" : "")?>><label for="<?=$arProperty["ID"]?>"><?=htmlspecialchars($vars["NAME"])?></label>
-													<?endwhile;?>
-											    <?elseif($arProperty["TYPE"] == "MULTISELECT"):?>
-													<select multiple name="ORDER_PROP_<?=$arProperty["ID"]?>[]" size="<?=((IntVal($arProperty["SIZE1"]) > 0) ? $arProperty["SIZE1"] : 5)?>" class="multi" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>">
-													<?
-														$arDef = Split(",", $arProperty["DEFAULT_VALUE"]);
-														for ($i = 0; $i < count($arDef); $i++)
-														$arDef[$i] = Trim($arDef[$i]);
-
-														$db_vars = CSaleOrderPropsVariant::GetList(
+										<?endforeach;?>
+									</select>
+									<?if(!empty($arResult["DELIVERY_PROPS"])):?>
+										<ul class="userProp">
+											<?foreach ($arResult["DELIVERY_PROPS"] as $i => $arProperty):?>
+												<?$visibile = $arResult["DELIVERY"][$arPersonType["ID"]]["FIRST"] == $arProperty["DELIVERY_ID"] ?  "" : "disabled" ?>
+												<li data-id="deli_<?=$arProperty["DELIVERY_ID"]?>" class="deliProps<?if(!empty($visibile)):?> hidden<?endif;?>">
+													<?if($arProperty["TYPE"] != "CHECKBOX"):?>
+														<span class="label"><?=$arProperty["NAME"]?><?if($arProperty["REQUIED"] === "Y"):?>*<?endif;?></span>
+														<label><?=$arProperty["DESCRIPTION"]?></label>
+													<?endif;?>
+													<?if($arProperty["TYPE"] == "TEXT"):?>
+														<input type="text" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?=$visibile?>>
+													<?elseif($arProperty["TYPE"] == "TEXTAREA"):?>
+														<textarea name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?if($arProperty["IS_ADDRESS"] === "Y"):?> data-address="Y"<?endif;?> <?=$visibile?>><?if($arProperty["IS_ADDRESS"] === "Y"):?><?=$arResult["USER"]["PERSONAL_STREET"]?><?endif;?></textarea>
+													<?elseif($arProperty["TYPE"] == "LOCATION"):?>
+														<input type="text" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$arProperty["DEFAULT_VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" class="location"<?if(!empty($arProperty["LOCATION_ID"])):?> autocomplete="off" data-location="<?=$arProperty["LOCATION_ID"]?>"<?endif;?>>
+													<?elseif($arProperty["TYPE"] == "SELECT"):?>
+												        <select name="ORDER_PROP_<?=$arProperty["ID"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>">
+												        <?
+												        $db_vars = CSaleOrderPropsVariant::GetList(
+											                array("SORT" => "ASC", "NAME" => "ASC"),
+											                array("ORDER_PROPS_ID" => $arProperty["ID"])
+												        );
+												        while ($vars = $db_vars->Fetch()):?>
+												            <option value="<?=$vars["VALUE"]?>"<?=(($vars["VALUE"] == $arProperty["DEFAULT_VALUE"]) ? " selected" : "")?>><?=htmlspecialchars($vars["NAME"])?></option>
+												        <?endwhile;?>
+												        ?>
+												        </select>
+													<?elseif($arProperty["TYPE"] == "RADIO"):?>
+														<?$db_vars = CSaleOrderPropsVariant::GetList(
 															array("SORT" => "ASC", "NAME" => "ASC"),
 															array("ORDER_PROPS_ID" => $arProperty["ID"])
-														);
-													?>
-													<?while ($vars = $db_vars->Fetch()):?>
-														<option value="<?=$vars["VALUE"]?>"<?=(in_array($vars["VALUE"], $arDef) ? " selected" : "")?>><?=htmlspecialchars($vars["NAME"])?></option>
-													<?endwhile;?>
-													</select>
-   												<?endif;?>
+														);?>
+														<?while($vars = $db_vars->Fetch()):?>
+															<input type="radio" name="ORDER_PROP_<?=$arProperty["ID"]?>" value="<?=$vars["VALUE"]?>" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>" id="<?=$arProperty["ID"]?>" <?=(($vars["VALUE"] == $arProperty["DEFAULT_VALUE"]) ? " checked" : "")?>><label for="<?=$arProperty["ID"]?>"><?=htmlspecialchars($vars["NAME"])?></label>
+														<?endwhile;?>
+												    <?elseif($arProperty["TYPE"] == "MULTISELECT"):?>
+														<select multiple name="ORDER_PROP_<?=$arProperty["ID"]?>[]" size="<?=((IntVal($arProperty["SIZE1"]) > 0) ? $arProperty["SIZE1"] : 5)?>" class="multi" data-requied="<?if($arProperty["REQUIED"] === "Y"):?>Y<?endif;?>">
+														<?
+															$arDef = Split(",", $arProperty["DEFAULT_VALUE"]);
+															for ($i = 0; $i < count($arDef); $i++)
+															$arDef[$i] = Trim($arDef[$i]);
 
-											</li>
-										<?endforeach;?>
-									</ul>
-								<?endif;?>
-							</td>
-						</tr>
-					<?endif;?>
+															$db_vars = CSaleOrderPropsVariant::GetList(
+																array("SORT" => "ASC", "NAME" => "ASC"),
+																array("ORDER_PROPS_ID" => $arProperty["ID"])
+															);
+														?>
+														<?while ($vars = $db_vars->Fetch()):?>
+															<option value="<?=$vars["VALUE"]?>"<?=(in_array($vars["VALUE"], $arDef) ? " selected" : "")?>><?=htmlspecialchars($vars["NAME"])?></option>
+														<?endwhile;?>
+														</select>
+	   												<?endif;?>
+
+												</li>
+											<?endforeach;?>
+										</ul>
+									<?endif;?>
+								</td>
+							</tr>
+						<?endif;?>
 					<tr>
 						<td></td>
 						<td>
@@ -311,6 +321,7 @@
 				</div>
 			</div>
 		</div>
+	<div class="clear"></div>
 	</div>
 	<div id="elementError">
 	  <div id="elementErrorContainer">
@@ -348,3 +359,9 @@
 		);?>
 	</div>
 <?endif;?>
+
+<script>
+	var personalCartLANG = {
+		"max-quantity": '<?=GetMessage("MAX_QUANTITY")?>'
+	};
+</script>

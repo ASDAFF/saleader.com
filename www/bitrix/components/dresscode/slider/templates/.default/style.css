@@ -13,6 +13,9 @@
 	display: block;
 }
 #slider ol{
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
 	position: absolute;
 	left:50%;
 	bottom:12px;

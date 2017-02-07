@@ -31,6 +31,10 @@ $(function(){
 
 		var searchProductParamsObject = jQuery.parseJSON(searchProductParams);
 
+		if(searchProductParamsObject["HIDE_NOT_AVAILABLE"] == undefined){
+			searchProductParamsObject["HIDE_NOT_AVAILABLE"] = "N";
+		}
+
 		var getParamsObject = {
 			"IBLOCK_TYPE": searchProductParamsObject["IBLOCK_TYPE"],
 			"IBLOCK_ID": searchProductParamsObject["IBLOCK_ID"],
@@ -42,13 +46,15 @@ $(function(){
 			"PAGER_TEMPLATE": "round",
 			"CONVERT_CURRENCY": searchProductParamsObject["CONVERT_CURRENCY"],
 			"CURRENCY_ID": searchProductParamsObject["CURRENCY_ID"],
+			"HIDE_NOT_AVAILABLE": searchProductParamsObject["HIDE_NOT_AVAILABLE"],
 			"FILTER_NAME": "arrFilter",
 			"ADD_SECTIONS_CHAIN": "N",
 			"SHOW_ALL_WO_SECTION": "Y",
+			"HIDE_MEASURES": searchProductParamsObject["HIDE_MEASURES"],
 			"PAGEN_1": sectionPage,
 			"SEARCH_QUERY": keyword
 		};
-		
+
 		var jqxhr = $.get(searchAjaxPath, getParamsObject, afterSearchGetProducts);
 	
 	};

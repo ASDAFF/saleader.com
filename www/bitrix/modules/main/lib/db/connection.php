@@ -294,9 +294,9 @@ abstract class Connection extends Data\Connection
 	 * - query($sql, $binds, $offset, $limit)
 	 *
 	 * @param string $sql Sql query.
-	 * @param array $binds,... Array of binds.
-	 * @param int $offset,... Offset of first row returned.
-	 * @param int $limit,... Limit rows count.
+	 * @param array $binds Array of binds.
+	 * @param int $offset Offset the of the first row to return, starting from 0.
+	 * @param int $limit Limit rows count.
 	 *
 	 * @return Result
 	 * @throws \Bitrix\Main\Db\SqlQueryException
@@ -911,5 +911,13 @@ abstract class Connection extends Data\Connection
 	public function getNodeId()
 	{
 		return $this->nodeId;
+	}
+
+	protected function afterConnected()
+	{
+		if(isset($this->configuration["include_after_connected"]) && $this->configuration["include_after_connected"] <> '')
+		{
+			include($this->configuration["include_after_connected"]);
+		}
 	}
 }

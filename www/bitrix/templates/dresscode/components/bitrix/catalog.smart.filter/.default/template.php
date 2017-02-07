@@ -1,5 +1,4 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-//test_dump($arResult);
 $this->setFrameMode(true);?>
 
 <div id="smartFilter">
@@ -441,7 +440,7 @@ $this->setFrameMode(true);?>
 								<?endforeach;?>
 
 								<?if(count($arItem["VALUES"]) > 5):?>
-									<li><a href="#" class="showALL"><?=GetMessage("CT_BCSF_FILTER_SHOW_ALL")?> <?=count($arItem["VALUES"])-3?></a></li>
+									<li><a href="#" class="showALL"><?=GetMessage("CT_BCSF_FILTER_SHOW_ALL")?> <?=count($arItem["VALUES"])-5?></a></li>
 								<?endif;?>
 							</ul>
 					<?
@@ -459,7 +458,7 @@ $this->setFrameMode(true);?>
 		<div id="modef" <?=(!isset($arResult["ELEMENT_COUNT"])) ? 'style="display:none"' : 'style="display: inline-block;"';?>>
 			<a href="#" class="close"></a>
 			<?=GetMessage("CT_BCSF_FILTER_COUNT", array("#ELEMENT_COUNT#" => '<span id="modef_num">'.intval($arResult["ELEMENT_COUNT"]).'</span>'));?>
-			<a href="<?=$arResult["FILTER_URL"]?>" id="modef_send"><?=GetMessage("CT_BCSF_FILTER_SHOW")?></a>
+			<a href="<?=$arResult["FILTER_URL"]?>" id="modef_send" class="modef_send_link"><?=GetMessage("CT_BCSF_FILTER_SHOW")?></a>
 		</div>
 	</form>
 </div>

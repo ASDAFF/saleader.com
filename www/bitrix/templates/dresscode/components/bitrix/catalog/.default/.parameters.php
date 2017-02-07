@@ -37,5 +37,29 @@ if($arCurrentValues["USE_REVIEW"] == "Y"){
 		"VALUES" => $arIBlockReview,
 		"REFRESH" => "Y",
 	);
+
+	$arTemplateParameters["HIDE_AVAILABLE_TAB"] = array(
+		"NAME" => GetMessage("HIDE_AVAILABLE_TAB"),
+		"TYPE" => "CHECKBOX",
+		"PARENT" => "BASE",
+		"DEFAULT" =>"N",
+		"VALUE" => "Y"
+	);
 }
+
+$arTemplateParameters["HIDE_MEASURES"] = array(
+	"PARENT" => "BASE",
+	"NAME" => GetMessage("HIDE_MEASURES"),
+	"TYPE" => "CHECKBOX",
+	"REFRESH" => "Y"
+);
+
+$arTemplateParameters["SHOW_SECTION_BANNER"] = array(
+	"PARENT" => "BASE",
+	"NAME" => GetMessage("SHOW_SECTION_BANNER"),
+	"TYPE" => "CHECKBOX",
+	"REFRESH" => "Y"
+);
+
+
 ?>

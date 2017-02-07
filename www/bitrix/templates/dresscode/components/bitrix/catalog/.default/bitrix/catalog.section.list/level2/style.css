@@ -2,7 +2,6 @@
 	margin-bottom: 24px;
 	border-radius: 4px;
 	margin-top: 24px;
-	cursor: pointer;
 }
 
 #nextSection .title{
@@ -12,6 +11,7 @@
 	padding-bottom: 12px;
 	padding-top: 12px;
 	font-size: 14px;
+	cursor: pointer;
 }
 
 #nextSection ul{
@@ -48,19 +48,4 @@
 
 #nextSection .sectionColumn.last{
 	width: 60px;
-}
-
-.sectionColumn span.selected {
-	padding: 12px 24px;
-	display: inline-block;
-	cursor: default;
-}
-
-#nextSection li span.cnt.selected {
-	color: #eca712;
-	cursor: default;
-}
-
-.drop li {
-	color: #ffa800;
 }
