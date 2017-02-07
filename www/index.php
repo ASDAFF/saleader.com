@@ -46,39 +46,6 @@ $APPLICATION->SetTitle("Интернет-магазин IP видеонаблю�
         "ACTIVE_COMPONENT" => "Y"
     )
 );?>
-<?
-$APPLICATION->IncludeComponent(
-	"dresscode:pop.section",
-	".default",
-	array(
-		"CACHE_TYPE" => "A",
-		"CACHE_TIME" => "3600000",
-		"PROP_NAME" => "UF_POPULAR",
-		"IBLOCK_TYPE" => "catalog",
-		"IBLOCK_ID" => "25",
-		"PICTURE_WIDTH" => "120",
-		"PICTURE_HEIGHT" => "100",
-		"PROP_VALUE" => "Y",
-		"ELEMENTS_COUNT" => "10",
-		"SORT_PROPERTY_NAME" => "7",
-		"SORT_VALUE" => "DESC",
-		"SELECT_FIELDS" => array(
-			0 => "NAME",
-			1 => "SECTION_PAGE_URL",
-			2 => "DETAIL_PICTURE",
-			3 => "UF_IMAGES",
-			4 => "UF_MARKER",
-			5 => "",
-		),
-		"POP_LAST_ELEMENT" => "Y",
-		"COMPONENT_TEMPLATE" => ".default"
-	),
-	false,
-	array(
-		"ACTIVE_COMPONENT" => "Y"
-	)
-);?>
-
 <?$APPLICATION->IncludeComponent(
 	"dresscode:offers.product", 
 	".default", 
@@ -111,7 +78,38 @@ $APPLICATION->IncludeComponent(
 		"ACTIVE_COMPONENT" => "Y"
 	)
 );?>
-
+<?
+$APPLICATION->IncludeComponent(
+    "dresscode:pop.section",
+    ".default",
+    array(
+        "CACHE_TYPE" => "A",
+        "CACHE_TIME" => "3600000",
+        "PROP_NAME" => "UF_POPULAR",
+        "IBLOCK_TYPE" => "catalog",
+        "IBLOCK_ID" => "25",
+        "PICTURE_WIDTH" => "120",
+        "PICTURE_HEIGHT" => "100",
+        "PROP_VALUE" => "Y",
+        "ELEMENTS_COUNT" => "10",
+        "SORT_PROPERTY_NAME" => "7",
+        "SORT_VALUE" => "DESC",
+        "SELECT_FIELDS" => array(
+            0 => "NAME",
+            1 => "SECTION_PAGE_URL",
+            2 => "DETAIL_PICTURE",
+            3 => "UF_IMAGES",
+            4 => "UF_MARKER",
+            5 => "",
+        ),
+        "POP_LAST_ELEMENT" => "Y",
+        "COMPONENT_TEMPLATE" => ".default"
+    ),
+    false,
+    array(
+        "ACTIVE_COMPONENT" => "Y"
+    )
+);?>
 <?$APPLICATION->IncludeComponent("dresscode:brands.list", ".default", array(
 	"IBLOCK_TYPE" => "info",
 		"IBLOCK_ID" => "1",
