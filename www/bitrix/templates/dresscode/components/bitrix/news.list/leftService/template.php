@@ -3,7 +3,7 @@ $this->setFrameMode(true);
 ?>
 <?if(!empty($arResult["ITEMS"])):?>
 	<div class="sideBlock" id="serviceBlock">
-		<a class="heading" href="<?=SITE_DIR?>services/"><?=GetMessage("SERVICE_HEADING")?></a>
+		<a class="heading" href="<?=SITE_DIR?>services/"><?=$arResult["NAME"]?></a>
 		<div class="sideBlockContent">
 			<?foreach($arResult["ITEMS"] as $ix => $arItem):?>
 				<?

@@ -127,6 +127,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 				"VALUES" => $arProperty,
 				"ADDITIONAL_VALUES" => "Y",
 			),
+			"HIDE_MEASURES" => array(
+				"PARENT" => "BASE",
+				"NAME" => GetMessage("HIDE_MEASURES"),
+				"TYPE" => "CHECKBOX",
+				"REFRESH" => "Y"
+			),
 			"CACHE_TIME" => Array("DEFAULT" => "3600000"),
 		)
 	);

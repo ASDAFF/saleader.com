@@ -13,23 +13,20 @@ $this->setFrameMode(true);$arPlacemarks = array();?>
 					<th class="amount"><?=GetMessage("STORES_AMOUNT")?></th>
 				</tr>
 					<?foreach($arResult["STORES"] as $pid => $arProperty):?>
-						<?if($arParams["SHOW_EMPTY_STORE"] == "N" && isset($arProperty["REAL_AMOUNT"]) && $arProperty["REAL_AMOUNT"] <= 0):?>
-						<?else:?>
-							<?
-							if($arProperty["COORDINATES"]["GPS_S"] != 0 && $arProperty["COORDINATES"]["GPS_N"] != 0){
-								$gpsN = substr(doubleval($arProperty["COORDINATES"]["GPS_N"]), 0, 15);
-								$gpsS = substr(doubleval($arProperty["COORDINATES"]["GPS_S"]), 0, 15);
-								$arPlacemarks[] = array("LON" => $gpsS, "LAT"=>$gpsN, "TEXT"=>$arProperty["TITLE"]);
-							}
-							?>
-							<?$image = CFile::ResizeImageGet($arProperty["IMAGE_ID"], array('width' => 50, 'height' => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false);?>
-							<tr>
-								<td class="name"><a href="<?=$arProperty["URL"]?>"> <?=$arProperty["TITLE"]?></a></td>
-								<td><?=$arProperty["SCHEDULE"]?></td>
-								<td><?=$arProperty["PHONE"]?></td>
-								<td<?if($arProperty["REAL_AMOUNT"] > 0):?> class="amount green"<?else:?> class="amount red"<?endif;?>><img src="<?=SITE_TEMPLATE_PATH?>/images/<?if($arProperty["REAL_AMOUNT"] > 0):?>inStock<?else:?>outOfStock<?endif;?>.png" alt="<?=$arProperty["AMOUNT"]?>" class="icon"><?=$arProperty["AMOUNT"]?></td>
-							</tr>
-						<?endif;?>
+						<?
+						if($arProperty["COORDINATES"]["GPS_S"] != 0 && $arProperty["COORDINATES"]["GPS_N"] != 0){
+							$gpsN = substr(doubleval($arProperty["COORDINATES"]["GPS_N"]), 0, 15);
+							$gpsS = substr(doubleval($arProperty["COORDINATES"]["GPS_S"]), 0, 15);
+							$arPlacemarks[] = array("LON" => $gpsS, "LAT"=>$gpsN, "TEXT"=>$arProperty["TITLE"]);
+						}
+						?>
+						<?$image = CFile::ResizeImageGet($arProperty["IMAGE_ID"], array('width' => 50, 'height' => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false);?>
+						<tr>
+							<td class="name"><a href="<?=$arProperty["URL"]?>"> <?=$arProperty["TITLE"]?></a></td>
+							<td><?=$arProperty["SCHEDULE"]?></td>
+							<td><?=$arProperty["PHONE"]?></td>
+							<td<?if($arProperty["REAL_AMOUNT"] > 0):?> class="amount green"<?else:?> class="amount red"<?endif;?>><img src="<?=SITE_TEMPLATE_PATH?>/images/<?if($arProperty["REAL_AMOUNT"] > 0):?>inStock<?else:?>outOfStock<?endif;?>.png" alt="<?=$arProperty["AMOUNT"]?>" class="icon"><?=$arProperty["AMOUNT"]?></td>
+						</tr>
 					<?endforeach;?>
 				</tbody>
 			</table>

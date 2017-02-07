@@ -9,4 +9,5 @@ $MESS ["FILTER"] = "Фильтрация";
 $MESS["IBLOCK_PROPERTY"] = "Свойства";
 $MESS["CP_BCS_CONVERT_CURRENCY"] = "Показывать цены в одной валюте";
 $MESS["CP_BCS_CURRENCY_ID"] = "Валюта, в которую будут сконвертированы цены";
+$MESS["HIDE_MEASURES"] = "Не отображать единицы измерения у товаров";
 ?>

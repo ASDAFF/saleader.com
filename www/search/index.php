@@ -6,7 +6,7 @@ $APPLICATION->SetTitle("Страница поиска");
 	".default", 
 	array(
 		"IBLOCK_TYPE" => "catalog",
-		"IBLOCK_ID" => "9",
+		"IBLOCK_ID" => "25",
 		"CACHE_TYPE" => "A",
 		"CACHE_TIME" => "3600000",
 		"PRICE_CODE" => array(

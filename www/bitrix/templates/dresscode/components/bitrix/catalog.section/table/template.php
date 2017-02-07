@@ -18,7 +18,7 @@ $this->setFrameMode(true);?>
 					$arElement["IMAGE"]["src"] = SITE_TEMPLATE_PATH."/images/empty.png";
 				}
 			?>
-			<div class="itemRow item" id="<?=$this->GetEditAreaId($arElement["ID"]);?>">
+			<div class="itemRow item" id="<?=$this->GetEditAreaId($arElement["ID"]);?>" data-hide-measure="<?=$arParams["HIDE_MEASURES"]?>">
 				<div class="column">
 					<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture">
 						<img src="<?=$arElement["IMAGE"]["src"]?>" alt="<?=$arElement["NAME"]?>">
@@ -33,7 +33,7 @@ $this->setFrameMode(true);?>
 					      <i class="m" style="width:<?=($arElement["PROPERTIES"]["RATING"]["VALUE"] * 100 / 5)?>%"></i>
 					      <i class="h"></i>
 					    </div>
-				    <?endif;?>							
+				    <?endif;?>
 				</div>
 				<?if(isset($arElement["PROPERTIES"]["CML2_ARTICLE"])):?>
 					<div class="column">
@@ -45,11 +45,26 @@ $this->setFrameMode(true);?>
 					</div>
 				<?endif;?>
 				<div class="column">
-					<a class="price"><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
-						<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
-							<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
-						<?endif;?>
-					</a>
+					<?if($arElement["COUNT_PRICES"] > 1):?>
+						<a href="#" class="price getPricesWindow" data-id="<?=$arElement["ID"]?>">
+							<span class="priceIcon"></span><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+							<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+								<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+							<?endif;?>
+							<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
+								<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
+							<?endif;?>
+						</a>
+					<?else:?>
+						<a class="price"><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+							<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+								<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+							<?endif;?>
+							<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
+								<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
+							<?endif;?>
+						</a>
+					<?endif;?>
 				</div>
 				<div class="column">
 					<a rel="nofollow" href="#" class="addCart<?if($arElement["CAN_BUY"] != true && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>
@@ -67,7 +82,11 @@ $this->setFrameMode(true);?>
 						<div class="row">
 							<a href="#" class="addWishlist label" data-id="<?=$arElement["~ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/wishlist.png" alt="" class="icon"><?=GetMessage("WISHLIST_LABEL")?></a>
 							<?if(/*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"]):?>
-								<a rel="nofollow" class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
+								<?if(!empty($arElement["STORES"])):?>
+									<a  rel="nofollow" href="#" data-id="<?=$arElement["ID"]?>" class="inStock label changeAvailable getStoresWindow"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></a>
+								<?else:?>
+									<span class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></span>
+								<?endif;?>
 							<?else:?>
 								<?if($arElement["CAN_BUY"] == true):?>
 									<a rel="nofollow" class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>

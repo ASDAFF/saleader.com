@@ -19,9 +19,9 @@
 				"PROPERTY_".intval($_GET["prop_id"]) => intval($_GET["product_id"])
 			);
 
-			if($OPTION_ADD_CART == N){
-				$arTmpFilter[">CATALOG_QUANTITY"] = 0;
-			}
+			// if($OPTION_ADD_CART == N){
+			// 	$arTmpFilter[">CATALOG_QUANTITY"] = 0;
+			// }
 
 			$arProps = array();
 			$arParams =  array();
@@ -30,16 +30,26 @@
 			$arProperties = array();
 			$arPropActive = array();
 			$arAllProperties = array();
+			$arPropCombination = array();
+			$arHighloadProperty = array();
 
 			$PROPS = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["props"]) : $_GET["props"];
 			$PARAMS = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["params"]) : $_GET["params"];
+			$HIGHLOAD = BX_UTF != 1 ? iconv("UTF-8", "windows-1251", $_GET["highload"]) : $_GET["highload"];
 
 			//normalize property
 			$exProps = explode(";", trim($PROPS, ";"));
 			$exParams = explode(";", trim($PARAMS, ";"));
+			$exHighload = explode(";", trim($HIGHLOAD, ";"));
 
 			if(empty($exProps) || empty($exParams))
 				die("error #1 | Empty params or propList _no valid data");
+
+			if(!empty($exHighload)){
+				foreach ($exHighload as $ihl => $nextHighLoad) {
+					$arHighloadProperty[$nextHighLoad] = "Y";
+				}
+			}
 
 			foreach ($exProps as $ip => $sProp) {
 				$msp = explode(":", $sProp);
@@ -49,7 +59,11 @@
 			foreach ($exParams as $ip => $pProp) {
 				$msr = explode(":", $pProp);
 				$arParams[$msr[0]] = $msr[1];
-				$arTmpParams["PROPERTY_".$msr[0]."_VALUE"] = $msr[1];
+				if(empty($arHighloadProperty[$msr[0]])){
+					$arTmpParams["PROPERTY_".$msr[0]."_VALUE"] = $msr[1];
+				}else{
+					$arTmpParams["PROPERTY_".$msr[0]] = $msr[1];
+				}
 			}
 
 			$arFilter = array_merge($arTmpFilter, array_slice($arTmpParams, 0, $_GET["level"]));
@@ -65,11 +79,15 @@
 			);
 
 			while($obOffer = $rsOffer->GetNextElement()){
+				$arOfferParams = $obOffer->GetFields();
 				$arFilterProp = $obOffer->GetProperties();
 				foreach ($arFilterProp as $ifp => $arNextProp) {
-					if($arNextProp["PROPERTY_TYPE"] == "L" && !empty($arNextProp["VALUE"])){
-						$arProps[$arNextProp["CODE"]][$arNextProp["VALUE"]] = "N";
+					if($arNextProp["PROPERTY_TYPE"] == "L" && !empty($arNextProp["VALUE"])
+						|| $arNextProp["PROPERTY_TYPE"] == "S" && !empty($arNextProp["USER_TYPE_SETTINGS"]["TABLE_NAME"]) && !empty($arNextProp["VALUE"])
+					){
+						$arProps[$arNextProp["CODE"]][$arNextProp["VALUE"]] = N;
 						$arProperties[$arNextProp["CODE"]] = $arNextProp["VALUE"];
+						$arPropCombination[$arOfferParams["ID"]][$arNextProp["CODE"]][$arNextProp["VALUE"]] = "Y";
 					}
 				}
 			}
@@ -92,12 +110,38 @@
 			}
 
 			if(!empty($arProps)){
+				$activeIntertion = 0;
 				foreach ($arProps as $ip => $arNextProp) {
 					foreach ($arNextProp as $inv => $arNextPropValue) {
 						if($arNextPropValue == "Y"){
 							$arPropActive[$ip] = $inv;
+							$arPropActiveIndex[$activeIntertion++] = $inv;
 						}
 					}
+				}
+			}
+
+			if(!empty($arProps)){
+				$arPrevLevelProp = array();
+				$levelIteraion = 0;
+				foreach ($arProps as $inp => $arNextProp){ //level each
+					if($levelIteraion > 0){
+						foreach ($arNextProp as $inpp => $arNextPropEach) {
+							if($arNextPropEach == "N" && !empty($arPrevLevelProp)){
+								$seachSuccess = false;
+								foreach ($arPropCombination as $inc => $arNextCombination) {
+									if($arNextCombination[$inp][$inpp] == "Y" && $arNextCombination[$arPrevLevelProp["INDEX"]][$arPrevLevelProp["VALUE"]] == "Y"){
+										$seachSuccess = true;
+										break(1);
+									}
+								}
+								if($seachSuccess == false){
+									$arProps[$inp][$inpp] = "D";
+								}
+							}
+						}
+					}$levelIteraion++;
+					$arPrevLevelProp = array("INDEX" => $inp, "VALUE" => $arPropActive[$inp]);
 				}
 			}
 
@@ -107,32 +151,84 @@
 				"PROPERTY_".intval($_GET["prop_id"]) => intval($_GET["product_id"])
 			);
 
-			if($OPTION_ADD_CART == "N" ){
-				$arTmpFilter[">CATALOG_QUANTITY"] = 0;
-			}
+			// if($OPTION_ADD_CART == "N" ){
+			// 	$arTmpFilter[">CATALOG_QUANTITY"] = 0;
+			// }
 
 			foreach ($arPropActive as $icp => $arNextProp) {
-				$arLastFilter["PROPERTY_".$icp."_VALUE"] = $arNextProp;
-			}
-
-			$arLastOffer = getLastOffer($arLastFilter, $arProps, $_GET["product_id"], $OPTION_CURRENCY);
-
-
-			if(!empty($arLastOffer["PRODUCT"]["DETAIL_PICTURE"]) || !empty($arLastOffer["PRODUCT"]["PROPERTIES"]["MORE_PHOTO"]["VALUE"])){
-				$arLastOffer["PRODUCT"]["IMAGES"] = array();
-			}
-
-			if(!empty($arLastOffer["PRODUCT"]["DETAIL_PICTURE"])){			
-				array_push($arLastOffer["PRODUCT"]["IMAGES"], picture_separate_array_push($arLastOffer["PRODUCT"]["DETAIL_PICTURE"]));
-			}
-
-			if(!empty($arLastOffer["PRODUCT"]["PROPERTIES"]["MORE_PHOTO"]["VALUE"])){
-				foreach ($arLastOffer["PRODUCT"]["PROPERTIES"]["MORE_PHOTO"]["VALUE"] as $irp => $nextPictureID) {
-					array_push($arLastOffer["PRODUCT"]["IMAGES"], picture_separate_array_push($nextPictureID));
+				if(empty($arHighloadProperty[$icp])){
+					$arLastFilter["PROPERTY_".$icp."_VALUE"] = $arNextProp;
+				}else{
+					$arLastFilter["PROPERTY_".$icp] = $arNextProp;
 				}
 			}
 
-			$arLastOffer["PRODUCT"]["CAN_BUY"] = $OPTION_ADD_CART == "Y" ? true : false;
+			$arLastOffer = getLastOffer($arLastFilter, $arProps, $_GET["product_id"], $OPTION_CURRENCY);
+			$arLastOffer["PRODUCT"]["CAN_BUY"] = $arLastOffer["PRODUCT"]["CATALOG_AVAILABLE"];
+
+			//clear ''
+			$arLastOffer["PRODUCT"]["NAME"] = str_replace("'", "", $arLastOffer["PRODUCT"]["NAME"]);
+			$arLastOffer["PRODUCT"]["~NAME"] = str_replace("'", "", $arLastOffer["PRODUCT"]["~NAME"]);
+
+			if(!empty($arLastOffer["PRODUCT"]["CATALOG_MEASURE"])){
+				//����������� ������� ���������
+				$rsMeasure = CCatalogMeasure::getList(
+					array(),
+					array(
+						"ID" => $arLastOffer["PRODUCT"]["CATALOG_MEASURE"]
+					),
+					false,
+					false,
+					false
+				);
+
+				while($arNextMeasure = $rsMeasure->Fetch()) {
+					$arLastOffer["PRODUCT"]["MEASURE"] = $arNextMeasure;
+				}
+			}
+
+			ob_start();
+			$APPLICATION->IncludeComponent(
+				"dresscode:catalog.properties.list", 
+				"no-group", 
+				array(
+					"PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"],
+					"COUNT_PROPERTIES" => 7
+				),
+				false
+			);
+			$arLastOffer["PRODUCT"]["RESULT_PROPERTIES_NO_GROUP"] = ob_get_contents();
+			ob_end_clean();
+
+			ob_start();
+			$APPLICATION->IncludeComponent(
+				"dresscode:catalog.properties.list", 
+				"group", 
+			array(
+				"PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]
+			),
+			false
+			);
+			$arLastOffer["PRODUCT"]["RESULT_PROPERTIES_GROUP"] = ob_get_contents();
+			ob_end_clean();
+
+			//price count
+			$dbPrice = CPrice::GetList(
+		        array(),
+		        array("PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]),
+		        false,
+		        false,
+		        array("ID")
+		    );
+			$arLastOffer["PRODUCT"]["COUNT_PRICES"] = $dbPrice->SelectedRowsCount();	
+			
+			//���������� � �������
+			$rsStore = CCatalogStoreProduct::GetList(array(), array("PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]), false, false, array("ID", "AMOUNT")); 
+			while($arNextStore = $rsStore->GetNext()){
+				$arLastOffer["PRODUCT"]["STORES"][] = $arNextStore;
+			}
+			
+			$arLastOffer["PRODUCT"]["STORES_COUNT"] = count($arLastOffer["PRODUCT"]["STORES"]);
 
 			if(!empty($arProps)){
 				echo jsonMultiEn(
@@ -144,15 +240,42 @@
 			}
 
 		}
+	}elseif($_GET["act"] == "getOfferByID" && !empty($_GET["id"])){
+		$rsOffer = CIBlockElement::GetList(
+			array(),
+			array("ID" => intval($_GET["id"])), false, false,
+			array(
+				"ID",
+				"NAME",
+				"IBLOCK_ID"
+			)
+		);
+
+		while($obOffer = $rsOffer->GetNextElement()){
+			$arFilterProp = $obOffer->GetProperties();
+			foreach ($arFilterProp as $ifp => $arNextProp) {
+				if($arNextProp["PROPERTY_TYPE"] == "L" && !empty($arNextProp["VALUE"]) || $arNextProp["PROPERTY_TYPE"] == "S" && !empty($arNextProp["USER_TYPE_SETTINGS"]["TABLE_NAME"])){
+					$arResultProperties[$arNextProp["CODE"]] = $arNextProp["VALUE"];
+				}
+			}
+		}
+		if(!empty($arResultProperties)){
+			echo jsonMultiEn(array($arResultProperties));
+		}
 	}
 }
 
 function picture_separate_array_push($pictureID, $arPushImage = array()){
-	$arPushImage["SMALL_IMAGE"] = array_change_key_case(CFile::ResizeImageGet($pictureID, array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false), CASE_UPPER);  
-	$arPushImage["MEDIUM_IMAGE"] = array_change_key_case(CFile::ResizeImageGet($pictureID, array("width" => 500, "height" => 500), BX_RESIZE_IMAGE_PROPORTIONAL, false), CASE_UPPER);  
-	$arPushImage["LARGE_IMAGE"] = CFile::GetByID($pictureID)->Fetch();
-	$arPushImage["LARGE_IMAGE"]["SRC"] = CFile::GetPath($arPushImage["LARGE_IMAGE"]["ID"]);
-	return $arPushImage;
+	if(!empty($pictureID)){
+		$arPushImage = array();
+		$arPushImage["SMALL_IMAGE"] = array_change_key_case(CFile::ResizeImageGet($pictureID, array("width" => 50, "height" => 50), BX_RESIZE_IMAGE_PROPORTIONAL, false), CASE_UPPER);  
+		$arPushImage["MEDIUM_IMAGE"] = array_change_key_case(CFile::ResizeImageGet($pictureID, array("width" => 500, "height" => 500), BX_RESIZE_IMAGE_PROPORTIONAL, false), CASE_UPPER);  
+		$arPushImage["LARGE_IMAGE"] = CFile::GetByID($pictureID)->Fetch();
+		$arPushImage["LARGE_IMAGE"]["SRC"] = CFile::GetPath($arPushImage["LARGE_IMAGE"]["ID"]);
+		return $arPushImage;
+	}else{
+		return false;
+	}
 }
 
 function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
@@ -167,7 +290,8 @@ function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
 			"DETAIL_PAGE_URL",
 			"PREVIEW_TEXT",
 			"DETAIL_TEXT",
-			"CATALOG_QUANTITY"
+			"CATALOG_QUANTITY",
+			"CATALOG_AVAILABLE"
 		)
 	);
 	if(!$rsLastOffer->SelectedRowsCount()){
@@ -176,22 +300,46 @@ function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
 		return getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency);
 	}else{
 		if($obReturnOffer = $rsLastOffer->GetNextElement()){
+			
 			$productFilelds = $obReturnOffer->GetFields();
+			$productProperties = $obReturnOffer->GetProperties();
 			$productFilelds["IMAGES"] = array();
+			$rsProductSelect = array("ID", "IBLOCK_ID", "DETAIL_PICTURE");
+
 			if(!empty($productFilelds["DETAIL_PICTURE"])){
-				array_push($productFilelds["IMAGES"], picture_separate_array_push($productFilelds["DETAIL_PICTURE"]));
-			}else{
-				$rsProduct = CIBlockElement::GetList(
-					array(),
-					array("ID" => $productID), false, false,
-					array("DETAIL_PICTURE")
-				)->GetNext();
-				if(!empty($rsProduct["DETAIL_PICTURE"])){
-					array_push($productFilelds["IMAGES"], picture_separate_array_push($rsProduct["DETAIL_PICTURE"]));
-				}else{
-					$productFilelds["IMAGES"]["SMALL_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");  
-					$productFilelds["IMAGES"]["MEDIUM_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");   
-					$productFilelds["IMAGES"]["LARGE_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png"); 
+				$productFilelds["IMAGES"][] = picture_separate_array_push($productFilelds["DETAIL_PICTURE"]);
+			}
+
+			if(!empty($productProperties["MORE_PHOTO"]["VALUE"])){
+				foreach ($productProperties["MORE_PHOTO"]["VALUE"] as $irp => $nextPictureID) {
+					$productFilelds["IMAGES"][] = picture_separate_array_push($nextPictureID);
+				}				
+			}
+
+			if(empty($productFilelds["DETAIL_PICTURE"]) || empty($productProperties["MORE_PHOTO"]["VALUE"])){
+				if($rsProduct = CIBlockElement::GetList(array(), array("ID" => $productID), false, false, $rsProductSelect)->GetNextElement()){
+					
+					$rsProductFields = $rsProduct->GetFields();
+					$rsProductProperties = $rsProduct->GetProperties();
+
+					if(!empty($rsProductFields["DETAIL_PICTURE"]) || !empty($rsProductProperties["MORE_PHOTO"]["VALUE"])){
+						if(!empty($rsProductFields["DETAIL_PICTURE"]) && empty($productFilelds["DETAIL_PICTURE"])){
+							$productFilelds["IMAGES"][] = picture_separate_array_push($rsProductFields["DETAIL_PICTURE"]);
+						}
+						if(!empty($rsProductProperties["MORE_PHOTO"]["VALUE"]) && empty($productProperties["MORE_PHOTO"]["VALUE"])){
+							foreach ($rsProductProperties["MORE_PHOTO"]["VALUE"] as $irp => $nextPictureID) {
+								if(!empty($nextPictureID)){
+									$productFilelds["IMAGES"][] = picture_separate_array_push($nextPictureID);
+								}
+							}
+						}
+					}else{
+						if(empty($productFilelds["IMAGES"])){
+							$productFilelds["IMAGES"][0]["SMALL_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");  
+							$productFilelds["IMAGES"][0]["MEDIUM_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");   
+							$productFilelds["IMAGES"][0]["LARGE_IMAGE"] = array("SRC" => SITE_TEMPLATE_PATH."/images/empty.png");
+						} 
+					}
 				}
 			}
 
@@ -211,7 +359,7 @@ function getLastOffer($arLastFilter, $arProps, $productID, $priceCurrency){
 			return array(
 				"PRODUCT" => array_merge(
 					$productFilelds, array(
-						"PROPERTIES" => $obReturnOffer->GetProperties()
+						"PROPERTIES" => $productProperties
 					)
 				),
 				"PROPERTIES" => $arProps

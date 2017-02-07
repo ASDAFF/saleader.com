@@ -13,19 +13,23 @@
 	<tbody>
 		<?foreach ($arResult["ITEMS"] as $key => $arElement):?>
 		<?$countPos += $arElement["QUANTITY"] ?>
-			<tr class="basketItemsRow parent" data-id="<?=$arElement["ID"]?>">
-				<td><a href="<?=$arElement["INFO"]["DETAIL_PAGE_URL"]?>" target="_blank" class="pic"><img src="<?=!empty($arElement["INFO"]["PICTURE"]["src"]) ? $arElement["INFO"]["PICTURE"]["src"] : SITE_TEMPLATE_PATH."/images/empty.png"?>" alt="<?=$arElement["INFO"]["NAME"]?>"></a></td>
-				<td class="name"><a href="<?=$arElement["INFO"]["DETAIL_PAGE_URL"]?>" target="_blank"><?=$arElement["INFO"]["NAME"]?></a></td>
+			<tr class="basketItemsRow parent" data-id="<?=$arElement["ID"]?>" data-cart-id="<?=$arElement["ID"]?>"> 
+				<td><a href="<?=$arElement["INFO"]["DETAIL_PAGE_URL"]?>" target="_blank" class="pic" target="_blank"><img src="<?=!empty($arElement["INFO"]["PICTURE"]["src"]) ? $arElement["INFO"]["PICTURE"]["src"] : SITE_TEMPLATE_PATH."/images/empty.png"?>" alt="<?=$arElement["INFO"]["NAME"]?>"></a></td>
+				<td class="name"><a href="<?=$arElement["INFO"]["DETAIL_PAGE_URL"]?>" target="_blank" target="_blank"><?=$arElement["INFO"]["NAME"]?></a></td>
 				<td class="bQty">		
 					<div class="basketQty">
 						<a href="#" class="minus" data-id="<?=$arElement["ID"]?>"></a>
-							<input name="qty" type="text" value="<?=intVal($arElement["QUANTITY"])?>" class="qty" data-id="<?=$arElement["ID"]?>" />
+							<input name="qty" type="text" value="<?=doubleval($arElement["QUANTITY"])?>" class="qty" <?if($arResult["OPTION_QUANTITY_TRACE"] == "Y"):?>data-max-quantity="<?=$arElement["INFO"]["CATALOG_QUANTITY"]?>"<?endif;?> data-id="<?=$arElement["ID"]?>" data-ratio="<?=$arElement["INFO"]["ADDBASKET_QUANTITY_RATIO"]?>" />
 							<a href="#" class="plus" data-id="<?=$arElement["ID"]?>"></a> 
 						</div>
 					</td>
 				<td>                            
-					<?if(/*$arElement["INFO"]["CATALOG_QUANTITY"] > 0*/$arElement["INFO"]["CAN_BUY"] ):?>
-						<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
+					<?if($arElement["INFO"]["CATALOG_QUANTITY"] > 0):?>
+						<?if(!empty($arElement["INFO"]["STORES"])):?>
+							<a href="#" data-id="<?=$arElement["INFO"]["ID"]?>" class="inStock label changeAvailable getStoresWindow"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></a>
+						<?else:?>
+							<span class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></span>
+						<?endif;?>
 					<?else:?>
 						<?if($arElement["INFO"]["CAN_BUY"] == true):?>
 							<a class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>
@@ -38,10 +42,13 @@
 					<span class="price">		      
 						<?=($arElement["INFO"]["OLD_PRICE"] != $arElement["PRICE"] ? '<s>'.FormatCurrency($arElement["INFO"]["OLD_PRICE"], $OPTION_CURRENCY).'</s>' : '')?>
   						<?=FormatCurrency($arElement["PRICE"], $OPTION_CURRENCY);?> 
+	  					<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["INFO"]["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+							<span class="measure"> / <?=$arResult["MEASURES"][$arElement["INFO"]["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+						<?endif;?>
   					</span>
   				</td>
   				<td>
-  					<span class="sum" data-price="<?=round($arElement["PRICE"])?>"><?=FormatCurrency($arElement["PRICE"] * round($arElement["QUANTITY"]), $OPTION_CURRENCY);?> </span>
+  					<span class="sum" data-price="<?=doubleval($arElement["PRICE"])?>"><?=FormatCurrency($arElement["PRICE"] * doubleval($arElement["QUANTITY"]), $OPTION_CURRENCY);?> </span>
   				</td>
 				<td class="elementDelete"><a href="#" class="delete" data-id="<?=$arElement["ID"]?>"></a></td>
 			</tr>

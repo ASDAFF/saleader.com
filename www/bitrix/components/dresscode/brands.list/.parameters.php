@@ -8,19 +8,19 @@ if(CModule::IncludeModule("iblock") && CModule::IncludeModule("sale") && CModule
 	$PROP_VALUES = array();
 
 	$SORT_VALUES = array(
-		"id",
-		"section",
-		"name",
-		"code",
-		"active",
-		"left_margin",
-		"depth_level",
-		"sort",
-		"created",
-		"created_by",
-		"modified_by",
-		"element_cnt",
-		"timestamp_x"
+		"id" => "id",
+		"section" => "section",
+		"name" => "name",
+		"code" => "code",
+		"active" => "active",
+		"left_margin" => "left_margin",
+		"depth_level" => "depth_level",
+		"sort" => "sort",
+		"created" => "created",
+		"created_by" => "created_by",
+		"modified_by" => "modified_by",
+		"element_cnt" => "element_cnt",
+		"timestamp_x" => "timestamp_x"
 	);
 
 	$res = CIBlockType::GetList();

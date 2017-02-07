@@ -78,6 +78,8 @@
 				position: "absolute", 
 				textAlign: "center",
 				lineHeight: "100px",
+				overflowX: "auto",
+				overflowY: "hidden",
 				height: "100px",
 				width: "100%",
 				bottom: "0px",
@@ -86,9 +88,12 @@
 			}); 
 
 			$zoomerMoreImagesContainerWrapper = $("<div />", {id: "zoomerMoreImagesContainerWrapper"}).css({
+				boxSizing: "border-box",
 			    display: "inline-block",
 			    verticalAlign: "middle",
 			    position: "relative",
+			    padding: "0px 80px",
+			    height: "100px",
 			    width: "auto"
 			});
 
@@ -108,10 +113,11 @@
 				
 				var $nextElement = $(nextElement);
 				var nextElementPictureSrc = $nextElement.data("large-picture");
+				var nextElementPictureSmallSrc = $nextElement.data("small-picture");
 				
 				if(nextElementPictureSrc !=""){
 					var $nextElementLink = $("<a />", {class: "link", href: "#"}).css({
-						backgroundImage: "url(" + nextElementPictureSrc + ")",
+						backgroundImage: "url(" + nextElementPictureSmallSrc + ")",
 						backgroundPosition: "50% 50%",
 						backgroundRepeat: "no-repeat",
 					    backgroundSize: "contain",
@@ -125,9 +131,9 @@
 					var $nextElementItem = $("<div />", {class: "item"}).css({
 						boxSizing: "border-box",
 						overflow: "hidden",
-					    lineHeight: "57px",
+					    lineHeight: "100px",
 					    marginLeft: (ix == 0 ? "0px" : "12px"),
-					    height: "60px",
+					    height: "100px",
 					    float: "left",
 					    width: "80px",
 					    opacity: "0.6"
@@ -194,7 +200,7 @@
 					transform: "translateY(-50%)",
 					position: "absolute",
 					cursor: "pointer",
-					right: "-92px",
+					right: "0px",
 					height: "60px",
 					width: "80px",
 					top: "50%"
@@ -206,7 +212,7 @@
 					cursor: "pointer",
 					height: "60px",
 					width: "80px",
-					left: "-92px",
+					left: "0px",
 					top: "50%"
 				});
 

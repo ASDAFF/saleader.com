@@ -36,12 +36,13 @@
 	$MESS["ADDSKU"]				 = "В корзину";
 	$MESS["FROM"]				 = "от ";
 	$MESS["COUPON_ACTIVATE"] 	 = "Активировать";
-	$MESS["COUPON_LABEL"] 	     = "Введите номер купона";
+	$MESS["COUPON_LABEL"] 	     = "Введите промокод";
 	$MESS["BASKET_VIEW_LABEL"]   = "Вид корзины: ";
 	$MESS["BASKET_QUANTITY_LABEL"] = "Кол-во:";
 	$MESS["BASKET_TABS_ACTIONS"] = "Доступные действия:";
 	$MESS["BASKET_TABS_ORDER_MAKE"] = "Оформить заказ";
 	$MESS["BASKET_TABS_CONTINUE"] = "Продолжить покупки";
 	$MESS["BASKET_TABS_CLEAR"] = "Очистить корзину";
-
+	$MESS["MAX_QUANTITY"] 		 = "Данного количества нет на складе";
+	$MESS["FAST_VIEW_PRODUCT_LABEL"] = "Быстрый просмотр";
 ?>

@@ -27,6 +27,7 @@
 	text-align: center;
 	padding-bottom: 12px;
 	padding-top: 12px;
+	cursor: pointer;
 	font-size: 14px;
 	display: block;
 }

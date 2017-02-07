@@ -1,6 +1,6 @@
 <?
 	$MESS["POP_SECTION_HEADING"] = "Популярные категории товаров";
-	$MESS["SHOW_MORE"] = "Показать ещё";
-	$MESS["SHOWS"] = "Показано";
-	$MESS["FROM"] = "из";
+	$MESS["POP_SECTION_SHOW_MORE"] = "Показать ещё";
+	$MESS["POP_SECTION_SHOWS"] = "Показано";
+	$MESS["POP_SECTION_FROM"] = "из";
 ?>

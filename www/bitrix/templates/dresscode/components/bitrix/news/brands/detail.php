@@ -1,76 +1,24 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-CModule::IncludeModule("catalog");
 $this->setFrameMode(true);
 ?>
-<?$ELEMENT_ID = $APPLICATION->IncludeComponent(
-	"bitrix:news.detail",
-	"brands",
-	array(
-		"DISPLAY_DATE" => "Y",
-		"DISPLAY_NAME" => "Y",
-		"DISPLAY_PICTURE" => "Y",
-		"DISPLAY_PREVIEW_TEXT" => "Y",
-		"USE_SHARE" => "Y",
-		"SHARE_HIDE" => "N",
-		"SHARE_TEMPLATE" => "",
-		"SHARE_HANDLERS" => "",
-		"SHARE_SHORTEN_URL_LOGIN" => "",
-		"SHARE_SHORTEN_URL_KEY" => "",
-		"AJAX_MODE" => "Y",
-		"IBLOCK_TYPE" => "info",
-		"IBLOCK_ID" => "1",
-		"ELEMENT_ID" => "",
-		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
-		"CHECK_DATES" => "Y",
-		"FIELD_CODE" => array(
-			0 => "",
-			1 => "",
-		),
-		"PROPERTY_CODE" => array(
-			0 => "",
-			1 => "",
-		),
-		"IBLOCK_URL" => "news.php?ID=#IBLOCK_ID#\"",
-		"DETAIL_URL" => "",
-		"SET_TITLE" => "Y",
-		"SET_CANONICAL_URL" => "Y",
-		"SET_BROWSER_TITLE" => "Y",
-		"BROWSER_TITLE" => "-",
-		"SET_META_KEYWORDS" => "Y",
-		"META_KEYWORDS" => "-",
-		"SET_META_DESCRIPTION" => "Y",
-		"META_DESCRIPTION" => "-",
-		"SET_STATUS_404" => "Y",
-		"SET_LAST_MODIFIED" => "Y",
-		"INCLUDE_IBLOCK_INTO_CHAIN" => "N",
-		"ADD_SECTIONS_CHAIN" => "N",
-		"ADD_ELEMENT_CHAIN" => "Y",
-		"ACTIVE_DATE_FORMAT" => "d.m.Y",
-		"USE_PERMISSIONS" => "N",
-		"GROUP_PERMISSIONS" => "N",
-		"CACHE_TYPE" => "A",
-		"CACHE_TIME" => "3600",
-		"CACHE_GROUPS" => "Y",
-		"DISPLAY_TOP_PAGER" => "Y",
-		"DISPLAY_BOTTOM_PAGER" => "Y",
-		"PAGER_TITLE" => "Страница",
-		"PAGER_TEMPLATE" => "",
-		"PAGER_SHOW_ALL" => "Y",
-		"PAGER_BASE_LINK_ENABLE" => "Y",
-		"SHOW_404" => "Y",
-		"MESSAGE_404" => "",
-		"PAGER_BASE_LINK" => "",
-		"PAGER_PARAMS_NAME" => "arrPager",
-		"AJAX_OPTION_JUMP" => "N",
-		"AJAX_OPTION_STYLE" => "Y",
-		"AJAX_OPTION_HISTORY" => "N",
-		"COMPONENT_TEMPLATE" => "brands",
-		"AJAX_OPTION_ADDITIONAL" => "",
-		"FILE_404" => ""
-	),
-	false
-);?>
 
+<?
+if(!empty($arResult["VARIABLES"]["ELEMENT_CODE"])){
+	$arSelect = Array("ID", "IBLOCK_ID", "NAME", "DETAIL_TEXT", "DETAIL_PICTURE", "SECTION_PAGE_URL");
+	$arFilter = Array("IBLOCK_ID" => IntVal($arParams["IBLOCK_ID"]), "CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"], "ACTIVE_DATE"=>"Y", "ACTIVE"=>"Y");
+	$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+	if($ob = $res->GetNextElement()){
+		$arResult["ITEM"] = $ob->GetFields(); 
+		$ELEMENT_ID = $arResult["ITEM"]["ID"];
+		$ELEMENT_NAME = $arResult["ITEM"]["NAME"];
+	}
+}
+?>
+
+<?global $APPLICATION;
+		 $APPLICATION->AddChainItem($ELEMENT_NAME);
+		 $APPLICATION->SetTitle($ELEMENT_NAME);
+?>
 
 <?$BASE_PRICE = CCatalogGroup::GetBaseGroup();?>
 <?$arSortFields = array(
@@ -108,7 +56,7 @@ $this->setFrameMode(true);
 }elseif(!empty($_COOKIE["CATALOG_SORT_FIELD"]) && !empty($arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]])){ // COOKIE
 	
 	$arParams["ELEMENT_SORT_FIELD"] = $arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["CODE"];
-	$arParams["ELEMENT_SORT_ORDER"] = $arSortFields[$_COOKIE["ORDER"]];
+	$arParams["ELEMENT_SORT_ORDER"] = $arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["ORDER"];
 	
 	$arSortFields[$_COOKIE["CATALOG_SORT_FIELD"]]["SELECTED"] = "Y";
 }
@@ -153,16 +101,114 @@ $this->setFrameMode(true);
 }
 ?>
 
+
+<?$BIG_PICTURE = CFile::ResizeImageGet($arResult["ITEM"]["DETAIL_PICTURE"], array("width" => 150, "height" => 250), BX_RESIZE_IMAGE_PROPORTIONAL, false);?>
+
+<?if(!empty($BIG_PICTURE["src"])):?>
+	<div class="brandsBigPicture"><img src="<?=$BIG_PICTURE["src"]?>" alt="<?=$arResult["ITEM"]["NAME"]?>"></div>
+<?endif;?>
+
+<?if(!empty($arResult["ITEM"]["DETAIL_TEXT"])):?>
+	<div class="brandsDescription"><?=$arResult["ITEM"]["DETAIL_TEXT"]?></div>
+<?endif;?>
+
 <a href="<?=$arResult["FOLDER"]?>" class="backToList"><?=GetMessage("BACK_TO_LIST_PAGE")?></a>
 <?
 		global $arrFilter;
 		$arrFilter["PROPERTY_ATT_BRAND"] = $ELEMENT_ID;
 		$countElements = CIBlockElement::GetList(array(), $arrFilter, array(), false);
 ?>
+	<?if($countElements > 1){
+
+		$arSections = array();
+		$arResult["MENU_SECTIONS"] = array();
+		$arFilter["SECTION_ID"] = array();
+		
+		$res = CIBlockElement::GetList(array(), $arrFilter, false, false, array("ID"));
+		while($nextElement = $res->GetNext()){
+			$resGroup = CIBlockElement::GetElementGroups($nextElement["ID"], false);
+			while($arGroup = $resGroup->Fetch()){
+			    $IBLOCK_SECTION_ID = $arGroup["ID"];
+			}
+
+			$arSections[$IBLOCK_SECTION_ID] = $IBLOCK_SECTION_ID;
+			$arSectionCount[$IBLOCK_SECTION_ID] = !empty($arSectionCount[$IBLOCK_SECTION_ID]) ? $arSectionCount[$IBLOCK_SECTION_ID] + 1 : 1;
+			$arResult["ITEMS"][] = $nextElement;
+		}
+
+		if(!empty($arSections)){
+			$arFilter = array("ID" => $arSections);
+			$rsSections = CIBlockSection::GetList(array("SORT" => "DESC"), $arFilter);
+			while ($arSection = $rsSections->Fetch()){
+				$searchParam = "SECTION_ID=".$arSection["ID"];
+				$searchID = intval($_GET["SECTION_ID"]);
+				$arSection["SELECTED"] = $arSection["ID"] == $searchID ? Y : N;
+				$arSection["FILTER_LINK"] = $APPLICATION->GetCurPageParam($searchParam , array("SECTION_ID"));
+				$arSection["ELEMENTS_COUNT"] = $arSectionCount[$arSection["ID"]];
+				array_push($arResult["MENU_SECTIONS"], $arSection);
+			}
+		}
+
+	}?>
+
+	<?if($countElements > 1):?>
+		<?$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();?>
+		<?$this->SetViewTarget("hiddenZoneClass");?> hiddenZone<?$this->EndViewTarget();?>
+	<?endif;?>
+
+	<?
+		$this->SetViewTarget("smartFilter");
+    ?>
+
+	<?
+		$OPTION_CURRENCY  = CCurrency::GetBaseCurrency();
+	?>
+
+	<?if(!empty($arResult["MENU_SECTIONS"]) && count($arResult["MENU_SECTIONS"]) > 1):?>
+		<div id="nextSection">
+			<span class="title"><?=GetMessage("SELECT_CATEGORY");?></span>
+			<ul>
+				<?foreach ($arResult["MENU_SECTIONS"] as $ic => $arSection):?>
+					<li><a href="<?=$arSection["FILTER_LINK"]?>"<?if($arSection["SELECTED"] == Y):?> class="selected"<?endif;?>><?=$arSection["NAME"]?> (<?=$arSection["ELEMENTS_COUNT"]?>)</a></li>
+				<?endforeach;?>
+			</ul>
+		</div>
+	<?endif;?>
+
+	<?if($countElements > 1):?>
+		<?$APPLICATION->IncludeComponent(
+			"dresscode:cast.smart.filter", 
+			"", 
+			array(
+				"IBLOCK_TYPE" => $arParams["PRODUCT_IBLOCK_TYPE"],
+				"IBLOCK_ID" =>$arParams["PRODUCT_IBLOCK_ID"],
+				"SECTION_ID" => $_REQUEST["SECTION_ID"],
+				"FILTER_NAME" => $arParams["PRODUCT_FILTER_NAME"],
+				"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+				"SHOW_ALL_WO_SECTION" => "Y",
+				"CACHE_TYPE" => "N",
+				"CACHE_TIME" => "36000000",
+				"CACHE_GROUPS" => "Y",
+				"SAVE_IN_SESSION" => "N",
+				"INSTANT_RELOAD" => "N",
+				"PRICE_CODE" => $arParams["PRODUCT_PRICE_CODE"],
+				"XML_EXPORT" => "N",
+				"SECTION_TITLE" => "-",
+				"SECTION_DESCRIPTION" => "-",
+				"CONVERT_CURRENCY" => "N",
+				"FILTER_BRAND_ID" => $ELEMENT_ID,
+				"CURRENCY_ID" => $OPTION_CURRENCY
+			),
+			false
+		);?>
+	<?endif;?>
+	<?
+		$this->EndViewTarget();
+	?>
+
 <?if($countElements):?>
 	<div id="catalog">
 	<h1 class="brandsHeading"><?=GetMessage("CATALOG_TITLE")?><?=$ELEMENT_NAME?></h1>
-		<noindex>
 		<div id="catalogLine">
 			<?if(!empty($arSortFields)):?>
 				<div class="column">
@@ -195,15 +241,24 @@ $this->setFrameMode(true);
 					</div>
 					<div class="viewList">
 						<?foreach ($arTemplates as $arTemplatesCode => $arNextTemplate):?>
-							<div class="element"><a rel="nofollow" <?if($arNextTemplate["SELECTED"] != "Y"):?> href="<?=$APPLICATION->GetCurPageParam("VIEW=".$arTemplatesCode, array("VIEW"));?>"<?endif;?> class="<?=$arNextTemplate["CLASS"]?><?if($arNextTemplate["SELECTED"] == "Y"):?> selected<?endif;?>"></a></div>
+							<div class="element"><a<?if($arNextTemplate["SELECTED"] != "Y"):?> href="<?=$APPLICATION->GetCurPageParam("VIEW=".$arTemplatesCode, array("VIEW"));?>"<?endif;?> class="<?=$arNextTemplate["CLASS"]?><?if($arNextTemplate["SELECTED"] == "Y"):?> selected<?endif;?>"></a></div>
 						<?endforeach;?>
 					</div>
 				</div>
 			<?endif;?>
 		</div>
-		</noindex>
 		<?
 			reset($arTemplates);
+		?>
+
+		<?
+			global $arrFilter;
+			unset($arrFilter["FACET_OPTIONS"]);
+		?>
+
+		<?
+			$arrFilter["FACET_OPTIONS"] = array();
+			$_REQUEST["SECTION_ID"] = !empty($_REQUEST["SECTION_ID"]) ? $_REQUEST["SECTION_ID"] : 0;
 		?>
 
 		<?$APPLICATION->IncludeComponent(
@@ -217,10 +272,14 @@ $this->setFrameMode(true);
 				"INCLUDE_SUBSECTIONS" => "Y",
 				"FILTER_NAME" => $arParams["PRODUCT_FILTER_NAME"],
 				"PRICE_CODE" => $arParams["PRODUCT_PRICE_CODE"],
-				"PRODUCT_PROPERTIES" => $arParams["PRODUCT_PRODUCT_PROPERTIES"],
+				"PROPERTY_CODE" => $arParams["PRODUCT_PROPERTY_CODE"],
 				"PAGER_TEMPLATE" => "round",
+				"PAGE_ELEMENT_COUNT" => $arParams["PAGE_ELEMENT_COUNT"],
 				'CONVERT_CURRENCY' => $arParams['PRODUCT_CONVERT_CURRENCY'],
 				'CURRENCY_ID' => $arParams['PRODUCT_CURRENCY_ID'],
+				"HIDE_NOT_AVAILABLE" => $arParams["HIDE_NOT_AVAILABLE"],
+				"HIDE_MEASURES" => $arParams["HIDE_MEASURES"],
+				"SECTION_ID" => $_REQUEST["SECTION_ID"],
 				"SHOW_ALL_WO_SECTION" => "Y",
 				"ADD_SECTIONS_CHAIN" => "N",
 				"AJAX_MODE" => "Y"
@@ -232,6 +291,8 @@ $this->setFrameMode(true);
 <?else:?>
 	<style>
 		.backToList{
+			display: inline-block;
+			margin-bottom: 24px;
 			float: none;
 		}
 	</style>

@@ -33,6 +33,8 @@ if(is_array($arLang) && $arLang["from"] != $arLang["to"]){
 	$SEARCH_QUERY = CSearchLanguage::ConvertKeyboardLayout($SEARCH_QUERY, $arLang["from"], $arLang["to"]);
 }
 
+$arResult["SEARCH_QUERY"] = $SEARCH_QUERY;
+
 if($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]? $USER->GetGroups(): false)))
 {
 	$arResult["FACET_FILTER"] = false;
@@ -54,7 +56,7 @@ if($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]? $USER->GetGroups()
 			$arResult["FACET_FILTER"] = array(
 				"ACTIVE_DATE" => "Y",
 				"CHECK_PERMISSIONS" => "Y",
-				"NAME" => "%".$SEARCH_QUERY."%"
+				"?NAME" => $SEARCH_QUERY
 			);
 			if ($this->arParams['HIDE_NOT_AVAILABLE'] == 'Y')
 				$arResult["FACET_FILTER"]['CATALOG_AVAILABLE'] = 'Y';
@@ -125,7 +127,7 @@ if($this->StartResultCache(false, ($arParams["CACHE_GROUPS"]? $USER->GetGroups()
 				"ACTIVE_DATE" => "Y",
 				"ACTIVE" => "Y",
 				"CHECK_PERMISSIONS" => "Y",
-				"NAME" => "%".$SEARCH_QUERY."%"
+				"?NAME" => $SEARCH_QUERY
 			);
 			if ('Y' == $this->arParams['HIDE_NOT_AVAILABLE'])
 				$arElementFilter['CATALOG_AVAILABLE'] = 'Y';
@@ -716,11 +718,8 @@ $clearURL = CHTTP::urlDeleteParams($pageURL, $paramsToDelete, array("delete_syst
 if(isset($_REQUEST["ajax"]) && $_REQUEST["ajax"] === "y")
 {
 	$arFilter = $this->makeFilter($FILTER_NAME, $SEARCH_QUERY);
-	unset($arFilter["SECTION_ID"]);
-	unset($arFilter["FACET_OPTIONS"]);
-
 	$arResult["ELEMENT_COUNT"] = CIBlockElement::GetList(array(), $arFilter, array(), false);
-
+	
 // echo $arResult["ELEMENT_COUNT"]; exit;
 	$paramsToAdd = array(
 		"set_filter" => "y",

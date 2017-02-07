@@ -51,7 +51,7 @@
 									$this->AddEditAction($arElement["ID"], $arElement["EDIT_LINK"], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_EDIT"));
 									$this->AddDeleteAction($arElement["ID"], $arElement["DELETE_LINK"], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
 								?>
-								<div class="item product sku" id="<?=$this->GetEditAreaId($arElement["ID"]);?>" data-product-id="<?=!empty($arElement["~ID"]) ? $arElement["~ID"] : $arElement["ID"]?>" data-iblock-id="<?=$arElement["SKU_INFO"]["IBLOCK_ID"]?>" data-prop-id="<?=$arElement["SKU_INFO"]["SKU_PROPERTY_ID"]?>">
+								<div class="item product sku" id="<?=$this->GetEditAreaId($arElement["ID"]);?>" data-product-id="<?=!empty($arElement["~ID"]) ? $arElement["~ID"] : $arElement["ID"]?>" data-iblock-id="<?=$arElement["SKU_INFO"]["IBLOCK_ID"]?>" data-prop-id="<?=$arElement["SKU_INFO"]["SKU_PROPERTY_ID"]?>" data-product-width="<?=$arParams["PICTURE_WIDTH"]?>" data-product-height="<?=$arParams["PICTURE_HEIGHT"]?>" data-hide-measure="<?=$arParams["HIDE_MEASURES"]?>">
 							
 									<div class="tabloid">
 										<?if(!empty($arElement["PROPERTIES"]["OFFERS"]["VALUE"])):?>
@@ -67,14 +67,34 @@
 										      <i class="h"></i>
 										    </div>
 									    <?endif;?>
-										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture"><img src="<?=(!empty($arElement["IMG"]["src"]) ? $arElement["IMG"]["src"] : SITE_TEMPLATE_PATH.'/images/empty.png')?>" alt="<?=$arElement["NAME"]?>"></a>
-										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a>
-										<a class="price"><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["DISCOUNT_PRICE"], $arResult["CURRENCY"], true)?>
-											<?if(!empty($arElement["PRICE"]["DISCOUNT"])):?>
-												<s class="discount"><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $arResult["CURRENCY"], true)?></s>
-											<?endif;?>
+										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture">
+											<img src="<?=(!empty($arElement["IMG"]["src"]) ? $arElement["IMG"]["src"] : SITE_TEMPLATE_PATH.'/images/empty.png')?>" alt="<?=$arElement["NAME"]?>">
+											<span class="getFastView" data-id="<?=$arElement["ID"]?>"><?=GetMessage("FAST_VIEW_PRODUCT_LABEL")?></span>
 										</a>
-										<a href="#" class="addCart<?if($arElement["CAN_BUY"] != true && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>
+										<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a> 
+										
+										<?if($arElement["COUNT_PRICES"] > 1):?>
+											<a class="price getPricesWindow" data-id="<?=$arElement["ID"]?>">
+												<span class="priceIcon"></span><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["DISCOUNT_PRICE"], $arResult["CURRENCY"], true)?>
+												<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+													<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+												<?endif;?>
+												<?if(!empty($arElement["PRICE"]["DISCOUNT"])):?>
+													<s class="discount"><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $arResult["CURRENCY"], true)?></s>
+												<?endif;?>
+											</a>					
+										<?else:?>
+											<a class="price"><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["DISCOUNT_PRICE"], $arResult["CURRENCY"], true)?> 
+												<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+													<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+												<?endif;?>
+												<?if(!empty($arElement["PRICE"]["DISCOUNT"])):?>
+													<s class="discount"><?=CCurrencyLang::CurrencyFormat($arElement["PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $arResult["CURRENCY"], true)?></s>
+												<?endif;?>
+											</a>					
+										<?endif;?>
+										
+										<a href="#" class="addCart<?if($arElement["CAN_BUY"] === "N" && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>
 										<div class="optional">
 											<div class="row">
 												<a href="#" class="fastBack label" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/fastBack.png" alt="" class="icon"><?=GetMessage("FASTBACK_LABEL")?></a>
@@ -82,10 +102,14 @@
 											</div>
 											<div class="row">
 												<a href="#" class="addWishlist label" data-id="<?=$arElement["~ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/wishlist.png" alt="" class="icon"><?=GetMessage("WISHLIST_LABEL")?></a>
-												<?if(/*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"]):?>
-													<a class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
+												<?if($arElement["CATALOG_QUANTITY"] > 0):?>
+													<?if(!empty($arElement["STORES"])):?>
+														<a href="#" data-id="<?=$arElement["ID"]?>" class="inStock label changeAvailable getStoresWindow"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></a>
+													<?else:?>
+														<span class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></span>
+													<?endif;?>
 												<?else:?>
-													<?if($arElement["CAN_BUY"] == true):?>
+													<?if($arElement["CAN_BUY"] !== "N"):?>
 														<a class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>
 													<?else:?>
 														<a class="outOfStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/outOfStock.png" alt="" class="icon"><?=GetMessage("NOAVAILABLE")?></a>
@@ -97,16 +121,16 @@
 											<?if(!empty($arElement["SKU_PROPERTIES"]) && $level = 1):?>
 												<?foreach ($arElement["SKU_PROPERTIES"] as $propName => $arNextProp):?>
 													<?if(!empty($arNextProp["VALUES"])):?>
-														<div class="skuProperty" data-name="<?=$propName?>" data-level="<?=$level++?>">
+														<div class="skuProperty" data-name="<?=$propName?>" data-level="<?=$level++?>" data-highload="<?=$arNextProp["HIGHLOAD"]?>">
 															<div class="skuPropertyName"><?=$arNextProp["NAME"]?></div>
 															<ul class="skuPropertyList">
 																<?foreach ($arNextProp["VALUES"] as $xml_id => $arNextPropValue):?>
 																	<li class="skuPropertyValue<?if($arNextPropValue["DISABLED"] == "Y"):?> disabled<?elseif($arNextPropValue["SELECTED"] == "Y"):?> selected<?endif;?>" data-name="<?=$propName?>" data-value="<?=$arNextPropValue["VALUE"]?>">
 																		<a href="#" class="skuPropertyLink">
 																			<?if(!empty($arNextPropValue["IMAGE"])):?>
-																				<img src="<?=$arNextPropValue["IMAGE"]["src"]?>">
+																				<img src="<?=$arNextPropValue["IMAGE"]["src"]?>" alt="">
 																			<?else:?>
-																				<?=$arNextPropValue["VALUE"]?>
+																				<?=$arNextPropValue["DISPLAY_VALUE"]?>
 																			<?endif;?>
 																		</a>
 																	</li>

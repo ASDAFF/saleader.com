@@ -24,9 +24,16 @@
 									      <i class="h"></i>
 									    </div>
 								    <?endif;?>
-									<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture"><img src="<?=$arElement["PICTURE"]["src"]?>" alt="<?=$arElement["NAME"]?>"></a>
+									<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture">
+										<img src="<?=$arElement["PICTURE"]["src"]?>" alt="<?=$arElement["NAME"]?>">
+										<span class="getFastView" data-id="<?=$arElement["PRODUCT_ID"]?>"><?=GetMessage("FAST_VIEW_PRODUCT_LABEL")?></span>
+									</a>
 									<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a>
-									<a class="price"><?=CCurrencyLang::CurrencyFormat($arElement["ARRAY_PRICE"]["DISCOUNT_PRICE"], $OPTION_CURRENCY)?><?if($arElement["ARRAY_PRICE"]["DISCOUNT_PRICE"] != $arElement["ARRAY_PRICE"]["RESULT_PRICE"]["BASE_PRICE"]):?><s class="discount"><?=CCurrencyLang::CurrencyFormat($arElement["ARRAY_PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY)?></s><?endif;?></a>
+									<a class="price"><?=CCurrencyLang::CurrencyFormat($arElement["ARRAY_PRICE"]["DISCOUNT_PRICE"], $OPTION_CURRENCY)?>
+										<?if($arElement["ARRAY_PRICE"]["DISCOUNT_PRICE"] != $arElement["ARRAY_PRICE"]["RESULT_PRICE"]["BASE_PRICE"]):?>
+											<s class="discount"><?=CCurrencyLang::CurrencyFormat($arElement["ARRAY_PRICE"]["RESULT_PRICE"]["BASE_PRICE"], $OPTION_CURRENCY)?></s>
+										<?endif;?>
+									</a>
 								</div>
 							</div>
 						</li>
@@ -43,6 +50,7 @@
 				countElement: 6,
 				resizeElement: true,
 				resizeAutoParams: {
+					2560: 8,
 					1920: 6,
 					1700: 5,
 					1500: 4,

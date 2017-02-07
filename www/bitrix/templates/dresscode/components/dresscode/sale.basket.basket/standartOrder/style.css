@@ -173,6 +173,7 @@
 	box-sizing: border-box;
 	position: absolute;
 	padding: 0 12px;
+	z-index: 11;
 	width: 100%;
 	top: 12px;
 	left: 0;
@@ -257,6 +258,9 @@
 	border: 0;
 }
 
+#personalCart .qty.error{
+	border: 1px solid #ff0000;
+}
 
 #personalCart .productTable {
 	border-collapse: collapse;
@@ -493,6 +497,8 @@
 	border: 1px solid #2d2d2d;
 	background-color: #2d2d2d;
 	text-align: center;
+	line-height: 48px;
+	font-size: 14px;
 	padding: 0 24px;
 	cursor: pointer;
 	color: #ffffff;

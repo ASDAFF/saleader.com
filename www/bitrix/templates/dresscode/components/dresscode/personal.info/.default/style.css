@@ -64,6 +64,7 @@
 }
 
 #mainProfile .profileSettings textarea {
+	font: normal normal 13px "roboto_ltregular" , arial , sans-serif;
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;

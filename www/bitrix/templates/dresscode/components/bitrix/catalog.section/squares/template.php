@@ -7,19 +7,18 @@ $this->setFrameMode(true);?>
 		?><? echo $arResult["NAV_STRING"]; ?><?
 	}
 ?>
-
-	<div class="items productList">
+	<div class="items productList" id="<?=CAjax::GetComponentID($component->__name, $component->__template->__name);?>">
 		<?foreach ($arResult["ITEMS"] as $index => $arElement):?>
 			<?
 				$this->AddEditAction($arElement["ID"], $arElement["EDIT_LINK"], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_EDIT"));
 				$this->AddDeleteAction($arElement["ID"], $arElement["DELETE_LINK"], CIBlock::GetArrayByID($arElement["IBLOCK_ID"], "ELEMENT_DELETE"), array("CONFIRM" => GetMessage('CT_BNL_ELEMENT_DELETE_CONFIRM')));
-				$arElement["IMAGE"] = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array("width" => 290, "height" => 340), BX_RESIZE_IMAGE_PROPORTIONAL, false);
+				$arElement["IMAGE"] = CFile::ResizeImageGet($arElement["DETAIL_PICTURE"], array("width" => 220, "height" => 200), BX_RESIZE_IMAGE_PROPORTIONAL, false);
 				if(empty($arElement["IMAGE"])){
 					$arElement["IMAGE"]["src"] = SITE_TEMPLATE_PATH."/images/empty.png";
 				}
 			?>
-			<div class="item product sku" id="<?=$this->GetEditAreaId($arElement["ID"]);?>" data-product-id="<?=!empty($arElement["~ID"]) ? $arElement["~ID"] : $arElement["ID"]?>" data-iblock-id="<?=$arElement["SKU_INFO"]["IBLOCK_ID"]?>" data-prop-id="<?=$arElement["SKU_INFO"]["SKU_PROPERTY_ID"]?>">
-		
+			<div class="item product sku" id="<?=$this->GetEditAreaId($arElement["ID"]);?>" data-product-id="<?=!empty($arElement["~ID"]) ? $arElement["~ID"] : $arElement["ID"]?>" data-iblock-id="<?=$arElement["SKU_INFO"]["IBLOCK_ID"]?>" data-prop-id="<?=$arElement["SKU_INFO"]["SKU_PROPERTY_ID"]?>" data-product-width="220" data-product-height="200" data-hide-measure="<?=$arParams["HIDE_MEASURES"]?>">
+
 				<div class="tabloid">
 					<a href="#" class="removeFromWishlist" data-id="<?=$arElement["~ID"]?>"></a>
 					<?if(!empty($arElement["PROPERTIES"]["OFFERS"]["VALUE"])):?>
@@ -35,13 +34,31 @@ $this->setFrameMode(true);?>
 					      <i class="h"></i>
 					    </div>
 				    <?endif;?>
-					<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture"><img src="<?=(!empty($arElement["IMAGE"]["src"]) ? $arElement["IMAGE"]["src"] : SITE_TEMPLATE_PATH.'/images/empty.png')?>" alt="<?=$arElement["NAME"]?>"></a>
-					<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a>
-					<a class="price"><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
-						<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
-							<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
-						<?endif;?>
+					<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="picture">
+						<img src="<?=(!empty($arElement["IMAGE"]["src"]) ? $arElement["IMAGE"]["src"] : SITE_TEMPLATE_PATH.'/images/empty.png')?>" alt="<?=$arElement["NAME"]?>">
+						<span class="getFastView" data-id="<?=$arElement["ID"]?>"><?=GetMessage("FAST_VIEW_PRODUCT_LABEL")?></span>
 					</a>
+					<a href="<?=$arElement["DETAIL_PAGE_URL"]?>" class="name"><span class="middle"><?=$arElement["NAME"]?></span></a>
+					<?if($arElement["COUNT_PRICES"] > 1):?>
+						<a href="#" class="price getPricesWindow" data-id="<?=$arElement["ID"]?>">
+							<span class="priceIcon"></span><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+							<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+								<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+							<?endif;?>
+							<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
+								<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
+							<?endif;?>
+						</a>
+					<?else:?>
+						<a class="price"><?=$arElement["MIN_PRICE"]["PRINT_DISCOUNT_VALUE"]?>
+							<?if($arParams["HIDE_MEASURES"] != "Y" && !empty($arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"])):?>
+								<span class="measure"> / <?=$arResult["MEASURES"][$arElement["CATALOG_MEASURE"]]["SYMBOL_RUS"]?></span>
+							<?endif;?>
+							<?if(!empty($arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"]) && $arElement["MIN_PRICE"]["PRINT_DISCOUNT_DIFF"] > 0):?>
+								<s class="discount"><?=$arElement["MIN_PRICE"]["PRINT_VALUE"]?></s>
+							<?endif;?>
+						</a>
+					<?endif;?>
 					<a rel="nofollow" href="#" class="addCart<?if($arElement["CAN_BUY"] != true && $arElement["CATALOG_QUANTITY"] <= 0):?> disabled<?endif;?>" data-id="<?=$arElement["ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/incart.png" alt="" class="icon"><?=GetMessage("ADDCART_LABEL")?></a>
 					<div class="optional">
 						<div class="row">
@@ -51,7 +68,11 @@ $this->setFrameMode(true);?>
 						<div class="row">
 							<a rel="nofollow" href="#" class="addWishlist label" data-id="<?=$arElement["~ID"]?>"><img src="<?=SITE_TEMPLATE_PATH?>/images/wishlist.png" alt="" class="icon"><?=GetMessage("WISHLIST_LABEL")?></a>
 							<?if(/*$arElement["CATALOG_QUANTITY"] > 0*/$arElement["CAN_BUY"]):?>
-								<a rel="nofollow" class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="" class="icon"><?=GetMessage("AVAILABLE")?></a>
+								<?if(!empty($arElement["STORES"])):?>
+									<a rel="nofollow"  href="#" data-id="<?=$arElement["ID"]?>" class="inStock label changeAvailable getStoresWindow"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></a>
+								<?else:?>
+									<span class="inStock label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/inStock.png" alt="<?=GetMessage("AVAILABLE")?>" class="icon"><span><?=GetMessage("AVAILABLE")?></span></span>
+								<?endif;?>
 							<?else:?>
 								<?if($arElement["CAN_BUY"] == true):?>
 									<a rel="nofollow" class="onOrder label changeAvailable"><img src="<?=SITE_TEMPLATE_PATH?>/images/onOrder.png" alt="" class="icon"><?=GetMessage("ON_ORDER")?></a>
@@ -65,16 +86,16 @@ $this->setFrameMode(true);?>
 						<?if(!empty($arElement["SKU_PROPERTIES"]) && $level = 1):?>
 							<?foreach ($arElement["SKU_PROPERTIES"] as $propName => $arNextProp):?>
 								<?if(!empty($arNextProp["VALUES"])):?>
-									<div class="skuProperty" data-name="<?=$propName?>" data-level="<?=$level++?>">
+									<div class="skuProperty" data-name="<?=$propName?>" data-level="<?=$level++?>" data-highload="<?=$arNextProp["HIGHLOAD"]?>">
 										<div class="skuPropertyName"><?=$arNextProp["NAME"]?></div>
 										<ul class="skuPropertyList">
 											<?foreach ($arNextProp["VALUES"] as $xml_id => $arNextPropValue):?>
 												<li class="skuPropertyValue<?if($arNextPropValue["DISABLED"] == "Y"):?> disabled<?elseif($arNextPropValue["SELECTED"] == "Y"):?> selected<?endif;?>" data-name="<?=$propName?>" data-value="<?=$arNextPropValue["VALUE"]?>">
 													<a href="#" class="skuPropertyLink">
 														<?if(!empty($arNextPropValue["IMAGE"])):?>
-															<img src="<?=$arNextPropValue["IMAGE"]["src"]?>">
+															<img src="<?=$arNextPropValue["IMAGE"]["src"]?>" alt="">
 														<?else:?>
-															<?=$arNextPropValue["VALUE"]?>
+															<?=$arNextPropValue["DISPLAY_VALUE"]?>
 														<?endif;?>
 													</a>
 												</li>
@@ -90,7 +111,6 @@ $this->setFrameMode(true);?>
 		<?endforeach;?>
 		<div class="clear"></div>
 	</div>
-
 	<?
 		if ($arParams["DISPLAY_BOTTOM_PAGER"]){
 			?><? echo $arResult["NAV_STRING"]; ?><?

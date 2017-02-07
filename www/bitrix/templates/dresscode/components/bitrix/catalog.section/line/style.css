@@ -68,6 +68,7 @@
 }
 
 #catalogLineList .picture{
+	position: relative;
 	text-align: center;
 	display: block;
 }
@@ -79,6 +80,7 @@
 
 #catalogLineList .markerContainer{
 	position: absolute;
+	z-index: 99;
 	top: 8px;
 	left: 8px;
 }
@@ -96,10 +98,11 @@
 #catalogLineList .rating {
 	display: inline-block;
 	vertical-align: middle;
-	margin-top: 4px;
 	margin-bottom: 12px;
+	margin-right: 12px;
 	position: relative;
 	overflow: hidden;
+	margin-top: 4px;
 	height: 15px;
 	width: 79px;
 	z-index: 2;
@@ -136,6 +139,10 @@
 	font-size: 21px;
 	display: block;
 	color: #000000;
+}
+
+#catalogLineList .price .measure{
+	font-size: 16px;
 }
 
 #catalogLineList .price .discount{
@@ -257,6 +264,7 @@
 	text-align: center;
 	line-height: 20px;
 	padding: 4px 6px;
+	min-width: 30px;
 	display: block;
 	color: #000000;
 }

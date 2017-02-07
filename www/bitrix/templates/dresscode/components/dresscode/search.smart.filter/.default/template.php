@@ -440,7 +440,7 @@ $this->setFrameMode(true);?>
 								<?endforeach;?>
 
 								<?if(count($arItem["VALUES"]) > 5):?>
-									<li><a href="#" class="showALL"><?=GetMessage("CT_BCSF_FILTER_SHOW_ALL")?> <?=count($arItem["VALUES"])-3?></a></li>
+									<li><a href="#" class="showALL"><?=GetMessage("CT_BCSF_FILTER_SHOW_ALL")?> <?=count($arItem["VALUES"])-5?></a></li>
 								<?endif;?>
 							</ul>
 					<?
@@ -462,6 +462,7 @@ $this->setFrameMode(true);?>
 		</div>
 	</form>
 </div>
+
 <script>
 	var smartFilter = new JCSmartFilter('<?=CUtil::JSEscape($arResult["FORM_ACTION"])?>', '<?=CUtil::JSEscape($arParams["FILTER_VIEW_MODE"])?>', <?=CUtil::PhpToJSObject($arResult["JS_FILTER_PARAMS"])?>);
 	var	SMART_FILTER_LANG = {

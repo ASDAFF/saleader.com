@@ -1,7 +1,7 @@
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Задайте вопрос");
 ?><h1>Контактная информация </h1>
-<? $APPLICATION->IncludeComponent(
+<?/* $APPLICATION->IncludeComponent(
     "bitrix:menu",
     "personal",
     Array(
@@ -17,125 +17,92 @@ $APPLICATION->SetTitle("Задайте вопрос");
         "ROOT_MENU_TYPE" => "about",
         "USE_EXT" => "N"
     )
-); ?>
-    <div class="bx_page" class="contactList"  itemscope itemtype="http://schema.org/Organization">
-        <h2>Интернет-гипермаркет <span itemprop="name">SaLeader.com</span></h2>
-        <ul>
-            <li>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <img alt="cont1.png" src="<?= SITE_TEMPLATE_PATH ?>/images/cont1.png" title="cont1.png">
-                        </td>
-                        <td>
-                            <a href="tel:74951044845" title="Контактный телефон интернет-магазина SaLeader.com"
-                               rel="nofollow" itemprop="telephone">+7 (495) 104-48-45</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </li>
-            <li>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <img alt="cont2.png" src="<?= SITE_TEMPLATE_PATH ?>/images/cont2.png" title="cont2.png">
-                        </td>
-                        <td>
-                            <a href="mailto:sale@saleader.com" title="Электронная почта интернет-магазина Лидер Продаж"
-                               rel="nofollow" itemprop="email">sale@saleader.com</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </li>
-            <li>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <img alt="cont3.png" src="<?= SITE_TEMPLATE_PATH ?>/images/cont3.png" title="cont3.png">
-                        </td>
-                        <td itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                            <span  itemprop="addressLocality">
-                                г. Мытищи
-                                </span>
-                             <span itemprop="postalCode">
-                                141014
-                            </span>
-                            <br>
-                            <span  itemprop="streetAddress">
-                                ул. Трудовая, д. 31, офис 218     
-                            </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </li>
-            <li>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <img alt="cont4.png" src="<?= SITE_TEMPLATE_PATH ?>/images/cont4.png" title="cont4.png">
-                        </td>
-                        <td>
-                            Пн-Пт : с 09:00 до 18:00<br>
-                            Сб, Вс : выходной<br>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </li>
-        </ul>
-        <? $APPLICATION->IncludeComponent(
-            "bitrix:map.google.view",
-            ".default",
-            array(
-                "COMPONENT_TEMPLATE" => ".default",
-                "CONTROLS" => array(
-                    0 => "SMALL_ZOOM_CONTROL",
-                    1 => "TYPECONTROL",
-                    2 => "SCALELINE",
-                ),
-                "INIT_MAP_TYPE" => "ROADMAP",
-                "MAP_DATA" => "a:4:{s:10:\"google_lat\";d:55.89039584389596;s:10:\"google_lon\";d:37.71288532394237;s:12:\"google_scale\";i:17;s:10:\"PLACEMARKS\";a:1:{i:0;a:3:{s:4:\"TEXT\";s:12:\"SaLeader.com\";s:3:\"LON\";d:37.713510990143;s:3:\"LAT\";d:55.890649806489;}}}",
-                "MAP_HEIGHT" => "500",
-                "MAP_ID" => "",
-                "MAP_WIDTH" => "100%",
-                "OPTIONS" => array(
-                    0 => "ENABLE_DBLCLICK_ZOOM",
-                    1 => "ENABLE_DRAGGING",
-                    2 => "ENABLE_KEYBOARD",
-                )
-            ),
-            false
-        ); ?><br>
-        <noindex>
-            <small><a
-                    href="https://www.google.com/maps/place/%D0%A2%D0%A0%D0%90%D0%9D%D0%A1%D0%A1%D0%9D%D0%90%D0%91,+%D1%82%D1%80%D0%B0%D0%BD%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%BD%D0%BE-%D0%BB%D0%BE%D0%B3%D0%B8%D1%81%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%BA%D0%BE%D0%BC%D0%BF%D0%B0%D0%BD%D0%B8%D1%8F/@55.890684,37.712885,17z/data=!4m5!3m4!1s0x0:0xdd6f1834b1496f56!8m2!3d55.890607!4d37.712763?hl=ru"
-                    class="blackLink" target="_blank" rel="nofollow">Просмотреть увеличенную карту</a></small>
-        </noindex>
-        <h2 class="bold">ЗАДАТЬ ВОПРОС</h2>
-    </div>
+); */?>
 <? $APPLICATION->IncludeComponent(
-    "bitrix:main.feedback",
-    ".default",
-    Array(
-        "AJAX_MODE" => "Y",
-        "COMPONENT_TEMPLATE" => ".default",
-        "EMAIL_TO" => "em00s8@mail.ru",
-        "EVENT_MESSAGE_ID" => array(0 => "7",),
-        "OK_TEXT" => "Спасибо, ваше сообщение принято.",
-        "REQUIRED_FIELDS" => array(),
-        "USE_CAPTCHA" => "Y"
-    )
+    "bitrix:news",
+    "contacts",
+    array(
+        "COMPONENT_TEMPLATE" => "contacts",
+        "IBLOCK_TYPE" => "info",
+        "IBLOCK_ID" => "19",
+        "NEWS_COUNT" => "20",
+        "USE_SEARCH" => "N",
+        "USE_RSS" => "N",
+        "USE_RATING" => "N",
+        "USE_CATEGORIES" => "N",
+        "USE_REVIEW" => "N",
+        "USE_FILTER" => "N",
+        "SORT_BY1" => "ACTIVE_FROM",
+        "SORT_ORDER1" => "DESC",
+        "SORT_BY2" => "SORT",
+        "SORT_ORDER2" => "ASC",
+        "CHECK_DATES" => "Y",
+        "SEF_MODE" => "Y",
+        "AJAX_MODE" => "N",
+        "AJAX_OPTION_JUMP" => "N",
+        "AJAX_OPTION_STYLE" => "Y",
+        "AJAX_OPTION_HISTORY" => "N",
+        "AJAX_OPTION_ADDITIONAL" => "",
+        "CACHE_TYPE" => "A",
+        "CACHE_TIME" => "36000000",
+        "CACHE_FILTER" => "N",
+        "CACHE_GROUPS" => "Y",
+        "SET_LAST_MODIFIED" => "N",
+        "SET_TITLE" => "Y",
+        "INCLUDE_IBLOCK_INTO_CHAIN" => "N",
+        "ADD_SECTIONS_CHAIN" => "N",
+        "ADD_ELEMENT_CHAIN" => "Y",
+        "USE_PERMISSIONS" => "N",
+        "PREVIEW_TRUNCATE_LEN" => "",
+        "LIST_ACTIVE_DATE_FORMAT" => "d.m.Y",
+        "LIST_FIELD_CODE" => array(
+            0 => "",
+            1 => "",
+        ),
+        "LIST_PROPERTY_CODE" => array(
+            0 => "",
+            1 => "",
+        ),
+        "HIDE_LINK_WHEN_NO_DETAIL" => "N",
+        "DISPLAY_NAME" => "Y",
+        "META_KEYWORDS" => "-",
+        "META_DESCRIPTION" => "-",
+        "BROWSER_TITLE" => "NAME",
+        "DETAIL_SET_CANONICAL_URL" => "N",
+        "DETAIL_ACTIVE_DATE_FORMAT" => "d.m.Y",
+        "DETAIL_FIELD_CODE" => array(
+            0 => "",
+            1 => "",
+        ),
+        "DETAIL_PROPERTY_CODE" => array(
+            0 => "",
+            1 => "",
+        ),
+        "DETAIL_DISPLAY_TOP_PAGER" => "N",
+        "DETAIL_DISPLAY_BOTTOM_PAGER" => "Y",
+        "DETAIL_PAGER_TITLE" => "Страница",
+        "DETAIL_PAGER_TEMPLATE" => "",
+        "DETAIL_PAGER_SHOW_ALL" => "Y",
+        "PAGER_TEMPLATE" => ".default",
+        "DISPLAY_TOP_PAGER" => "N",
+        "DISPLAY_BOTTOM_PAGER" => "Y",
+        "PAGER_TITLE" => "Новости",
+        "PAGER_SHOW_ALWAYS" => "N",
+        "PAGER_DESC_NUMBERING" => "N",
+        "PAGER_DESC_NUMBERING_CACHE_TIME" => "36000",
+        "PAGER_SHOW_ALL" => "N",
+        "PAGER_BASE_LINK_ENABLE" => "N",
+        "SET_STATUS_404" => "N",
+        "SHOW_404" => "N",
+        "MESSAGE_404" => "",
+        "SEF_FOLDER" => "/about/contacts/",
+        "SEF_URL_TEMPLATES" => array(
+            "news" => "/list",
+            "section" => "",
+            "detail" => "#ELEMENT_CODE#/",
+        )
+    ),
+    false
 ); ?>
-    <h2 class="personalMenu bold">Реквизиты интернет-магазина</h2>
-    <p>5СЕК.РУ</p>
-    <p><b>Адрес</b>: 367000 РД, г Махачкала, пр-т Акушинского 62 к2 оф22</p>
-    <p><b>ИНН</b>: 0573003548</p>
-    <p><b>КПП</b>: 057301001</p>
-    <p><b>ОГРН</b>: 1140573000270</p><? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php") ?>
+
+<? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php") ?>
