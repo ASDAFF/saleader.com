@@ -4,8 +4,8 @@ Allow: /bitrix/cache/
 Allow: /bitrix/js/
 Allow: /bitrix/templates/
 Allow: /bitrix/panel/
-Host: https://saleader.com
-Sitemap: https://saleader.com/sitemap.xml
+Host: https://ipvi.com
+Sitemap: https://ipvi.com/sitemap.xml
 Disallow: */index.php
 Disallow: /*show_include_exec_time=
 Disallow: /*show_page_exec_time=

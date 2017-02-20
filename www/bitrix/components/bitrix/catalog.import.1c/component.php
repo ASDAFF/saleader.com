@@ -14,8 +14,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /** @var string $parentComponentTemplate */
 $this->setFrameMode(false);
 
-global $HTTP_RAW_POST_DATA;
-
 /*************************************************************************
 	Processing of received parameters
 *************************************************************************/
@@ -293,14 +291,9 @@ elseif ($_GET["mode"]=="init")
 elseif (($_GET["mode"] == "file") && $ABS_FILE_NAME)
 {
 	//Read http data
-	if (function_exists("file_get_contents"))
-		$DATA = file_get_contents("php://input");
-	elseif (isset($HTTP_RAW_POST_DATA))
-		$DATA = &$HTTP_RAW_POST_DATA;
-	else
-		$DATA = false;
-
+	$DATA = file_get_contents("php://input");
 	$DATA_LEN = defined("BX_UTF")? mb_strlen($DATA, 'latin1'): strlen($DATA);
+
 	//And save it the file
 	if (isset($DATA) && $DATA !== false)
 	{

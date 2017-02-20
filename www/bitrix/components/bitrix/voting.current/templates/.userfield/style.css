@@ -60,18 +60,23 @@ ol.bx-vote-question-list li {
 }
 
 .bx-vote-bar {
-	border: 1px solid #f7fafb;
-	border-radius: 2px;
 	min-height: 27px;
 	margin: 3px 0 4px 0;
 	position: relative;
 }
 
-.bx-vote-block-input-wrap input {
-	margin: 6px 5px 0 0;
-	overflow: hidden;
-	padding: 0;
+.bx-vote-text-field {
+	background-color: #fff;
+	border: 1px solid #c6cdd3;
+	border-radius: 2px;
+	height: 25px;
+	padding: 0 0 0 5px;
+	width: 330px;
+	color: #616161;
+	font-size: 14px;
+	margin-left: -5px;
 }
+
 
 .bx-vote-block-input-wrap label {
 	color: #616161;
@@ -92,12 +97,14 @@ ol.bx-vote-question-list li {
 }
 
 .bx-vote-voted-users,
-.bx-vote-voted-users:hover {
-	text-decoration: none;
-	display: inline-block;
+a.bx-vote-voted-users,
+.bx-vote-voted-users:hover,
+a.bx-vote-voted-users:hover {
 	border-bottom: 1px dashed #707172;
 	color: #707172;
+	display: inline-block;
 	font-size: 14px;
+	text-decoration: none;
 }
 
 .bx-vote-data-percent {
@@ -123,6 +130,7 @@ ol.bx-vote-question-list li {
 	font-weight: bold;
 	line-height: normal;
 	margin-top: 14px;
+	margin-right: 14px;
 	vertical-align: top;
 }
 
@@ -148,6 +156,11 @@ ol.bx-vote-question-list li {
 .bx-vote-block .feed-add-button-transparent:hover {
 	border-bottom: none;
 }
+
+.bx-vote-bottom-block .feed-add-button {
+	margin-top: 0;
+}
+
 
 .bx-vote-block-result .bx-vote-block-input-wrap label {
 	position: relative;
@@ -192,7 +205,6 @@ ol.bx-vote-question-list li {
 	margin-left: 0;
 	min-height: 16px;
 	overflow: hidden;
-	padding-top: 1px;
 
 	-webkit-transition: margin-left 0.3s linear;
 	transition: margin-left 0.3s linear;
@@ -212,6 +224,10 @@ label.bx-vote-block-input-wrap-inner {
 	padding: 0;
 	position: relative;
 	width: 15px;
+}
+
+.bx-vote-block-input-disable {
+	opacity: 0.4;
 }
 
 

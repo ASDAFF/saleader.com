@@ -25,12 +25,12 @@
 				
 
 				if(!empty($fields['PREVIEW_PICTURE']) && !empty($fields['DETAIL_PICTURE'])){
-					$fields["PREVIEW_PICTURE"] = CFile::ResizeImageGet($fields['PREVIEW_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_PROPORTIONAL, true);
-					$fields["DETAIL_PICTURE"] = CFile::ResizeImageGet($fields['DETAIL_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+					$fields["PREVIEW_PICTURE"] = CFile::ResizeImageGet($fields['PREVIEW_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_EXACT, true);
+					$fields["DETAIL_PICTURE"] = CFile::ResizeImageGet($fields['DETAIL_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_EXACT, true);
 				}elseif(!empty($fields['PREVIEW_PICTURE']) && empty($fields['DETAIL_PICTURE'])){
-					$fields["DETAIL_PICTURE"] = $fields["PREVIEW_PICTURE"] = CFile::ResizeImageGet($fields['PREVIEW_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+					$fields["DETAIL_PICTURE"] = $fields["PREVIEW_PICTURE"] = CFile::ResizeImageGet($fields['PREVIEW_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_EXACT, true);
 				}elseif(!empty($fields['DETAIL_PICTURE']) && empty($fields['PREVIEW_PICTURE'])){
-					$fields["PREVIEW_PICTURE"] = $fields["DETAIL_PICTURE"] = CFile::ResizeImageGet($fields['DETAIL_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_PROPORTIONAL, true);
+					$fields["PREVIEW_PICTURE"] = $fields["DETAIL_PICTURE"] = CFile::ResizeImageGet($fields['DETAIL_PICTURE'], array('width' => $arParams["PICTURE_WIDTH"], 'height' => $arParams["PICTURE_HEIGHT"]), BX_RESIZE_IMAGE_EXACT, true);
 				}
 
 				$arResult["ITEMS"][] = $fields;

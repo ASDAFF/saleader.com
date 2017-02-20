@@ -91,12 +91,7 @@ abstract class CAllMain
 
 	private static $forkActions = array();
 
-	function __construct()
-	{
-		$this->CMain();
-	}
-
-	function CMain()
+	public function __construct()
 	{
 		global $QUERY_STRING;
 		$this->sDocPath2 = GetPagePath(false, true);
@@ -106,13 +101,13 @@ abstract class CAllMain
 		$this->oAsset = \Bitrix\Main\Page\Asset::getInstance();
 	}
 
-	function reinitPath()
+	public function reinitPath()
 	{
 		$this->sDocPath2 = GetPagePath(false, true);
 		$this->sDirPath = GetDirPath($this->sDocPath2);
 	}
 
-	function GetCurPage($get_index_page=null)
+	public function GetCurPage($get_index_page=null)
 	{
 		if (null === $get_index_page)
 		{
@@ -133,7 +128,7 @@ abstract class CAllMain
 		return $str;
 	}
 
-	function SetCurPage($page, $param=false)
+	public function SetCurPage($page, $param=false)
 	{
 		$this->sDocPath2 = GetPagePath($page);
 		$this->sDirPath = GetDirPath($this->sDocPath2);
@@ -141,7 +136,7 @@ abstract class CAllMain
 			$this->sUriParam = $param;
 	}
 
-	function GetCurUri($addParam="", $get_index_page=null)
+	public function GetCurUri($addParam="", $get_index_page=null)
 	{
 		$page = $this->GetCurPage($get_index_page);
 		$param = $this->GetCurParam();
@@ -152,7 +147,7 @@ abstract class CAllMain
 		return $url;
 	}
 
-	function GetCurPageParam($strParam="", $arParamKill=array(), $get_index_page=null)
+	public function GetCurPageParam($strParam="", $arParamKill=array(), $get_index_page=null)
 	{
 		$sUrlPath = $this->GetCurPage($get_index_page);
 		$strNavQueryString = DeleteParam($arParamKill);
@@ -164,17 +159,17 @@ abstract class CAllMain
 			return $sUrlPath."?".$strParam.$strNavQueryString;
 	}
 
-	function GetCurParam()
+	public function GetCurParam()
 	{
 		return $this->sUriParam;
 	}
 
-	function GetCurDir()
+	public function GetCurDir()
 	{
 		return $this->sDirPath;
 	}
 
-	function GetFileRecursive($strFileName, $strDir=false)
+	public function GetFileRecursive($strFileName, $strDir=false)
 	{
 		if($strDir === false)
 			$strDir = $this->GetCurDir();
@@ -197,7 +192,7 @@ abstract class CAllMain
 		return $fn;
 	}
 
-	function IncludeAdminFile($strTitle, $filepath)
+	public function IncludeAdminFile($strTitle, $filepath)
 	{
 		//define all global vars
 		$keys = array_keys($GLOBALS);
@@ -207,8 +202,7 @@ abstract class CAllMain
 				global ${$keys[$i]};
 
 		//title
-		/** @global CMain $APPLICATION */
-		$APPLICATION->SetTitle($strTitle);
+		$this->SetTitle($strTitle);
 
 		include($_SERVER["DOCUMENT_ROOT"].BX_ROOT."/modules/main/include/prolog_admin_after.php");
 		include($filepath);
@@ -216,12 +210,12 @@ abstract class CAllMain
 		die();
 	}
 
-	function SetAuthResult($arAuthResult)
+	public function SetAuthResult($arAuthResult)
 	{
 		$this->arAuthResult = $arAuthResult;
 	}
 
-	function AuthForm($mess, $show_prolog=true, $show_epilog=true, $not_show_links="N", $do_die=true)
+	public function AuthForm($mess, $show_prolog=true, $show_epilog=true, $not_show_links="N", $do_die=true)
 	{
 		$excl = array("excl"=>1, "key"=>1, "GLOBALS"=>1, "mess"=>1, "show_prolog"=>1, "show_epilog"=>1, "not_show_links"=>1, "do_die"=>1);
 		foreach($GLOBALS as $key => $value)
@@ -319,14 +313,12 @@ abstract class CAllMain
 			die();
 	}
 
-	function ShowAuthForm($message)
+	public function ShowAuthForm($message)
 	{
-		/** @global CMain $APPLICATION */
-		global $APPLICATION;
-		$APPLICATION->AuthForm($message, false, false, "N", false);
+		$this->AuthForm($message, false, false, "N", false);
 	}
 
-	function NeedCAPTHAForLogin($login)
+	public function NeedCAPTHAForLogin($login)
 	{
 		//When last login was failed then ask for CAPTCHA
 		if(isset($_SESSION["BX_LOGIN_NEED_CAPTCHA"]) && $_SESSION["BX_LOGIN_NEED_CAPTCHA"])
@@ -398,19 +390,19 @@ abstract class CAllMain
 		return false;
 	}
 
-	function GetMenuHtml($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
+	public function GetMenuHtml($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
 	{
 		$menu = $this->GetMenu($type, $bMenuExt, $template, $sInitDir);
 		return $menu->GetMenuHtml();
 	}
 
-	function GetMenuHtmlEx($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
+	public function GetMenuHtmlEx($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
 	{
 		$menu = $this->GetMenu($type, $bMenuExt, $template, $sInitDir);
 		return $menu->GetMenuHtmlEx();
 	}
 
-	function GetMenu($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
+	public function GetMenu($type="left", $bMenuExt=false, $template = false, $sInitDir = false)
 	{
 		$menu = new CMenu($type);
 		if($sInitDir===false)
@@ -422,18 +414,10 @@ abstract class CAllMain
 
 	public static function IsHTTPS()
 	{
-		if($_SERVER["SERVER_PORT"] == 443)
-			return true;
-
-		// 'HTTPS' Set to a non-empty value if the script was queried through the HTTPS protocol.
-		// Note that when using ISAPI with IIS, the value will be "off" if the request was not made through the HTTPS protocol.
-		if(isset($_SERVER["HTTPS"]) && !empty($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) <> "off")
-			return true;
-
-		return false;
+		return \Bitrix\Main\Context::getCurrent()->getRequest()->isHttps();
 	}
 
-	function GetTitle($property_name = false, $strip_tags = false)
+	public function GetTitle($property_name = false, $strip_tags = false)
 	{
 		if($property_name!==false && strlen($this->GetProperty($property_name))>0)
 			$res = $this->GetProperty($property_name);
@@ -444,7 +428,7 @@ abstract class CAllMain
 		return $res;
 	}
 
-	function SetTitle($title, $arOptions = null)
+	public function SetTitle($title, $arOptions = null)
 	{
 		$this->sDocTitle = $title;
 
@@ -474,12 +458,13 @@ abstract class CAllMain
 			}
 		}
 	}
-	function ShowTitle($property_name="title", $strip_tags = true)
+
+	public function ShowTitle($property_name="title", $strip_tags = true)
 	{
 		$this->AddBufferContent(array(&$this, "GetTitle"), $property_name, $strip_tags);
 	}
 
-	function SetPageProperty($PROPERTY_ID, $PROPERTY_VALUE, $arOptions = null)
+	public function SetPageProperty($PROPERTY_ID, $PROPERTY_VALUE, $arOptions = null)
 	{
 		$this->arPageProperties[strtoupper($PROPERTY_ID)] = $PROPERTY_VALUE;
 
@@ -487,19 +472,19 @@ abstract class CAllMain
 			$this->arPagePropertiesChanger[strtoupper($PROPERTY_ID)] = $arOptions;
 	}
 
-	function GetPageProperty($PROPERTY_ID, $default_value = false)
+	public function GetPageProperty($PROPERTY_ID, $default_value = false)
 	{
 		if(isset($this->arPageProperties[strtoupper($PROPERTY_ID)]))
 			return $this->arPageProperties[strtoupper($PROPERTY_ID)];
 		return $default_value;
 	}
 
-	function ShowProperty($PROPERTY_ID, $default_value = false)
+	public function ShowProperty($PROPERTY_ID, $default_value = false)
 	{
 		$this->AddBufferContent(array(&$this, "GetProperty"), $PROPERTY_ID, $default_value);
 	}
 
-	function GetProperty($PROPERTY_ID, $default_value = false)
+	public function GetProperty($PROPERTY_ID, $default_value = false)
 	{
 		$propVal = $this->GetPageProperty($PROPERTY_ID);
 		if($propVal !== false)
@@ -512,12 +497,12 @@ abstract class CAllMain
 		return $default_value;
 	}
 
-	function GetPagePropertyList()
+	public function GetPagePropertyList()
 	{
 		return $this->arPageProperties;
 	}
 
-	function InitPathVars(&$site, &$path)
+	public static function InitPathVars(&$site, &$path)
 	{
 		$site = false;
 		if(is_array($path))
@@ -528,7 +513,7 @@ abstract class CAllMain
 		return $path;
 	}
 
-	function SetDirProperty($PROPERTY_ID, $PROPERTY_VALUE, $path=false)
+	public function SetDirProperty($PROPERTY_ID, $PROPERTY_VALUE, $path=false)
 	{
 		self::InitPathVars($site, $path);
 
@@ -543,7 +528,7 @@ abstract class CAllMain
 		$this->arDirProperties[$site][$path][strtoupper($PROPERTY_ID)] = $PROPERTY_VALUE;
 	}
 
-	function InitDirProperties($path)
+	public function InitDirProperties($path)
 	{
 		self::InitPathVars($site, $path);
 
@@ -595,7 +580,7 @@ abstract class CAllMain
 		return true;
 	}
 
-	function GetDirProperty($PROPERTY_ID, $path=false, $default_value = false)
+	public function GetDirProperty($PROPERTY_ID, $path=false, $default_value = false)
 	{
 		self::InitPathVars($site, $path);
 
@@ -614,7 +599,7 @@ abstract class CAllMain
 		return $default_value;
 	}
 
-	function GetDirPropertyList($path=false)
+	public function GetDirPropertyList($path=false)
 	{
 		self::InitPathVars($site, $path);
 
@@ -632,7 +617,7 @@ abstract class CAllMain
 		return false;
 	}
 
-	function GetMeta($id, $meta_name=false, $bXhtmlStyle=true)
+	public function GetMeta($id, $meta_name=false, $bXhtmlStyle=true)
 	{
 		if($meta_name==false)
 			$meta_name=$id;
@@ -642,7 +627,7 @@ abstract class CAllMain
 		return '';
 	}
 
-	function GetLink($id, $rel = null, $bXhtmlStyle = true)
+	public function GetLink($id, $rel = null, $bXhtmlStyle = true)
 	{
 		if($rel === null)
 		{
@@ -656,7 +641,7 @@ abstract class CAllMain
 		return '';
 	}
 
-	function ShowBanner($type, $html_before="", $html_after="")
+	public static function ShowBanner($type, $html_before="", $html_after="")
 	{
 		if(!CModule::IncludeModule("advertising"))
 			return;
@@ -666,17 +651,17 @@ abstract class CAllMain
 		$APPLICATION->AddBufferContent(array("CAdvBanner", "Show"), $type, $html_before, $html_after);
 	}
 
-	function ShowMeta($id, $meta_name=false, $bXhtmlStyle=true)
+	public function ShowMeta($id, $meta_name=false, $bXhtmlStyle=true)
 	{
 		$this->AddBufferContent(array(&$this, "GetMeta"), $id, $meta_name, $bXhtmlStyle);
 	}
 
-	function ShowLink($id, $rel = null, $bXhtmlStyle = true)
+	public function ShowLink($id, $rel = null, $bXhtmlStyle = true)
 	{
 		$this->AddBufferContent(array(&$this, "GetLink"), $id, $rel, $bXhtmlStyle);
 	}
 
-	function SetAdditionalCSS($Path2css, $additional=false)
+	public function SetAdditionalCSS($Path2css, $additional=false)
 	{
 		$this->oAsset->addCss($Path2css, $additional);
 
@@ -687,7 +672,7 @@ abstract class CAllMain
 	}
 
 	/** @deprecated */
-	function GetAdditionalCSS()
+	public function GetAdditionalCSS()
 	{
 		$n = count($this->sPath2css);
 		if($n > 0)
@@ -697,13 +682,13 @@ abstract class CAllMain
 		return false;
 	}
 
-	function GetCSSArray()
+	public function GetCSSArray()
 	{
 		return array_unique($this->sPath2css);
 	}
 
 	/** @deprecated use Asset::getInstance()->getCss() */
-	function GetCSS($cMaxStylesCnt = true, $bXhtmlStyle = true)
+	public function GetCSS($cMaxStylesCnt = true, $bXhtmlStyle = true, $assetTargetType = Main\Page\AssetShowTargetType::ALL)
 	{
 		if($cMaxStylesCnt === true)
 		{
@@ -711,24 +696,24 @@ abstract class CAllMain
 		}
 		$this->oAsset->setMaxCss($cMaxStylesCnt);
 		$this->oAsset->setXhtml($bXhtmlStyle);
-		$res = $this->oAsset->getCss();
+		$res = $this->oAsset->getCss($assetTargetType);
 		return $res;
 	}
 
-	function ShowCSS($cMaxStylesCnt=true, $bXhtmlStyle=true)
+	public function ShowCSS($cMaxStylesCnt = true, $bXhtmlStyle = true)
 	{
 		$this->AddBufferContent(array(&$this, "GetHeadStrings"), 'BEFORE_CSS');
 		$this->AddBufferContent(array(&$this, "GetCSS"), $cMaxStylesCnt, $bXhtmlStyle);
 	}
 
 	/** @deprecated $Asset::getInstance->addString($str, $bUnique, $location); */
-	function AddHeadString($str, $bUnique = false, $location = AssetLocation::AFTER_JS_KERNEL)
+	public function AddHeadString($str, $bUnique = false, $location = AssetLocation::AFTER_JS_KERNEL)
 	{
 		$location = Asset::getLocationByName($location);
 		$this->oAsset->addString($str, $bUnique, $location);
 	}
 
-	function GetHeadStrings($location = AssetLocation::AFTER_JS_KERNEL)
+	public function GetHeadStrings($location = AssetLocation::AFTER_JS_KERNEL)
 	{
 		$location = Asset::getLocationByName($location);
 		if($location === AssetLocation::AFTER_JS_KERNEL)
@@ -743,7 +728,7 @@ abstract class CAllMain
 		return ($res == '' ? '' : $res."\n");
 	}
 
-	function ShowHeadStrings()
+	public function ShowHeadStrings()
 	{
 		if(!$this->oAsset->getShowHeadString())
 		{
@@ -753,7 +738,7 @@ abstract class CAllMain
 	}
 
 	/** @deprecated use Asset::getInstance()->addJs($src, $additional) */
-	function AddHeadScript($src, $additional=false)
+	public function AddHeadScript($src, $additional=false)
 	{
 		$this->oAsset->addJs($src, $additional);
 
@@ -771,54 +756,54 @@ abstract class CAllMain
 	}
 
 	/** @deprecated use Asset::getInstance()->addBeforeJs($content) */
-	function AddLangJS($content)
+	public function AddLangJS($content)
 	{
 		$this->oAsset->addString($content, true, 'AFTER_CSS');
 	}
 
 	/** @deprecated use Asset::getInstance()->addString($content, false, \Bitrix\Main\Page\AssetLocation::AFTER_JS, $mode) */
-	function AddAdditionalJS($content)
+	public function AddAdditionalJS($content)
 	{
 		$this->oAsset->addString($content, false, AssetLocation::AFTER_JS);
 	}
 
-	static function IsExternalLink($src)
+	public static function IsExternalLink($src)
 	{
 		return (strncmp($src, 'http://', 7) == 0 || strncmp($src, 'https://', 8) == 0 || strncmp($src, '//', 2) == 0);
 	}
 
 	/** @deprecated deprecated use Asset::addCssKernelInfo() */
-	function AddCSSKernelInfo($module = '', $arCSS = array())
+	public function AddCSSKernelInfo($module = '', $arCSS = array())
 	{
 		$this->oAsset->addCssKernelInfo($module, $arCSS);
 	}
 
 	/** @deprecated deprecated use Asset::addJsKernelInfo() */
-	function AddJSKernelInfo($module = '', $arJS = array())
+	public function AddJSKernelInfo($module = '', $arJS = array())
 	{
 		$this->oAsset->addJsKernelInfo($module, $arJS);
 	}
 
 	/** @deprecated use Asset::getInstance()->groupJs($from, $to) */
-	function GroupModuleJS($from = '', $to = '')
+	public function GroupModuleJS($from = '', $to = '')
 	{
 		$this->oAsset->groupJs($from, $to);
 	}
 
 	/** @deprecated use Asset::getInstance()->moveJs($module) */
-	function MoveJSToBody($module = '')
+	public function MoveJSToBody($module = '')
 	{
 		$this->oAsset->moveJs($module);
 	}
 
 	/** @deprecated use Asset::getInstance()->groupCss($from, $to) */
-	function GroupModuleCSS($from = '', $to = '')
+	public function GroupModuleCSS($from = '', $to = '')
 	{
 		$this->oAsset->groupCss($from, $to);
 	}
 
 	/** @deprecated use Asset::getInstance()->setUnique($type, $id) */
-	function SetUniqueCSS($id = '', $cssType = 'page')
+	public function SetUniqueCSS($id = '', $cssType = 'page')
 	{
 		$cssType = (($cssType == 'page') ? 'PAGE' : 'TEMPLATE');
 		$this->oAsset->setUnique($cssType, $id);
@@ -826,30 +811,30 @@ abstract class CAllMain
 	}
 
 	/** @deprecated */
-	function SetUniqueJS($id = '', $jsType = 'page')
+	public function SetUniqueJS($id = '', $jsType = 'page')
 	{
 		return true;
 	}
 
 	/** @deprecated use Asset::getInstance()->getJs($type) */
-	function GetHeadScripts($type = 0)
+	public function GetHeadScripts($type = 0)
 	{
 		return $this->oAsset->getJs($type);
 	}
 
-	function ShowHeadScripts()
+	public function ShowHeadScripts()
 	{
 		$this->oAsset->setShowHeadScript();
 		$this->AddBufferContent(array(&$this, "GetHeadScripts"), 2);
 	}
 
-	function ShowBodyScripts()
+	public function ShowBodyScripts()
 	{
 		$this->oAsset->setShowBodyScript();
 		$this->AddBufferContent(array(&$this, "GetHeadScripts"), 3);
 	}
 
-	function ShowHead($bXhtmlStyle=true)
+	public function ShowHead($bXhtmlStyle=true)
 	{
 		echo '<meta http-equiv="Content-Type" content="text/html; charset='.LANG_CHARSET.'"'.($bXhtmlStyle? ' /':'').'>'."\n";
 		$this->ShowMeta("robots", false, $bXhtmlStyle);
@@ -861,7 +846,7 @@ abstract class CAllMain
 		$this->ShowHeadScripts();
 	}
 
-	function ShowAjaxHead($bXhtmlStyle = true, $showCSS = true, $showStrings = true, $showScripts = true)
+	public function ShowAjaxHead($bXhtmlStyle = true, $showCSS = true, $showStrings = true, $showScripts = true)
 	{
 		$this->RestartBuffer();
 		$this->sPath2css = array();
@@ -890,12 +875,12 @@ abstract class CAllMain
 		}
 	}
 
-	function SetShowIncludeAreas($bShow=true)
+	public function SetShowIncludeAreas($bShow=true)
 	{
 		$_SESSION["SESS_INCLUDE_AREAS"] = $bShow;
 	}
 
-	function GetShowIncludeAreas()
+	public function GetShowIncludeAreas()
 	{
 		global $USER;
 
@@ -912,17 +897,17 @@ abstract class CAllMain
 		return $panel_dynamic_mode;
 	}
 
-	function SetPublicShowMode($mode)
+	public function SetPublicShowMode($mode)
 	{
 		$this->SetShowIncludeAreas($mode != 'view');
 	}
 
-	function GetPublicShowMode()
+	public function GetPublicShowMode()
 	{
 		return $this->GetShowIncludeAreas() ? 'configure' : 'view';
 	}
 
-	function SetEditArea($areaId, $arIcons)
+	public function SetEditArea($areaId, $arIcons)
 	{
 		if(!$this->GetShowIncludeAreas())
 			return;
@@ -933,24 +918,24 @@ abstract class CAllMain
 		$this->editArea->SetEditArea($areaId, $arIcons);
 	}
 
-	function IncludeStringBefore()
+	public function IncludeStringBefore()
 	{
 		if($this->editArea === false)
 			$this->editArea = new CEditArea();
 		return $this->editArea->IncludeStringBefore();
 	}
 
-	function IncludeStringAfter($arIcons=false, $arParams=array())
+	public function IncludeStringAfter($arIcons=false, $arParams=array())
 	{
 		return $this->editArea->IncludeStringAfter($arIcons, $arParams);
 	}
 
-	function IncludeString($string, $arIcons=false)
+	public function IncludeString($string, $arIcons=false)
 	{
 		return $this->IncludeStringBefore().$string.$this->IncludeStringAfter($arIcons);
 	}
 
-	function GetTemplatePath($rel_path)
+	public function GetTemplatePath($rel_path)
 	{
 		if(substr($rel_path, 0, 1)!="/")
 		{
@@ -977,7 +962,7 @@ abstract class CAllMain
 		return $rel_path;
 	}
 
-	function SetTemplateCSS($rel_path)
+	public function SetTemplateCSS($rel_path)
 	{
 		if($path = $this->GetTemplatePath($rel_path))
 			$this->SetAdditionalCSS($path);
@@ -985,7 +970,7 @@ abstract class CAllMain
 
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	// COMPONENTS 2.0 >>>>>
-	function IncludeComponent($componentName, $componentTemplate, $arParams = array(), $parentComponent = null, $arFunctionParams = array())
+	public function IncludeComponent($componentName, $componentTemplate, $arParams = array(), $parentComponent = null, $arFunctionParams = array())
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION, $USER;
@@ -1081,12 +1066,21 @@ abstract class CAllMain
 	 * @return boolean|CBitrixComponent
 	 *
 	 */
-	function getCurrentIncludedComponent()
+	public function getCurrentIncludedComponent()
 	{
 		return end($this->__componentStack);
 	}
 
-	function AddViewContent($view, $content, $pos = 500)
+	/**
+	 * Returns a current component stack.
+	 * @return array
+	 */
+	public function getComponentStack()
+	{
+		return $this->__componentStack;
+	}
+
+	public function AddViewContent($view, $content, $pos = 500)
 	{
 		if(!is_array($this->__view[$view]))
 			$this->__view[$view] = array(array($content, $pos));
@@ -1094,12 +1088,12 @@ abstract class CAllMain
 			$this->__view[$view][] = array($content, $pos);
 	}
 
-	function ShowViewContent($view)
+	public function ShowViewContent($view)
 	{
 		$this->AddBufferContent(array(&$this, "GetViewContent"), $view);
 	}
 
-	function GetViewContent($view)
+	public function GetViewContent($view)
 	{
 		if(!is_array($this->__view[$view]))
 			return '';
@@ -1113,7 +1107,7 @@ abstract class CAllMain
 		return implode($res);
 	}
 
-	function OnChangeFileComponent($path, $site)
+	public static function OnChangeFileComponent($path, $site)
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
@@ -1194,7 +1188,7 @@ abstract class CAllMain
 	// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 	// $arParams - do not change!
-	function IncludeFile($rel_path, $arParams = array(), $arFunctionParams = array())
+	public function IncludeFile($rel_path, $arParams = array(), $arFunctionParams = array())
 	{
 		/** @global CMain $APPLICATION */
 		/** @noinspection PhpUnusedLocalVariableInspection */
@@ -1448,18 +1442,16 @@ abstract class CAllMain
 		return $res;
 	}
 
-	function AddChainItem($title, $link="", $bUnQuote=true)
+	public function AddChainItem($title, $link="", $bUnQuote=true)
 	{
 		if($bUnQuote)
 			$title = str_replace(array("&amp;", "&quot;", "&#039;", "&lt;", "&gt;"), array("&", "\"", "'", "<", ">"), $title);
 		$this->arAdditionalChain[] = array("TITLE"=>$title, "LINK"=>htmlspecialcharsbx($link));
 	}
 
-	function GetNavChain($path=false, $iNumFrom=0, $sNavChainPath=false, $bIncludeOnce=false, $bShowIcons = true)
+	public function GetNavChain($path=false, $iNumFrom=0, $sNavChainPath=false, $bIncludeOnce=false, $bShowIcons = true)
 	{
-		/** @global CMain $APPLICATION */
-		global $APPLICATION;
-		if($APPLICATION->GetProperty("NOT_SHOW_NAV_CHAIN")=="Y")
+		if($this->GetProperty("NOT_SHOW_NAV_CHAIN") == "Y")
 			return "";
 
 		CMain::InitPathVars($site, $path);
@@ -1471,7 +1463,12 @@ abstract class CAllMain
 		$arChain = array();
 		$strChainTemplate = $DOC_ROOT.SITE_TEMPLATE_PATH."/chain_template.php";
 		if(!file_exists($strChainTemplate))
-			$strChainTemplate = $DOC_ROOT.BX_PERSONAL_ROOT."/templates/.default/chain_template.php";
+		{
+			if(($template = getLocalPath("templates/.default/chain_template.php", BX_PERSONAL_ROOT)) !== false)
+			{
+				$strChainTemplate = $DOC_ROOT.$template;
+			}
+		}
 
 		$io = CBXVirtualIo::GetInstance();
 
@@ -1519,7 +1516,7 @@ abstract class CAllMain
 		return $this->_mkchain($arChain, $strChainTemplate, $bIncludeOnce, $bShowIcons);
 	}
 
-	function _mkchain($arChain, $strChainTemplate, $bIncludeOnce=false, $bShowIcons = true)
+	public function _mkchain($arChain, $strChainTemplate, $bIncludeOnce=false, $bShowIcons = true)
 	{
 		$strChain = $sChainProlog = $sChainEpilog = "";
 		if(file_exists($strChainTemplate))
@@ -1551,8 +1548,8 @@ abstract class CAllMain
 		}
 
 		/** @global CMain $APPLICATION */
-		global $APPLICATION, $USER;
-		if($APPLICATION->GetShowIncludeAreas() && $USER->CanDoOperation('edit_php') && $bShowIcons)
+		global $USER;
+		if($this->GetShowIncludeAreas() && $USER->CanDoOperation('edit_php') && $bShowIcons)
 		{
 			$site = CSite::GetSiteByFullPath($strChainTemplate);
 			$DOC_ROOT = CSite::GetSiteDocRoot($site);
@@ -1561,7 +1558,7 @@ abstract class CAllMain
 			{
 				$path = substr($strChainTemplate, strlen($DOC_ROOT));
 
-				$templ_perm = $APPLICATION->GetFileAccessPermission($path);
+				$templ_perm = $this->GetFileAccessPermission($path);
 				if((!defined("ADMIN_SECTION") || ADMIN_SECTION!==true) && $templ_perm>="W")
 				{
 					$arIcons = array();
@@ -1571,26 +1568,26 @@ abstract class CAllMain
 						"TITLE"=>GetMessage("MAIN_INC_ED_NAV")
 					);
 
-					$strChain = $APPLICATION->IncludeString($strChain, $arIcons);
+					$strChain = $this->IncludeString($strChain, $arIcons);
 				}
 			}
 		}
 		return $strChain;
 	}
 
-	function ShowNavChain($path=false, $iNumFrom=0, $sNavChainPath=false)
+	public function ShowNavChain($path=false, $iNumFrom=0, $sNavChainPath=false)
 	{
 		$this->AddBufferContent(array(&$this, "GetNavChain"), $path, $iNumFrom, $sNavChainPath);
 	}
 
-	function ShowNavChainEx($path=false, $iNumFrom=0, $sNavChainPath=false)
+	public function ShowNavChainEx($path=false, $iNumFrom=0, $sNavChainPath=false)
 	{
 		$this->AddBufferContent(array(&$this, "GetNavChain"), $path, $iNumFrom, $sNavChainPath, true);
 	}
 
 	/*****************************************************/
 
-	function SetFileAccessPermission($path, $arPermissions, $bOverWrite=true)
+	public function SetFileAccessPermission($path, $arPermissions, $bOverWrite=true)
 	{
 		global $CACHE_MANAGER;
 
@@ -1691,7 +1688,7 @@ abstract class CAllMain
 		return true;
 	}
 
-	function RemoveFileAccessPermission($path, $arGroups=false)
+	public function RemoveFileAccessPermission($path, $arGroups=false)
 	{
 		global $CACHE_MANAGER;
 
@@ -1754,7 +1751,7 @@ abstract class CAllMain
 		return true;
 	}
 
-	function CopyFileAccessPermission($path_from, $path_to, $bOverWrite=false)
+	public function CopyFileAccessPermission($path_from, $path_to, $bOverWrite=false)
 	{
 		CMain::InitPathVars($site_from, $path_from);
 		$DOC_ROOT_FROM = CSite::GetSiteDocRoot($site_from);
@@ -1786,7 +1783,7 @@ abstract class CAllMain
 	}
 
 
-	function GetFileAccessPermission($path, $groups=false, $task_mode=false) // task_mode - new access mode
+	public function GetFileAccessPermission($path, $groups=false, $task_mode=false) // task_mode - new access mode
 	{
 		global $USER;
 
@@ -1968,7 +1965,7 @@ abstract class CAllMain
 			return $max_perm;
 	}
 
-	function GetFileAccessPermissionByUser($intUserID, $path, $groups=false, $task_mode=false) // task_mode - new access mode
+	public function GetFileAccessPermissionByUser($intUserID, $path, $groups=false, $task_mode=false) // task_mode - new access mode
 	{
 		$intUserIDTmp = intval($intUserID);
 		if ($intUserIDTmp.'|' != $intUserID.'|')
@@ -2135,7 +2132,7 @@ abstract class CAllMain
 	}
 	/***********************************************/
 
-	function SaveFileContent($abs_path, $strContent)
+	public function SaveFileContent($abs_path, $strContent)
 	{
 		$strContent = str_replace("\r\n", "\n", $strContent);
 
@@ -2218,7 +2215,7 @@ abstract class CAllMain
 		return true;
 	}
 
-	function GetFileContent($path)
+	public function GetFileContent($path)
 	{
 		clearstatcache();
 
@@ -2236,7 +2233,7 @@ abstract class CAllMain
 	/**
 	 * @deprecated Use LPA::Process()
 	 */
-	function ProcessLPA($filesrc = false, $old_filesrc = false)
+	public static function ProcessLPA($filesrc = false, $old_filesrc = false)
 	{
 		return LPA::Process($filesrc, $old_filesrc);
 	}
@@ -2244,22 +2241,22 @@ abstract class CAllMain
 	/**
 	 * @deprecated Use LPA::ComponentChecker()
 	 */
-	function LPAComponentChecker(&$arParams, &$arPHPparams, $parentParamName = false)
+	public static function LPAComponentChecker(&$arParams, &$arPHPparams, $parentParamName = false)
 	{
 		LPA::ComponentChecker($arParams, $arPHPparams, $parentParamName);
 	}
 
-	function _ReplaceNonLatin($str)
+	public static function _ReplaceNonLatin($str)
 	{
 		return preg_replace("/[^a-zA-Z0-9_:\\.!\$\\-;@\\^\\~]/is", "", $str);
 	}
 
-	function GetLangSwitcherArray()
+	public function GetLangSwitcherArray()
 	{
-		return CMain::GetSiteSwitcherArray();
+		return $this->GetSiteSwitcherArray();
 	}
 
-	function GetSiteSwitcherArray()
+	public function GetSiteSwitcherArray()
 	{
 		$cur_dir = $this->GetCurDir();
 		$cur_page = $this->GetCurPage();
@@ -2319,7 +2316,7 @@ abstract class CAllMain
 	$use_default_role - "Y" - use default role
 	$max_role_for_super_admin - "Y" - for group ID=1 return max rights
 	*/
-	function GetUserRoles($module_id, $arGroups=false, $use_default_role="Y", $max_role_for_super_admin="Y", $site_id=false)
+	public static function GetUserRoles($module_id, $arGroups=false, $use_default_role="Y", $max_role_for_super_admin="Y", $site_id=false)
 	{
 		global $DB, $USER;
 		static $MODULE_ROLES = array();
@@ -2404,7 +2401,7 @@ abstract class CAllMain
 	$use_default_level - "Y" - use default role
 	$max_right_for_super_admin - "Y" - for group ID=1 return max rights
 	*/
-	function GetUserRight($module_id, $arGroups=false, $use_default_level="Y", $max_right_for_super_admin="Y", $site_id=false)
+	public static function GetUserRight($module_id, $arGroups=false, $use_default_level="Y", $max_right_for_super_admin="Y", $site_id=false)
 	{
 		global $DB, $USER, $MODULE_PERMISSIONS;
 		$err_mess = (CAllMain::err_mess())."<br>Function: GetUserRight<br>Line: ";
@@ -2543,7 +2540,7 @@ abstract class CAllMain
 		return $right;
 	}
 
-	function GetUserRightArray($module_id, $arGroups = false)
+	public static function GetUserRightArray($module_id, $arGroups = false)
 	{
 		global $DB, $USER;
 		$err_mess = (CAllMain::err_mess())."<br>Function: GetUserRightArray<br>Line: ";
@@ -2596,7 +2593,7 @@ abstract class CAllMain
 		return $arRes;
 	}
 
-	function GetGroupRightList($arFilter, $site_id=false)
+	public static function GetGroupRightList($arFilter, $site_id=false)
 	{
 		global $DB;
 
@@ -2619,12 +2616,12 @@ abstract class CAllMain
 		return $dbRes;
 	}
 
-	function GetGroupRight($module_id, $arGroups=false, $use_default_level="Y", $max_right_for_super_admin="Y", $site_id = false)
+	public static function GetGroupRight($module_id, $arGroups=false, $use_default_level="Y", $max_right_for_super_admin="Y", $site_id = false)
 	{
 		return CMain::GetUserRight($module_id, $arGroups, $use_default_level, $max_right_for_super_admin, $site_id);
 	}
 
-	function SetGroupRight($module_id, $group_id, $right, $site_id=false)
+	public static function SetGroupRight($module_id, $group_id, $right, $site_id=false)
 	{
 		global $DB;
 		$err_mess = (CAllMain::err_mess())."<br>Function: SetGroupRight<br>Line: ";
@@ -2662,7 +2659,7 @@ abstract class CAllMain
 		}
 	}
 
-	function DelGroupRight($module_id='', $arGroups=array(), $site_id=false)
+	public static function DelGroupRight($module_id='', $arGroups=array(), $site_id=false)
 	{
 		global $DB;
 		$err_mess = (CAllMain::err_mess())."<br>Function:  DelGroupRight<br>Line: ";
@@ -2709,7 +2706,7 @@ abstract class CAllMain
 		}
 	}
 
-	function GetMainRightList()
+	public static function GetMainRightList()
 	{
 		$arr = array(
 			"reference_id" => array(
@@ -2730,7 +2727,7 @@ abstract class CAllMain
 		return $arr;
 	}
 
-	function GetDefaultRightList()
+	public static function GetDefaultRightList()
 	{
 		$arr = array(
 			"reference_id" => array("D","R","W"),
@@ -2742,7 +2739,7 @@ abstract class CAllMain
 		return $arr;
 	}
 
-	function err_mess()
+	public static function err_mess()
 	{
 		return "<br>Class: CAllMain<br>File: ".__FILE__;
 	}
@@ -2753,7 +2750,7 @@ abstract class CAllMain
 	$name			: cookie name (without prefix)
 	$name_prefix	: name prefix (if not set get from options)
 	*/
-	function get_cookie($name, $name_prefix=false)
+	public function get_cookie($name, $name_prefix=false)
 	{
 		if($name_prefix===false)
 			$name = COption::GetOptionString("main", "cookie_name", "BITRIX_SM")."_".$name;
@@ -2774,7 +2771,7 @@ abstract class CAllMain
 	$spread			: to spread or not to spread
 	$name_prefix	: name prefix (if not set get from options)
 	*/
-	function set_cookie($name, $value, $time=false, $folder="/", $domain=false, $secure=false, $spread=true, $name_prefix=false, $httpOnly=false)
+	public function set_cookie($name, $value, $time=false, $folder="/", $domain=false, $secure=false, $spread=true, $name_prefix=false, $httpOnly=false)
 	{
 		if($time === false)
 			$time = time()+60*60*24*30*12; // 30 days * 12 ~ 1 year
@@ -2802,7 +2799,7 @@ abstract class CAllMain
 			$this->arrSPREAD_COOKIE[$name] = array("V" => $value, "T" => $time, "F" => $folder, "D" => $domain, "S" => $secure, "H" => $httpOnly);
 	}
 
-	function GetCookieDomain()
+	public function GetCookieDomain()
 	{
 		static $bCache = false;
 		static $cache  = false;
@@ -2861,7 +2858,7 @@ abstract class CAllMain
 		return $cache;
 	}
 
-	function StoreCookies()
+	public function StoreCookies()
 	{
 		if(
 			isset($_SESSION['SPREAD_COOKIE'])
@@ -2876,7 +2873,7 @@ abstract class CAllMain
 		$this->HoldSpreadCookieHTML(true);
 	}
 
-	function HoldSpreadCookieHTML($bSet = false)
+	public function HoldSpreadCookieHTML($bSet = false)
 	{
 		static $showed_already = false;
 		$result = $showed_already;
@@ -2888,7 +2885,7 @@ abstract class CAllMain
 	}
 
 	// Returns string with images to spread cookies
-	function GetSpreadCookieHTML()
+	public function GetSpreadCookieHTML()
 	{
 		$res = "";
 		if(
@@ -2914,7 +2911,7 @@ abstract class CAllMain
 	 *
 	 * @return array
 	 */
-	function GetSpreadCookieUrls()
+	public function GetSpreadCookieUrls()
 	{
 		$res = array();
 		if(COption::GetOptionString("main", "ALLOW_SPREAD_COOKIE", "Y")=="Y")
@@ -2988,12 +2985,12 @@ abstract class CAllMain
 		return $res;
 	}
 
-	function ShowSpreadCookieHTML()
+	public function ShowSpreadCookieHTML()
 	{
 		$this->AddBufferContent(array(&$this, "GetSpreadCookieHTML"));
 	}
 
-	function AddPanelButton($arButton, $bReplace=false)
+	public function AddPanelButton($arButton, $bReplace=false)
 	{
 		if(is_array($arButton) && count($arButton)>0)
 		{
@@ -3043,7 +3040,7 @@ abstract class CAllMain
 		}
 	}
 
-	function AddPanelButtonMenu($button_id, $arMenuItem)
+	public function AddPanelButtonMenu($button_id, $arMenuItem)
 	{
 		if(isset($this->arPanelButtons[$button_id]))
 		{
@@ -3060,7 +3057,7 @@ abstract class CAllMain
 		}
 	}
 
-	function GetPanel()
+	public function GetPanel()
 	{
 		global $USER;
 
@@ -3071,7 +3068,7 @@ abstract class CAllMain
 		}
 	}
 
-	function ShowPanel()
+	public function ShowPanel()
 	{
 		global $USER;
 
@@ -3094,19 +3091,19 @@ abstract class CAllMain
 		}
 	}
 
-	function PrintHKGlobalUrlVar()
+	public static function PrintHKGlobalUrlVar()
 	{
 		return CHotKeys::GetInstance()->PrintGlobalUrlVar();
 	}
 
-	abstract function GetLang($cur_dir=false, $cur_host=false);
+	abstract public function GetLang($cur_dir=false, $cur_host=false);
 
-	function GetSiteByDir($cur_dir=false, $cur_host=false)
+	public function GetSiteByDir($cur_dir=false, $cur_host=false)
 	{
 		return $this->GetLang($cur_dir, $cur_host);
 	}
 
-	function RestartWorkarea($start = false)
+	public function RestartWorkarea($start = false)
 	{
 		static $index = null;
 		static $view = null;
@@ -3144,7 +3141,7 @@ abstract class CAllMain
 		}
 	}
 	
-	function AddBufferContent($callback)
+	public function AddBufferContent($callback)
 	{
 		$args = array();
 		$args_num = func_num_args();
@@ -3171,7 +3168,7 @@ abstract class CAllMain
 			ob_start();
 	}
 
-	function RestartBuffer()
+	public function RestartBuffer()
 	{
 		$this->oAsset->setShowHeadString(false);
 		$this->oAsset->setShowHeadScript(false);
@@ -3190,7 +3187,7 @@ abstract class CAllMain
 		ob_start(array(&$this, "EndBufferContent"));
 	}
 
-	function &EndBufferContentMan()
+	public function &EndBufferContentMan()
 	{
 		if(!$this->buffered)
 			return null;
@@ -3209,7 +3206,7 @@ abstract class CAllMain
 		return $res;
 	}
 
-	function EndBufferContent($content="")
+	public function EndBufferContent($content="")
 	{
 		if ($this->buffer_man)
 		{
@@ -3228,15 +3225,8 @@ abstract class CAllMain
 		}
 
 		$asset = Asset::getInstance();
-		if (Frame::getUseAppCache())
-		{
-			$asset->addString(CJSCore::GetCoreMessagesScript(), false, AssetLocation::AFTER_CSS, AssetMode::ALL);
-		}
-		else
-		{
-			$asset->addString(CJSCore::GetCoreMessagesScript(), false, AssetLocation::AFTER_CSS, AssetMode::STANDARD);
-			$asset->addString(CJSCore::GetCoreMessagesScript(true), false, AssetLocation::AFTER_CSS, AssetMode::COMPOSITE);
-		}
+		$asset->addString(CJSCore::GetCoreMessagesScript(), false, AssetLocation::AFTER_CSS, AssetMode::STANDARD);
+		$asset->addString(CJSCore::GetCoreMessagesScript(true), false, AssetLocation::AFTER_CSS, AssetMode::COMPOSITE);
 
 		$asset->addString($this->GetSpreadCookieHTML(), false, AssetLocation::AFTER_JS, AssetMode::STANDARD);
 		if ($asset->canMoveJsToBody() && \CJSCore::IsCoreLoaded())
@@ -3274,14 +3264,14 @@ abstract class CAllMain
 		return $content;
 	}
 
-	function ResetException()
+	public function ResetException()
 	{
 		if($this->LAST_ERROR)
 			$this->ERROR_STACK[] = $this->LAST_ERROR;
 		$this->LAST_ERROR = false;
 	}
 
-	function ThrowException($msg, $id = false)
+	public function ThrowException($msg, $id = false)
 	{
 		$this->ResetException();
 		if(is_object($msg) && (is_subclass_of($msg, 'CApplicationException') || (strtolower(get_class($msg))=='capplicationexception')))
@@ -3290,24 +3280,24 @@ abstract class CAllMain
 			$this->LAST_ERROR = new CApplicationException($msg, $id);
 	}
 
-	function GetException()
+	public function GetException()
 	{
 		return $this->LAST_ERROR;
 	}
 
-	function ConvertCharset($string, $charset_in, $charset_out)
+	public function ConvertCharset($string, $charset_in, $charset_out)
 	{
 		$this->ResetException();
 
 		$error = "";
-		$result = CharsetConverter::ConvertCharset($string, $charset_in, $charset_out, $error);
+		$result = \Bitrix\Main\Text\Encoding::convertEncoding($string, $charset_in, $charset_out, $error);
 		if (!$result && !empty($error))
 			$this->ThrowException($error, "ERR_CHAR_BX_CONVERT");
 
 		return $result;
 	}
 
-	function ConvertCharsetArray($arData, $charset_from, $charset_to)
+	public function ConvertCharsetArray($arData, $charset_from, $charset_to)
 	{
 		if (!is_array($arData))
 		{
@@ -3325,7 +3315,7 @@ abstract class CAllMain
 		return $arData;
 	}
 
-	function CaptchaGetCode()
+	public function CaptchaGetCode()
 	{
 		include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/captcha.php");
 
@@ -3335,7 +3325,7 @@ abstract class CAllMain
 		return $cpt->GetSID();
 	}
 
-	function CaptchaCheckCode($captcha_word, $captcha_sid)
+	public function CaptchaCheckCode($captcha_word, $captcha_sid)
 	{
 		include_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/captcha.php");
 
@@ -3346,7 +3336,7 @@ abstract class CAllMain
 			return False;
 	}
 
-	function UnJSEscape($str)
+	public function UnJSEscape($str)
 	{
 		if(strpos($str, "%u")!==false)
 		{
@@ -3358,7 +3348,7 @@ abstract class CAllMain
 	/**
 	 * @deprecated Use CAdminFileDialog::ShowScript instead
 	 */
-	function ShowFileSelectDialog($event, $arResultDest, $arPath = array(), $fileFilter = "", $bAllowFolderSelect = False)
+	public static function ShowFileSelectDialog($event, $arResultDest, $arPath = array(), $fileFilter = "", $bAllowFolderSelect = False)
 	{
 		CAdminFileDialog::ShowScript(array(
 				"event" => $event,
@@ -3380,7 +3370,7 @@ abstract class CAllMain
 		"PARAMS"=> array('param' => 'value') - additional params, 2nd argument of jsPopup.ShowDialog()
 	),
 	*/
-	function GetPopupLink($arUrl)
+	public function GetPopupLink($arUrl)
 	{
 		CUtil::InitJSCore(array('window', 'ajax'));
 
@@ -3470,7 +3460,7 @@ abstract class CAllMain
 		return $uniq;
 	}
 
-	function PrologActions()
+	public static function PrologActions()
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION, $USER;
@@ -3573,21 +3563,30 @@ abstract class CAllMain
 		self::ForkActions();
 	}
 
-	function EpilogActions()
+	public static function EpilogActions()
 	{
 		global $DB;
+
+		$DB->StartUsingMasterOnly();
+
 		//send email events
 		if(COption::GetOptionString("main", "check_events", "Y") !== "N")
 		{
-			$DB->StartUsingMasterOnly();
 			CEvent::CheckEvents();
-			$DB->StopUsingMasterOnly();
 		}
+
 		//files cleanup
 		CMain::FileAction();
+
+		if (CUserCounter::CheckLiveMode())
+		{
+			CUserCounterPage::checkSendCounter();
+		}
+
+		$DB->StopUsingMasterOnly();
 	}
 
-	static function ForkActions($func = false, $args = array())
+	public static function ForkActions($func = false, $args = array())
 	{
 		if(
 			!defined("BX_FORK_AGENTS_AND_EVENTS_FUNCTION")
@@ -3668,14 +3667,14 @@ class CAllSite
 {
 	var $LAST_ERROR;
 
-	function InDir($strDir)
+	public static function InDir($strDir)
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
 		return (substr($APPLICATION->GetCurPage(true), 0, strlen($strDir))==$strDir);
 	}
 
-	function InPeriod($iUnixTimestampFrom, $iUnixTimestampTo)
+	public static function InPeriod($iUnixTimestampFrom, $iUnixTimestampTo)
 	{
 		if($iUnixTimestampFrom>0 && time()<$iUnixTimestampFrom)
 			return false;
@@ -3685,7 +3684,7 @@ class CAllSite
 		return true;
 	}
 
-	function InGroup($arGroups)
+	public static function InGroup($arGroups)
 	{
 		global $USER;
 		$arUserGroups = $USER->GetUserGroupArray();
@@ -3694,7 +3693,7 @@ class CAllSite
 		return false;
 	}
 
-	function GetWeekStart()
+	public static function GetWeekStart()
 	{
 		static $weekStart = -1;
 
@@ -3744,7 +3743,7 @@ class CAllSite
 		return $weekStart;
 	}
 
-	function GetDateFormat($type="FULL", $lang=false, $bSearchInSitesOnly=false)
+	public static function GetDateFormat($type="FULL", $lang=false, $bSearchInSitesOnly=false)
 	{
 		$bFullFormat = (strtoupper($type) == "FULL");
 
@@ -3803,14 +3802,14 @@ class CAllSite
 		return $format;
 	}
 
-	function GetTimeFormat($lang=false, $bSearchInSitesOnly = false)
+	public static function GetTimeFormat($lang=false, $bSearchInSitesOnly = false)
 	{
 		$dateTimeFormat = self::GetDateFormat('FULL', $lang, $bSearchInSitesOnly);
 		preg_match('~[HG]~', $dateTimeFormat, $chars, PREG_OFFSET_CAPTURE);
 		return trim(substr($dateTimeFormat, $chars[0][1]));
 	}
 
-	function CheckFields($arFields, $ID=false)
+	public function CheckFields($arFields, $ID=false)
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION, $DB;
@@ -3938,7 +3937,7 @@ class CAllSite
 		return true;
 	}
 
-	function SaveDomains($LID, $domains)
+	public static function SaveDomains($LID, $domains)
 	{
 		global $DB, $CACHE_MANAGER;
 
@@ -3973,7 +3972,7 @@ class CAllSite
 		$DB->Query("UPDATE b_lang SET DOMAIN_LIMITED='".($bIsDomain? "Y":"N")."' WHERE LID='".$DB->ForSql($LID)."'");
 	}
 
-	function Add($arFields)
+	public function Add($arFields)
 	{
 		global $DB, $DOCUMENT_ROOT, $CACHE_MANAGER;
 
@@ -4028,7 +4027,7 @@ class CAllSite
 	}
 
 
-	function Update($ID, $arFields)
+	public function Update($ID, $arFields)
 	{
 		global $DB, $MAIN_LANGS_CACHE, $MAIN_LANGS_ADMIN_CACHE, $CACHE_MANAGER;
 
@@ -4089,7 +4088,7 @@ class CAllSite
 		return true;
 	}
 
-	function Delete($ID)
+	public static function Delete($ID)
 	{
 		/** @global CMain $APPLICATION */
 		global $DB, $APPLICATION, $CACHE_MANAGER;
@@ -4150,7 +4149,7 @@ class CAllSite
 		return $DB->Query("DELETE FROM b_lang WHERE LID='".$DB->ForSQL($ID, 2)."'", true);
 	}
 
-	function GetTemplateList($site_id)
+	public static function GetTemplateList($site_id)
 	{
 		global $DB;
 		$strSql =
@@ -4163,7 +4162,7 @@ class CAllSite
 		return $dbr;
 	}
 
-	function GetDefList()
+	public static function GetDefList()
 	{
 		global $DB;
 
@@ -4178,7 +4177,7 @@ class CAllSite
 		return $sl;
 	}
 
-	function GetSiteDocRoot($site)
+	public static function GetSiteDocRoot($site)
 	{
 		if($site === false)
 			$site = SITE_ID;
@@ -4196,7 +4195,7 @@ class CAllSite
 		return $BX_CACHE_DOCROOT[$site];
 	}
 
-	function GetSiteByFullPath($path, $bOneResult = true)
+	public static function GetSiteByFullPath($path, $bOneResult = true)
 	{
 		$res = array();
 
@@ -4229,7 +4228,7 @@ class CAllSite
 		return false;
 	}
 
-	function GetList(&$by, &$order, $arFilter=array())
+	public static function GetList(&$by, &$order, $arFilter=array())
 	{
 		global $DB, $CACHE_MANAGER;
 
@@ -4348,13 +4347,13 @@ class CAllSite
 		return CSite::GetList($ord, $by, array("LID"=>$ID));
 	}
 
-	function GetArrayByID($ID)
+	public static function GetArrayByID($ID)
 	{
 		$res = self::GetByID($ID);
 		return $res->Fetch();
 	}
 
-	function GetDefSite($LID = false)
+	public static function GetDefSite($LID = false)
 	{
 		if(strlen($LID)>0)
 		{
@@ -4370,7 +4369,7 @@ class CAllSite
 		return false;
 	}
 
-	function IsDistinctDocRoots($arFilter=array())
+	public static function IsDistinctDocRoots($arFilter=array())
 	{
 		$s = false;
 		$res = CSite::GetList($by, $order, $arFilter);
@@ -4387,7 +4386,7 @@ class CAllSite
 	///////////////////////////////////////////////////////////////////
 	// Returns drop down list with langs
 	///////////////////////////////////////////////////////////////////
-	function SelectBox($sFieldName, $sValue, $sDefaultValue="", $sFuncName="", $field="class=\"typeselect\"")
+	public static function SelectBox($sFieldName, $sValue, $sDefaultValue="", $sFuncName="", $field="class=\"typeselect\"")
 	{
 		$by = "sort";
 		$order = "asc";
@@ -4407,7 +4406,7 @@ class CAllSite
 		return $s.$s1.'</select>';
 	}
 
-	function SelectBoxMulti($sFieldName, $Value)
+	public static function SelectBoxMulti($sFieldName, $Value)
 	{
 		$by = "sort";
 		$order = "asc";
@@ -4432,7 +4431,7 @@ class CAllSite
 		return $s;
 	}
 
-	function GetNameTemplates()
+	public static function GetNameTemplates()
 	{
 		return array(
 			'#NAME# #LAST_NAME#' => GetMessage('MAIN_NAME_JOHN_SMITH'),
@@ -4462,7 +4461,7 @@ class CAllSite
 	* @param string $site_id - use to get value for the specific site
 	* @return string ex: #LAST_NAME# #NAME#
 	*/
-	function GetNameFormat($dummy = null, $site_id = "")
+	public static function GetNameFormat($dummy = null, $site_id = "")
 	{
 		if ($site_id == "")
 		{
@@ -4531,12 +4530,12 @@ class CAllSite
 	*
 	* @return string - one of two possible default values
 	*/
-	function GetDefaultNameFormat()
+	public static function GetDefaultNameFormat()
 	{
 		return '#NAME# #LAST_NAME#';
 	}
 
-	function GetCurTemplate()
+	public static function GetCurTemplate()
 	{
 		/** @noinspection PhpUnusedLocalVariableInspection */
 		global $APPLICATION, $USER, $CACHE_MANAGER;
@@ -4651,10 +4650,9 @@ class CAllSite
 
 class _CLangDBResult extends CDBResult
 {
-
-	function _CLangDBResult($res)
+	public function __construct($res)
 	{
-		parent::CDBResult($res);
+		parent::__construct($res);
 	}
 
 	function Fetch()
@@ -4732,7 +4730,7 @@ class CAllLanguage
 {
 	var $LAST_ERROR;
 
-	function GetList(&$by, &$order, $arFilter=array())
+	public static function GetList(&$by, &$order, $arFilter=array())
 	{
 		global $DB;
 		$arSqlSearch = array();
@@ -4798,12 +4796,12 @@ class CAllLanguage
 		return $res;
 	}
 
-	function GetByID($ID)
+	public static function GetByID($ID)
 	{
 		return CLanguage::GetList($o, $b, array("LID"=>$ID));
 	}
 
-	function CheckFields($arFields, $ID = false)
+	public function CheckFields($arFields, $ID = false)
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION, $DB;
@@ -4864,7 +4862,7 @@ class CAllLanguage
 		return true;
 	}
 
-	function Add($arFields)
+	public function Add($arFields)
 	{
 		global $DB;
 
@@ -4892,7 +4890,7 @@ class CAllLanguage
 	}
 
 
-	function Update($ID, $arFields)
+	public function Update($ID, $arFields)
 	{
 		global $DB, $MAIN_LANGS_CACHE, $MAIN_LANGS_ADMIN_CACHE;
 
@@ -4920,7 +4918,7 @@ class CAllLanguage
 		return true;
 	}
 
-	function Delete($ID)
+	public static function Delete($ID)
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION, $DB;
@@ -4949,7 +4947,7 @@ class CAllLanguage
 		return $DB->Query("DELETE FROM b_language WHERE LID='".$DB->ForSQL($ID, 2)."'", true);
 	}
 
-	function SelectBox($sFieldName, $sValue, $sDefaultValue="", $sFuncName="", $field="class=\"typeselect\"")
+	public static function SelectBox($sFieldName, $sValue, $sDefaultValue="", $sFuncName="", $field="class=\"typeselect\"")
 	{
 		$by = "sort";
 		$order = "asc";
@@ -4969,7 +4967,7 @@ class CAllLanguage
 		return $s.$s1.'</select>';
 	}
 
-	function GetLangSwitcherArray()
+	public static function GetLangSwitcherArray()
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
@@ -5023,19 +5021,12 @@ abstract class CAllFilterQuery
 	var $clob_upper;
 	var $errorno;
 
-	function __construct($default_query_type = "and", $rus_bool_lang = "yes", $procent="Y", $ex_sep = array(), $clob="N", $div_fields="Y", $clob_upper="N")
-	{
-		$this->CFilterQuery($default_query_type, $rus_bool_lang, $procent, $ex_sep, $clob, $div_fields, $clob_upper);
-	}
-
-	abstract function BuildWhereClause($word);
-
 	/*
 	$default_query_type - logic for spaces
 	$rus_bool_lang - use russian logic words
 	$ex_sep - array with exceptions for delimiters
 	*/
-	function CFilterQuery($default_query_type = "and", $rus_bool_lang = "yes", $procent="Y", $ex_sep = array(), $clob="N", $div_fields="Y", $clob_upper="N")
+	public function __construct($default_query_type = "and", $rus_bool_lang = "yes", $procent="Y", $ex_sep = array(), $clob="N", $div_fields="Y", $clob_upper="N")
 	{
 		$this->m_query  = "";
 		$this->m_fields = "";
@@ -5050,7 +5041,9 @@ abstract class CAllFilterQuery
 		$this->div_fields = $div_fields;
 	}
 
-	function GetQueryString($fields, $query)
+	abstract public function BuildWhereClause($word);
+
+	public function GetQueryString($fields, $query)
 	{
 		$this->m_words = array();
 		if($this->div_fields=="Y")
@@ -5073,7 +5066,7 @@ abstract class CAllFilterQuery
 		return $query;
 	}
 
-	function CutKav($query)
+	public function CutKav($query)
 	{
 		$bdcnt = 0;
 		while (preg_match("/\"([^\"]*)\"/",$query,$pt))
@@ -5113,7 +5106,7 @@ abstract class CAllFilterQuery
 		return $query;
 	}
 
-	function ParseQ($q)
+	public function ParseQ($q)
 	{
 		$q = trim($q);
 		if(strlen($q) <= 0)
@@ -5132,7 +5125,7 @@ abstract class CAllFilterQuery
 		return $q;
 	}
 
-	function ParseStr($qwe)
+	public function ParseStr($qwe)
 	{
 		$qwe=trim($qwe);
 
@@ -5196,7 +5189,7 @@ abstract class CAllFilterQuery
 		return($qwe);
 	}
 
-	function PrepareQuery($q)
+	public function PrepareQuery($q)
 	{
 		$state = 0;
 		$qu = "";
@@ -5275,18 +5268,24 @@ class CAllLang extends CAllSite
 class CApplicationException
 {
 	var $msg, $id;
-	function CApplicationException($msg, $id = false)
+	public function __construct($msg, $id = false)
 	{
 		$this->msg = $msg;
 		$this->id = $id;
 	}
 
-	function GetString()
+	/** @deprecated */
+	public function CApplicationException($msg, $id = false)
+	{
+		self::__construct($msg, $id);
+	}
+
+	public function GetString()
 	{
 		return $this->msg;
 	}
 
-	function GetID()
+	public function GetID()
 	{
 		return $this->id;
 	}
@@ -5295,22 +5294,23 @@ class CApplicationException
 class CAdminException extends CApplicationException
 {
 	var $messages;
-	function CAdminException($messages, $id = false)
+
+	public function __construct($messages, $id = false)
 	{
 		//array("id"=>"", "text"=>""), array(...), ...
 		$this->messages = $messages;
 		$s = "";
 		foreach($this->messages as $msg)
 			$s .= $msg["text"]."<br>";
-		parent::CApplicationException($s, $id);
+		parent::__construct($s, $id);
 	}
 
-	function GetMessages()
+	public function GetMessages()
 	{
 		return $this->messages;
 	}
 
-	function AddMessage($message)
+	public function AddMessage($message)
 	{
 		$this->messages[]=$message;
 		$this->msg.=$message["text"]."<br>";
@@ -5319,7 +5319,7 @@ class CAdminException extends CApplicationException
 
 class CCaptchaAgent
 {
-	function DeleteOldCaptcha($sec = 3600)
+	public static function DeleteOldCaptcha($sec = 3600)
 	{
 		global $DB;
 
@@ -5345,12 +5345,12 @@ class CDebugInfo
 	var $is_comp = true;
 	var $index = 0;
 
-	function __construct($is_comp = true)
+	public function __construct($is_comp = true)
 	{
 		$this->is_comp = $is_comp;
 	}
 
-	function Start()
+	public function Start()
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
@@ -5385,7 +5385,7 @@ class CDebugInfo
 		$APPLICATION->arIncludeDebug[$this->index] = &$this->arResult;
 	}
 
-	function Stop($rel_path="", $path="", $cache_type="")
+	public function Stop($rel_path="", $path="", $cache_type="")
 	{
 		/** @global CMain $APPLICATION */
 		global $APPLICATION;
@@ -5436,7 +5436,7 @@ class CDebugInfo
 		}
 	}
 
-	function Output($rel_path="", $path="", $cache_type="")
+	public function Output($rel_path="", $path="", $cache_type="")
 	{
 		$this->Stop($rel_path, $path, $cache_type);
 		$result = "";

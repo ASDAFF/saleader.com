@@ -53,6 +53,8 @@ $bExportFromCrm = isset($arParams["EXPORT_FROM_CRM"]) && ($arParams["EXPORT_FROM
 $gzCompressionSupported = (($_GET["mode"] == "query" || $_POST["mode"] == "query") && $bCrmMode
 	&& isset($arParams["GZ_COMPRESSION_SUPPORTED"]) && $arParams["GZ_COMPRESSION_SUPPORTED"] && function_exists("gzcompress"));
 
+$lid = ($bCrmMode && !empty($arParams["LID"]) ? $arParams["LID"] : null);
+
 ob_start();
 
 $curPage = substr($APPLICATION -> GetCurPage(), 0, 22);
@@ -218,8 +220,9 @@ else
 			}
 			if($arParams["SITE_LIST"])
 				$arFilter["LID"] = $arParams["SITE_LIST"];
+
 			if(strlen(COption::GetOptionString("sale", "last_export_time_committed_".$curPage, ""))>0)
-				$arFilter[">=DATE_UPDATE"] = ConvertTimeStamp(COption::GetOptionString("sale", "last_export_time_committed_".$curPage, ""), "FULL");
+				$arFilter[">DATE_UPDATE"] = ConvertTimeStamp(COption::GetOptionString("sale", "last_export_time_committed_".$curPage, ""), "FULL");
 			COption::SetOptionString("sale", "last_export_time_".$curPage, time());
 		}
 		else
@@ -246,19 +249,39 @@ else
 			$arParams["REPLACE_CURRENCY"] = '';
 			if(strlen($_SESSION["BX_CML2_EXPORT"]["version"]) > 0 && IntVal($arParams["INTERVAL"]) <= 0)
 				$arParams["INTERVAL"] = 30;
+
+			CSaleExport::setLanguage('en');
 		}
 
 		if(strlen($_SESSION["BX_CML2_EXPORT"]["version"]) <= 0)
 			$arParams["INTERVAL"] = 0;
 
+		$options = array();
+
+		if ($bExportFromCrm)
+		{
+			$options['EXPORT_FROM_CRM'] = "Y";
+		}
+
+		if ($lid)
+		{
+			$options['LID'] = $lid;
+		}
+
 		CTimeZone::Disable();
 		$arResultStat = CSaleExport::ExportOrders2Xml(
 			$arFilter, $nTopCount, $arParams["REPLACE_CURRENCY"], $bCrmMode, $arParams["INTERVAL"],
-			$_SESSION["BX_CML2_EXPORT"]["version"], $bExportFromCrm ? array("EXPORT_FROM_CRM" => "Y") : Array()
+			$_SESSION["BX_CML2_EXPORT"]["version"], $options
 		);
 		CTimeZone::Enable();
 
-		if ($bCrmMode)
+		if (!$bCrmMode)
+		{
+			$time = intval($_SESSION["BX_CML2_EXPORT"][CSaleExport::getOrderPrefix()]);
+			if($time>0)
+				COption::SetOptionString("sale", "last_export_time_".$curPage, $time);
+		}
+		else
 		{
 			$crmSiteUrl = "";
 			if(isset($_POST["CRM_SITE_URL"]) && !empty($_POST["CRM_SITE_URL"]))
@@ -296,6 +319,8 @@ else
 	{
 		if($_COOKIE[COption::GetOptionString("sale", "export_session_name_".$curPage, "")] == COption::GetOptionString("sale", "export_session_id_".$curPage, ""))
 		{
+			$_SESSION["BX_CML2_EXPORT"][CSaleExport::getOrderPrefix()] = 0;
+
 			COption::SetOptionString("sale", "last_export_time_committed_".$curPage, COption::GetOptionString("sale", "last_export_time_".$curPage, ""));
 			global $CACHE_MANAGER;
 			$CACHE_MANAGER->Clean("sale_orders"); // for real-time orders
@@ -487,6 +512,7 @@ else
 			$loader = new CSaleOrderLoader;
 			$loader->arParams = $arParams;
 			$loader->bNewVersion = true;
+			$loader->crmCompatibleMode = $bExportFromCrm;
 			$startTime = time();
 
 			$o = new CXMLFileStream;

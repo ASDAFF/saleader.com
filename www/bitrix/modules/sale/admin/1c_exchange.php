@@ -118,10 +118,9 @@ elseif($type=="listen")
 	$APPLICATION->RestartBuffer();
 
 	CModule::IncludeModule('sale');
-	CSaleExport::setVersionSchema(\Bitrix\Main\Application::getInstance()->getContext()->getRequest()->get("version"));
 
-	$timeLimit = 240;//4 minute
-	$startExecTime  = time();
+	$timeLimit = 60;//1 minute
+	$startExecTime = time();
 	$max_execution_time = (intval(ini_get("max_execution_time")) * 0.75);
 	$max_execution_time = ($max_execution_time > $timeLimit )? $timeLimit:$max_execution_time;
 
@@ -131,12 +130,9 @@ elseif($type=="listen")
 		{
 			usleep(1000);
 
-			if(CSaleExport::getVersionSchema() > CSaleExport::DEFAULT_VERSION)
+			if(intVal(time() - $startExecTime) > $max_execution_time)
 			{
-				if(intVal(time() - $startExecTime) > $max_execution_time)
-				{
-					break;
-				}
+				break;
 			}
 		}
 	}
@@ -145,7 +141,7 @@ elseif($type=="listen")
 	{
 		echo "success\n";
 	}
-	elseif(CSaleExport::getVersionSchema() > CSaleExport::DEFAULT_VERSION)
+	else
 	{
 		CHTTP::SetStatus("304 Not Modified");
 	}
