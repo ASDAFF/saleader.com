@@ -5,7 +5,7 @@ use Bitrix\Main\Page\Asset;
 
 ?>
 <?
-	$TEMPLATE_BACKGROUND_NAME = "black";
+	$TEMPLATE_BACKGROUND_NAME = "white";
 	$TEMPLATE_THEME_NAME = "default";
 ?>
 <?

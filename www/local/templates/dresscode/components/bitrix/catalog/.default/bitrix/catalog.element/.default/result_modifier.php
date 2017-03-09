@@ -128,11 +128,11 @@ $arResult["RELATED_COUNT"] = $gRelated->SelectedRowsCount();
 if (intval($arResult["RELATED_COUNT"]) > 0) {
     $arResult["SHOW_RELATED"] = "Y";
 }
-
 //similar filter
 
-		if(!empty($arResult["IBLOCK_SECTION_ID"]) || !empty($arResult["PROPERTIES"]["SIMILAR_PRODUCT"]["VALUE"])){
-			global $similarFilter;
+		if(empty($arResult["IBLOCK_SECTION_ID"]) || !empty($arResult["PROPERTIES"]["SIMILAR_PRODUCT"]["VALUE"])){
+
+            global $similarFilter;
 			$arSelect = Array("ID");
 			if(empty($arResult["PROPERTIES"]["SIMILAR_PRODUCT"]["VALUE"])){
 				$db_old_groups = CIBlockElement::GetElementGroups($arResult["ID"], true);
@@ -149,7 +149,7 @@ if (intval($arResult["RELATED_COUNT"]) > 0) {
 
 			$arResult["SIMILAR_COUNT"] = $gSimilar->SelectedRowsCount();
 
-} elseif(!empty($arResult["IBLOCK_SECTION_ID"])) {
+}elseif(!empty($arResult["IBLOCK_SECTION_ID"])) {
     $section_id = $arResult["IBLOCK_SECTION_ID"];
     while ((count($props_array["UF_PARECIDAD"])==0 || !is_array($props_array["UF_PARECIDAD"])) && is_set($section_id)) {
         $section_props = CIBlockSection::GetList(array(), array('IBLOCK_ID' => $arParams['IBLOCK_ID'], 'ID' => $section_id),
@@ -157,13 +157,11 @@ if (intval($arResult["RELATED_COUNT"]) > 0) {
         $props_array = $section_props->GetNext();
         $section_id = $props_array['IBLOCK_SECTION_ID'];
     }
-
     if(is_array($props_array)) {
         $props_array = array_map(function ($item) {
             return "PROPERTY_" . $item;
         }, $props_array["UF_PARECIDAD"]
         );
-
         $dbRes = CIBlockElement::GetList(
             array('SORT'),
             array("IBLOCKID" => $arParams['IBLOCK_ID'], "ID" => $arResult['ID']),
@@ -178,10 +176,12 @@ if (intval($arResult["RELATED_COUNT"]) > 0) {
         }
         $similarFilter = array_filter($similarFilter);
         $similarFilter['!ID']=$arResult['ID'];
+        $similarFilter['IBLOCK_ID']=$arResult['IBLOCK_ID'];
         $gSimilar = CIBlockElement::GetList(array("RAND" => "ASC"), $similarFilter, false, false, $arSelect);
         $arResult["SIMILAR_COUNT"] = $gSimilar->SelectedRowsCount();
     }
 }
+
 $arResult['SIMILAR_FILTER']=$similarFilter;
 if (intval($arResult["SIMILAR_COUNT"]) > 0) {
     $arResult["SHOW_SIMILAR"] = "Y";
@@ -845,20 +845,11 @@ while ($arStore = $rsStore->Fetch()) {
 	$relatedFilter = array(
 		"ID" => $arResult["PROPERTIES"]["RELATED_PRODUCT"]["VALUE"]
 	);
-
-	global $similarFilter;
-	if(empty($arResult["PROPERTIES"]["SIMILAR_PRODUCT"]["VALUE"])){
-		$similarFilter = Array("IBLOCK_ID" => $arResult["IBLOCK_ID"], "ACTIVE_DATE" => "Y", "ACTIVE" => "Y", "SECTION_ID" => array_slice($arResult["SECTIONS_ROW"], 0, 1), "!ID" => $arResult["OFFERS_ARRAY_ID"]);
-	}else{
-		$similarFilter = Array("IBLOCK_ID" => $arResult["IBLOCK_ID"], "ACTIVE_DATE" => "Y", "ACTIVE" => "Y", "ID" => $arResult["PROPERTIES"]["SIMILAR_PRODUCT"]["VALUE"]);
-	}
-
 	if(!empty($arResult["SECTION_PATH_LIST"])){
 		foreach ($arResult["SECTION_PATH_LIST"] as $ik => $arSectionPath) {
 			$APPLICATION->AddChainItem($arSectionPath["NAME"], $arSectionPath["SECTION_PAGE_URL"]);
 		}
 	}
-
 ?>
 
 <?
