@@ -189,8 +189,8 @@
 
 			ob_start();
 			$APPLICATION->IncludeComponent(
-				"dresscode:catalog.properties.list", 
-				"no-group", 
+				"dresscode:catalog.properties.list",
+				"no-group",
 				array(
 					"PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"],
 					"COUNT_PROPERTIES" => 7
@@ -202,8 +202,8 @@
 
 			ob_start();
 			$APPLICATION->IncludeComponent(
-				"dresscode:catalog.properties.list", 
-				"group", 
+				"dresscode:catalog.properties.list",
+				"group",
 			array(
 				"PRODUCT_ID" => $arLastOffer["PRODUCT"]["ID"]
 			),

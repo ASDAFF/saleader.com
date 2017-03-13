@@ -143,7 +143,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                 <? endif; ?>
                             <? endif; ?>
                             <? if (!empty($arResult["DISPLAY_PROPERTIES"])): ?>
-                                <div class="elementProperties">
+                                <div class="elementProperties changePropertiesNoGroup">
                                     <div class="headingBox">
                                         <div class="heading">
                                             <?= GetMessage("CATALOG_ELEMENT_CHARACTERISTICS_SHORT"); ?>
@@ -208,7 +208,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                     </div>
                 <? endif; ?>
                 <? if (!empty($arResult["DISPLAY_PROPERTIES"])): ?>
-                    <div id="elementProperties">
+                    <div id="elementProperties" class="changePropertiesGroup">
                         <span class="heading"><?= GetMessage("SPECS") ?></span>
                         <table class="stats">
                             <tbody>
