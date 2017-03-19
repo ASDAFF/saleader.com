@@ -4,6 +4,8 @@ $this->setFrameMode(true);?>
 <?
 	$this->SetViewTarget("menuRollClass");?> menuRolled<?$this->EndViewTarget();
 	$this->SetViewTarget("hiddenZoneClass");?>hiddenZone<?$this->EndViewTarget();
+	$this->SetViewTarget("hiddenZoneClassEl");?>hiddenZone<?$this->EndViewTarget();
+
 ?>
 
 <?

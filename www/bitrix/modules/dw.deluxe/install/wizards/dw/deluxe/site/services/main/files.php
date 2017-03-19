@@ -60,7 +60,7 @@ CWizardUtil::ReplaceMacros(WIZARD_SITE_PATH."/index.php", Array("SITE_DIR" => WI
 CWizardUtil::ReplaceMacros(WIZARD_SITE_PATH."/.section.php", array("SITE_DESCRIPTION" => htmlspecialcharsbx($wizard->GetVar("siteMetaDescription"))));
 CWizardUtil::ReplaceMacros(WIZARD_SITE_PATH."/.section.php", array("SITE_KEYWORDS" => htmlspecialcharsbx($wizard->GetVar("siteMetaKeywords"))));
 
-copy(WIZARD_THEME_ABSOLUTE_PATH."/favicon.ico", WIZARD_SITE_PATH."favicon.ico");
+copy(WIZARD_THEME_ABSOLUTE_PATH. "/www/favicon.ico", WIZARD_SITE_PATH."favicon.ico");
 
 $arUrlRewrite = array(); 
 if (file_exists(WIZARD_SITE_ROOT_PATH."/urlrewrite.php"))

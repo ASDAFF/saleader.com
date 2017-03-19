@@ -14,7 +14,7 @@ else
 	<link rel="stylesheet" type="text/css" href="<?= SITE_TEMPLATE_PATH ?>/blog.css" />	
 	<link rel="stylesheet" type="text/css" href="<?= SITE_TEMPLATE_PATH ?>/common.css" />
 	<link rel="stylesheet" type="text/css" href="<?= SITE_TEMPLATE_PATH ?>/colors.css" />
-	<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/favicon.ico" /> 
+	<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/www/favicon.ico" />
 </head>	
 <body>
 <?if (IsModuleInstalled("im")) $APPLICATION->IncludeComponent("bitrix:im.messenger", "", Array(), null, array("HIDE_ICONS" => "Y")); ?>

@@ -1,5 +1,7 @@
 <? require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/header.php");
 $APPLICATION->SetTitle("Задайте вопрос");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 ?><h1>Контактная информация </h1>
 <?/* $APPLICATION->IncludeComponent(
     "bitrix:menu",

@@ -1,4 +1,7 @@
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 $APPLICATION->SetTitle("Новинки");?><h1>Популярные товары</h1><?$APPLICATION->IncludeComponent(
 	"bitrix:menu", 
 	"personal", 

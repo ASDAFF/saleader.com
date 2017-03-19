@@ -1,5 +1,7 @@
 <?define("NEED_AUTH", true);
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 $APPLICATION->SetTitle("Личный кабинет");
 ?><h1>Личный кабинет</h1>
 <?$APPLICATION->IncludeComponent("bitrix:menu", "personal", Array(

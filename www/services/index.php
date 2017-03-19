@@ -1,5 +1,6 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
 $APPLICATION->SetTitle("Услуги");?>
 <?$APPLICATION->IncludeComponent(
 	"bitrix:news", 

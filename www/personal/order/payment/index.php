@@ -1,5 +1,7 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_before.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 $APPLICATION->SetTitle("Оплата заказа");
 ?><?$APPLICATION->IncludeComponent(
 	"bitrix:sale.order.payment",

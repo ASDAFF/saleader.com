@@ -7,7 +7,7 @@ IncludeTemplateLangFile(__FILE__);
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title><?$APPLICATION->ShowTitle()?></title>
-	<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/www/favicon.ico" />
 	
 	<link rel="stylesheet" type="text/css" href="<?=SITE_TEMPLATE_PATH?>/common.css" />
 	

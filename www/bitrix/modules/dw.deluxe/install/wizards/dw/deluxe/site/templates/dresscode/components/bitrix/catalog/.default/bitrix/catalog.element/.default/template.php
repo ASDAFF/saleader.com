@@ -129,7 +129,7 @@
 														<?=$arProperty["DISPLAY_VALUE"]?>
 													<?else:?>
 													<?if($arProperty["FILTRABLE"] =="Y" && !empty($arProperty["VALUE_ENUM_ID"])):?>
-														<a href="<?=$arResult["LAST_SECTION"]["SECTION_PAGE_URL"]?>?arrFilter_<?=$arProperty["ID"]?>_<?=abs(crc32($arProperty["VALUE_ENUM_ID"]))?>=Y&amp;set_filter=Y" class="analog">
+														<a href="<?=$arResult["LAST_SECTION"]["SECTION_PAGE_URL"]?>filter/<?=strtolower($arProperty["CODE"])?>-is-<?=strtolower($arProperty["VALUE_XML_ID"])?>/apply/" class="analog">
 													<?endif;?><?=$arProperty["DISPLAY_VALUE"]?>
 														<?if($arProperty["FILTRABLE"] == "Y" && !empty($arProperty["VALUE_ENUM_ID"])):?>
 															</a>
@@ -204,7 +204,7 @@
 				                                    <?endif;?>
 				                                </td>
 				                                <td class="right">
-				                                    <?if($arProp["FILTRABLE"] =="Y" && !is_array($arProp["VALUE"])):?><a href="<?=$arResult["LAST_SECTION"]["SECTION_PAGE_URL"]?>?arrFilter_<?=$arProp["ID"]?>_<?=abs(crc32($arProp["VALUE_ENUM_ID"]))?>=Y&amp;set_filter=Y" class="analog"><?=GetMessage("OTHERITEMS")?></a><?endif;?>
+				                                    <?if($arProp["FILTRABLE"] =="Y" && !is_array($arProp["VALUE"])):?><a href="<?=$arResult["LAST_SECTION"]["SECTION_PAGE_URL"]?>filter/<?=strtolower($arProperty["CODE"])?>-is-<?=strtolower($arProperty["VALUE_XML_ID"])?>/apply/" class="analog"><?=GetMessage("OTHERITEMS")?></a><?endif;?>
 				                                </td>
 				                            </tr>
 				                        <?else:?>
@@ -230,7 +230,7 @@
 				                            </td>
 				                            <td class="right">
 				                                <?if($arProp["FILTRABLE"] =="Y" && !is_array($arProp["VALUE"]) && !empty($arProp["VALUE_ENUM_ID"])):?>
-				                                    <a href="<?=$arResult["SECTION"]["SECTION_PAGE_URL"]?>?arrFilter_<?=$arProp["ID"]?>_<?=abs(crc32($arProp["VALUE_ENUM_ID"]))?>=Y&amp;set_filter=Y" class="analog"><?=GetMessage("OTHERITEMS")?></a>
+				                                    <a href="<?=$arResult["SECTION"]["SECTION_PAGE_URL"]?>filter/<?=strtolower($arProperty["CODE"])?>-is-<?=strtolower($arProperty["VALUE_XML_ID"])?>/apply/" class="analog"><?=GetMessage("OTHERITEMS")?></a>
 				                                <?endif;?>
 				                            </td>
 				                        </tr>

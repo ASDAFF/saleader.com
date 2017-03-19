@@ -154,7 +154,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                         </div>
                                     </div>
                                     <div class="propertyList">
-                                        <? foreach ($arResult["DISPLAY_PROPERTIES"] as $ip => $arProperty): ?>
+                                        <? foreach ($arResult["DISPLAY_PROPERTIES"] as $ip => $arProperty):?>
                                             <? if (!empty($arProperty["DISPLAY_VALUE"]) && ++$propertyCounter <= $countPropertyElements): ?>
                                                 <div class="propertyTable">
                                                     <div
@@ -165,7 +165,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                         <? else: ?>
                                                             <? if (is_array($arProperty["DISPLAY_VALUE"])) $arProperty["DISPLAY_VALUE"] = implode('/', $arProperty["DISPLAY_VALUE"]) ?>
                                                             <? if ($arProperty["FILTRABLE"] == "Y" && !empty($arProperty["VALUE_ENUM_ID"])): ?>
-                                                                <a rel="nofollow" href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProperty["ID"] ?>_<?= abs(crc32($arProperty["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y" class="analog">
+                                                                <a rel="nofollow" href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>filter/<?=strtolower($arProperty["CODE"])?>-is-<?=strtolower($arProperty["VALUE_XML_ID"])?>/apply/" class="analog">
                                                             <? endif; ?><?= $arProperty["DISPLAY_VALUE"] ?>
                                                             <? if ($arProperty["FILTRABLE"] == "Y" && !empty($arProperty["VALUE_ENUM_ID"])): ?>
                                                                 </a>
@@ -250,7 +250,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                                 <noindex>
                                                     <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"])): ?>
                                                         <a rel="nofollow"
-                                                           href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
+                                                           href="<?= $arResult["LAST_SECTION"]["SECTION_PAGE_URL"] ?>filter/<?=strtolower($arProp["CODE"])?>-is-<?=strtolower($arProp["VALUE_XML_ID"])?>/apply/"
                                                            class="analog"><?= GetMessage("OTHERITEMS") ?></a><? endif; ?>
                                                 </noindex>
                                             </td>
@@ -283,7 +283,7 @@ $this->AddDeleteAction($arResult["ID"], $arResult["DELETE_LINK"], CIBlock::GetAr
                                             <noindex>
                                                 <? if ($arProp["FILTRABLE"] == "Y" && !is_array($arProp["VALUE"]) && !empty($arProp["VALUE_ENUM_ID"])): ?>
                                                     <a rel="nofollow"
-                                                       href="<?= $arResult["SECTION"]["SECTION_PAGE_URL"] ?>?arrFilter_<?= $arProp["ID"] ?>_<?= abs(crc32($arProp["VALUE_ENUM_ID"])) ?>=Y&amp;set_filter=Y"
+                                                       href="<?= $arResult["SECTION"]["SECTION_PAGE_URL"] ?>filter/<?=strtolower($arProp["CODE"])?>-is-<?=strtolower($arProp["VALUE_XML_ID"])?>/apply/"
                                                        class="analog"><?= GetMessage("OTHERITEMS") ?></a>
                                                 <? endif; ?>
                                             </noindex>

@@ -54,7 +54,8 @@
 ); ?>
     </div>
     <? $APPLICATION->ShowViewContent("smartFilter"); ?>
-    <div class="<? $APPLICATION->ShowViewContent("hiddenZoneClass"); ?>">
+    <div>
+        <div class="<? $APPLICATION->ShowViewContent("hiddenZoneClass"); ?>">
         <? $APPLICATION->IncludeComponent("bitrix:news.list", "leftNews", array(
 	"IBLOCK_TYPE" => "info",
 		"IBLOCK_ID" => "8",
@@ -141,7 +142,8 @@
 	"ACTIVE_COMPONENT" => "Y"
 	)
 ); ?>
-        <div id="subscribe" class="sideBlock">
+        </div>
+        <div id="subscribe" class="sideBlock <? $APPLICATION->ShowViewContent("hiddenZoneClass"); ?>">
             <div class="sideBlockContent">
                 <? $APPLICATION->IncludeFile(SITE_DIR . "sect_subscribe.php", Array(), Array("MODE" => "text", "NAME" => GetMessage("SECT_SUBSCRIBE"), "TEMPLATE" => "sect_subscribe.php")); ?>
                 <? $APPLICATION->IncludeComponent("bitrix:subscribe.form", ".default", array(
@@ -160,11 +162,12 @@
             </div>
         </div>
         <noindex>
-            <div class="sideBlock banner">
+            <div class="sideBlock banner <? $APPLICATION->ShowViewContent("hiddenZoneClass"); ?>">
                 <? $APPLICATION->IncludeFile(SITE_DIR . "sect_left_banner1.php", Array(), Array("MODE" => "text", "NAME" => GetMessage("SECT_LEFT_BANNER_1"), "TEMPLATE" => "sect_left_banner1.php")); ?>
             </div>
         </noindex>
-        <? $APPLICATION->IncludeComponent(
+        <div class="<? $APPLICATION->ShowViewContent("hiddenZoneClassEl"); ?>">
+            <? $APPLICATION->IncludeComponent(
             "bitrix:news.list",
             "leftService",
             array(
@@ -257,6 +260,7 @@
                 "ACTIVE_COMPONENT" => "Y"
             )
         ); ?>
+        </div>
 
         <? $APPLICATION->IncludeComponent("bitrix:news.list", "leftCollection", array(
 	"IBLOCK_TYPE" => "info",
@@ -344,7 +348,7 @@
 	)
 ); ?>
         <noindex>
-        <div class="sideBlock banner">
+        <div class="sideBlock banner <? $APPLICATION->ShowViewContent("hiddenZoneClass"); ?>">
             <? $APPLICATION->IncludeFile(SITE_DIR . "sect_left_banner2.php", Array(), Array("MODE" => "text", "NAME" => GetMessage("SECT_LEFT_BANNER_2"), "TEMPLATE" => "sect_left_banner2.php")); ?>
         </div>
         </noindex>

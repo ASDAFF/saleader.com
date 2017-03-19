@@ -1,7 +1,7 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 <html>
 <head>
-<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="<?=SITE_TEMPLATE_PATH?>/www/favicon.ico" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <?$APPLICATION->ShowMeta("robots")?>
 <?$APPLICATION->ShowMeta("keywords")?>

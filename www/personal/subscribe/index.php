@@ -1,5 +1,7 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 $APPLICATION->SetTitle("Рассылки");
 ?><h1>Настройка подписки</h1>
 <?$APPLICATION->IncludeComponent("bitrix:menu", "personal", Array(

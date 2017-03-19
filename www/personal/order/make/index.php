@@ -1,5 +1,7 @@
 <?
 require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 $APPLICATION->SetTitle("Заказы");
 ?><?$APPLICATION->IncludeComponent("bitrix:sale.order.ajax", "", array(
 	"PAY_FROM_ACCOUNT" => "Y",

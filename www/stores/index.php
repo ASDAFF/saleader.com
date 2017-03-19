@@ -1,4 +1,6 @@
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
+$APPLICATION->AddViewContent("hiddenZoneClassEl",'hiddenZone');
+$APPLICATION->AddViewContent("hiddenZoneClass",'hiddenZone');
 	$APPLICATION->SetTitle("Склады");?><h1>Склады</h1><?$APPLICATION->IncludeComponent("bitrix:catalog.store", ".default", Array(
 	"CACHE_TIME" => "3600",	// Время кеширования (сек.)
 		"CACHE_TYPE" => "A",	// Тип кеширования
