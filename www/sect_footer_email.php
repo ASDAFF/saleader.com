@@ -1,1 +1,1 @@
-<a rel="nofollow" href="mailto:info@digitalweb.ru" class="email">info@digitalweb.ru</a>
+<a rel="nofollow" href="mailto:sale@ipvi.store" class="email" title="Электронная почта IPVI.Store">sale@ipvi.store</a>

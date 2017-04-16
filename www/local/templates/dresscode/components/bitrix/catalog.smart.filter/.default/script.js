@@ -957,6 +957,7 @@ $(window).on("load", function() {
 	$("#del_filter").on("click", function(e) {
 		//$filter.attr("action", getSmartFilterParamsCast.SEF_DEL_FILTER_URL);
 		if(getSmartFilterParamsCast.SEF_DEL_FILTER_URL == undefined){
+			return
 			$filter.append('<input type="hidden" name="del_filter" value="Y">').submit();
 		}
 		e.preventDefault();

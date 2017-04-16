@@ -109,7 +109,7 @@ elseif ($obCache->StartDataCache()) {
 		if($arSection["DEPTH_LEVEL"] == 1 && !empty($arSection["PICTURE"])){
 			$arPicture = CFile::ResizeImageGet(
 		        CFile::GetFileArray($arSection["PICTURE"]),
-		        array("width" => 24, "height" => 24),
+		        array("width" => 40, "height" => 40),
 		        BX_RESIZE_IMAGE_PROPORTIONAL,
 		        true
 		    );
@@ -118,7 +118,7 @@ elseif ($obCache->StartDataCache()) {
 		if($arSection["DEPTH_LEVEL"] == 2 && !empty($arSection["DETAIL_PICTURE"])){
 			$arPicture = CFile::ResizeImageGet(
 		        CFile::GetFileArray($arSection["DETAIL_PICTURE"]),
-		        array("width" => 190, "height" => 100),
+		        array("width" => 80, "height" => 60),
 		        BX_RESIZE_IMAGE_PROPORTIONAL,
 		        false
 		    );

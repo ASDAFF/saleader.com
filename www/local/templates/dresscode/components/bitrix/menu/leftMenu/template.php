@@ -1,4 +1,5 @@
-<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+?>
 <?if(CModule::IncludeModule("currency")):?> 
 <?$this->setFrameMode(true);?>
 	<?if (!empty($arResult)):?>
@@ -23,12 +24,10 @@
 								<ul class="menuItems">
 									<?foreach($nextElement["ELEMENTS"][1] as $next2Elements):?>
 										<li>
-											<?if(!empty($next2Elements["PICTURE"]["src"])):?>
-												<a href="<?=$next2Elements["LINK"]?>" class="menuLink">
+                                            <a href="<?=$next2Elements["LINK"]?>" class="menuLink">
+                                            <?if(!empty($next2Elements["PICTURE"]["src"])):?>
 													<img src="<?=$next2Elements["PICTURE"]["src"]?>" alt="<?=$next2Elements["TEXT"]?>">
-												</a>
 											<?endif;?>
-											<a href="<?=$next2Elements["LINK"]?>" class="menuLink">
 												<span><?=$next2Elements["TEXT"]?></span><small><?=$next2Elements["ELEMENT_CNT"]?></small>
 											</a>
 											
@@ -44,13 +43,14 @@
 							<?if(count($nextElement["ELEMENTS"][2])):?>
 								<ul class="menuItems">
 									<?foreach($nextElement["ELEMENTS"][2] as $next2Elements):?>
-										<li>
-											<?if(!empty($next2Elements["PICTURE"]["src"])):?>
-												<a href="<?=$next2Elements["LINK"]?>" class="menuLink">
+
+                                        <li>
+                                            <a href="<?=$next2Elements["LINK"]?>" class="menuLink">
+                                            <?if(!empty($next2Elements["PICTURE"]["src"])):?>
 													<img src="<?=$next2Elements["PICTURE"]["src"]?>" alt="<?=$next2Elements["TEXT"]?>">
-												</a>
 											<?endif;?>
-											<a href="<?=$next2Elements["LINK"]?>" class="menuLink"><span><?=$next2Elements["TEXT"]?></span><small><?=$next2Elements["ELEMENT_CNT"]?></small></a>
+                                                <span><?=$next2Elements["TEXT"]?></span><small><?=$next2Elements["ELEMENT_CNT"]?></small>
+                                            </a>
 										</li>
 										<?if(!empty($next2Elements["ELEMENTS"])):?>
 											<?foreach($next2Elements["ELEMENTS"] as $next3Elements):?>

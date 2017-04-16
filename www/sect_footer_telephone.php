@@ -1,1 +1,1 @@
-<a rel="nofollow" href="tel:+7 (800) 777 55 22" class="telephone">+7 (800) 777 55 22</a>
+<a rel="nofollow" href="tel:+7 (495) 104 48 45" class="telephone" title="Номер телефона магазина iPVi.store">+7 (495) 104 48 45</a>

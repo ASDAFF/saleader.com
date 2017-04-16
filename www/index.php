@@ -2,10 +2,10 @@
 define("INDEX_PAGE", "Y");?>
 <?define("MAIN_PAGE", true);?>
 <?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/header.php");
-$APPLICATION->SetPageProperty("description", "Интернет-магази IP - видеонаблюдения предложит тысячи товаров по выгодной цене. Доставка по Москве и по всей России.");
-$APPLICATION->SetPageProperty("keywords", "ipvi, лидер продаж, интернет магазин, лучший интернет магазин");
-$APPLICATION->SetPageProperty("title", "Интернет-магазин IP видеонаблюдения");
-$APPLICATION->SetTitle("Интернет-магазин IP видеонаблюдения");?>
+$APPLICATION->SetPageProperty("description", "Интернет-магазин iPVi.store предложит системы видеонаблюдения по выгодной цене. Доставка по Москве и по всей России.");
+$APPLICATION->SetPageProperty("keywords", "iPVi.store, интернет магазин, лучший интернет магазин");
+$APPLICATION->SetPageProperty("title", "Интернет-магазин \"iPVi.store - системы видеонабюдения\"");
+$APPLICATION->SetTitle("Интернет-магазин \"iPVi.store - системы видеонабюдения\"");?>
 	<div id="promoBlock">
 		<?$APPLICATION->IncludeComponent("dresscode:slider", ".default", array(
 	"IBLOCK_TYPE" => "slider",
@@ -30,21 +30,21 @@ $APPLICATION->SetTitle("Интернет-магазин IP видеонаблю�
 		</div>
 	</div>
 <?$APPLICATION->IncludeComponent(
-    "dresscode:slider",
-    "middle",
-    array(
-        "IBLOCK_TYPE" => "slider",
-        "IBLOCK_ID" => "4",
-        "CACHE_TYPE" => "Y",
-        "CACHE_TIME" => "3600000",
-        "PICTURE_WIDTH" => "1476",
-        "PICTURE_HEIGHT" => "202",
-        "COMPONENT_TEMPLATE" => "middle"
-    ),
-    false,
-    array(
-        "ACTIVE_COMPONENT" => "Y"
-    )
+	"dresscode:slider", 
+	"middle", 
+	array(
+		"IBLOCK_TYPE" => "slider",
+		"IBLOCK_ID" => "4",
+		"CACHE_TYPE" => "A",
+		"CACHE_TIME" => "3600000",
+		"PICTURE_WIDTH" => "1476",
+		"PICTURE_HEIGHT" => "400",
+		"COMPONENT_TEMPLATE" => "middle"
+	),
+	false,
+	array(
+		"ACTIVE_COMPONENT" => "Y"
+	)
 );?>
 <?$APPLICATION->IncludeComponent(
 	"dresscode:offers.product", 
@@ -64,7 +64,7 @@ $APPLICATION->SetTitle("Интернет-магазин IP видеонаблю�
 			3 => "_1754",
 			4 => "_1755",
 		),
-		"ELEMENTS_COUNT" => "6",
+		"ELEMENTS_COUNT" => "9",
 		"SORT_PROPERTY_NAME" => "SORT",
 		"SORT_VALUE" => "ASC",
 		"COMPONENT_TEMPLATE" => ".default",
@@ -110,8 +110,11 @@ $APPLICATION->IncludeComponent(
         "ACTIVE_COMPONENT" => "Y"
     )
 );?>
-<?$APPLICATION->IncludeComponent("dresscode:brands.list", ".default", array(
-	"IBLOCK_TYPE" => "info",
+<?$APPLICATION->IncludeComponent(
+	"dresscode:brands.list", 
+	".default", 
+	array(
+		"IBLOCK_TYPE" => "info",
 		"IBLOCK_ID" => "1",
 		"SELECT_FIELDS" => array(
 			0 => "",
@@ -120,7 +123,7 @@ $APPLICATION->IncludeComponent(
 		),
 		"PROP_NAME" => "",
 		"PROP_VALUE" => "",
-		"ELEMENTS_COUNT" => "10",
+		"ELEMENTS_COUNT" => "14",
 		"SORT_PROPERTY_NAME" => "7",
 		"SORT_VALUE" => "ASC",
 		"PICTURE_WIDTH" => "150",
@@ -131,7 +134,7 @@ $APPLICATION->IncludeComponent(
 	),
 	false,
 	array(
-	"ACTIVE_COMPONENT" => "Y"
+		"ACTIVE_COMPONENT" => "Y"
 	)
 );?>
 <?$APPLICATION->IncludeComponent(

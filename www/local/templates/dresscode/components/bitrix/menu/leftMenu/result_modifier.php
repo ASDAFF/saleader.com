@@ -6,10 +6,10 @@
 	use Bitrix\Main\Entity;
 
 	$obCache = new CPHPCache();
-	if($obCache->InitCache(3600000000, $USER->GetGroups().SITE_ID."v1", "/")){
+	/*if($obCache->InitCache(3600000000, $USER->GetGroups().SITE_ID."v1", "/")){
 	   $arResult = $obCache->GetVars();
 	}
-	elseif($obCache->StartDataCache()){
+	elseif($obCache->StartDataCache()){*/
 		if(!empty($arResult)){
 
 			$arMeasureProductsID = array();
@@ -105,7 +105,7 @@
 								while ($row_requests = $result_requests->Fetch()) {
 									
 									if(!empty($row_requests["UF_FILE"])){
-			 							$row_requests["UF_FILE"] = CFile::ResizeImageGet($row_requests["UF_FILE"], array("width" => 30, "height" => 30), BX_RESIZE_IMAGE_PROPORTIONAL, false); 
+			 							$row_requests["UF_FILE"] = CFile::ResizeImageGet($row_requests["UF_FILE"], array("width" => 30, "height" => 30), BX_RESIZE_IMAGE_PROPORTIONAL, false);
 										$hasPicture = true;
 									}
 									
@@ -438,8 +438,8 @@
 			}
 
 		}
-	   $obCache->EndDataCache($arResult);
-	}
+	  /* $obCache->EndDataCache($arResult);
+	}*/
 	
 
 

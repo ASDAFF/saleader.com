@@ -450,10 +450,11 @@ $this->setFrameMode(true);?>
 			</div>
 		<?
 		}
+		$curDir=$APPLICATION->GetCurDir();
 		?>
 		<ul id="smartFilterControls">
 			<li><a id="set_filter" href="#"><?=GetMessage("CT_BCSF_SET_FILTER")?> <span id="set_filter_num"></span></a>
-			<li><a id="del_filter" href="#"><?=GetMessage("CT_BCSF_DEL_FILTER")?></a>
+			<li><a rel="nofollow" id="del_filter" href="<?=$curDir.'filter/clear/apply/'?>"><?=GetMessage("CT_BCSF_DEL_FILTER")?></a>
 		</ul>
 		<div id="modef" <?=(!isset($arResult["ELEMENT_COUNT"])) ? 'style="display:none"' : 'style="display: inline-block;"';?>>
 			<a href="#" class="close"></a>
